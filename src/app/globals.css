@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7efe1;
+  --foreground: #2b1710;
+
+  --color-brand-maroon-950: #2c0a05;
+  --color-brand-maroon-900: #3d0f08;
+  --color-brand-maroon-800: #5a1a10;
+  --color-brand-maroon-700: #7a2b1c;
+  --color-brand-maroon-600: #8f3520;
+
+  --color-brand-cream-50: #fbf5ea;
+  --color-brand-cream-100: #f7efe1;
+  --color-brand-cream-200: #efe2c9;
+
+  --color-brand-orange-600: #c9711f;
+  --color-brand-orange-500: #db8a3c;
+  --color-brand-orange-400: #e6a25c;
+
+  --color-brand-ink: #2b1710;
+  --color-brand-muted: #7a6a5c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-maroon-950: var(--color-brand-maroon-950);
+  --color-maroon-900: var(--color-brand-maroon-900);
+  --color-maroon-800: var(--color-brand-maroon-800);
+  --color-maroon-700: var(--color-brand-maroon-700);
+  --color-maroon-600: var(--color-brand-maroon-600);
+  --color-cream-50: var(--color-brand-cream-50);
+  --color-cream-100: var(--color-brand-cream-100);
+  --color-cream-200: var(--color-brand-cream-200);
+  --color-orange-600: var(--color-brand-orange-600);
+  --color-orange-500: var(--color-brand-orange-500);
+  --color-orange-400: var(--color-brand-orange-400);
+  --color-ink: var(--color-brand-ink);
+  --color-muted: var(--color-brand-muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}

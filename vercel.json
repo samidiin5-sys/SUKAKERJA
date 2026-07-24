@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/buat-tugas-rutin",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
