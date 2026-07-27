@@ -19,7 +19,7 @@ function inisial(nama: string) {
     .toUpperCase()
 }
 
-export default function DaftarKaryawan({ daftarAwal }: { daftarAwal: Karyawan[] }) {
+export default function DaftarKaryawan({ daftarAwal, isSuperAdmin = false }: { daftarAwal: Karyawan[]; isSuperAdmin?: boolean }) {
   const router = useRouter()
   
   // State Pencarian & Filter
@@ -222,8 +222,8 @@ export default function DaftarKaryawan({ daftarAwal }: { daftarAwal: Karyawan[] 
                     </div>
                   </div>
 
-                  {/* Tindakan */}
-                  <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-center">
+                  {/* Tindakan — hanya Super Admin */}
+                  {isSuperAdmin && <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-center">
                     <button
                       onClick={() => bukaDialogReset(k.id, k.nama)}
                       disabled={sedangProses === k.id}
@@ -257,7 +257,7 @@ export default function DaftarKaryawan({ daftarAwal }: { daftarAwal: Karyawan[] 
                         </button>
                       </div>
                     )}
-                  </div>
+                  </div>}
                 </div>
 
                 {/* Inline reset password form */}

@@ -9,23 +9,27 @@ import DaftarKaryawan from './daftar-karyawan'
 export default async function HalamanKelolaKaryawan() {
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin') {
+  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
     redirect('/dashboard')
   }
 
+  const isSuperAdmin = data.roleSistem === 'super_admin'
+
   const [daftarKaryawan, daftarDivisi] = await Promise.all([
     ambilDaftarKaryawan(),
-    ambilSemuaDivisi(),
+    isSuperAdmin ? ambilSemuaDivisi() : Promise.resolve([]),
   ])
 
   return (
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
-        <FormBuatKaryawan daftarDivisi={daftarDivisi.map((d) => ({ id: d.id, nama: d.nama }))} />
+        {isSuperAdmin && (
+          <FormBuatKaryawan daftarDivisi={daftarDivisi.map((d) => ({ id: d.id, nama: d.nama }))} />
+        )}
 
-        <div className="mt-6">
+        <div className={isSuperAdmin ? 'mt-6' : ''}>
           <h2 className="mb-3 text-xs font-bold tracking-widest text-muted">DAFTAR KARYAWAN</h2>
-          <DaftarKaryawan daftarAwal={daftarKaryawan} />
+          <DaftarKaryawan daftarAwal={daftarKaryawan} isSuperAdmin={isSuperAdmin} />
         </div>
       </div>
     </AppShell>

@@ -42,6 +42,14 @@ export async function pastikanSuperAdmin(): Promise<SesiPengguna> {
   return sesi
 }
 
+export async function pastikanOwnerAtauSuperAdmin(): Promise<SesiPengguna> {
+  const sesi = await ambilSesiPengguna()
+  if (sesi.roleSistem !== 'super_admin' && sesi.roleSistem !== 'owner') {
+    throw new Error('Hanya Owner atau Super Admin yang dapat melakukan tindakan ini')
+  }
+  return sesi
+}
+
 export type SesiAnggotaDivisi = SesiPengguna & { roleDivisi: RoleDivisi | null }
 
 export async function pastikanAnggotaDivisi(divisionId: string): Promise<SesiAnggotaDivisi> {

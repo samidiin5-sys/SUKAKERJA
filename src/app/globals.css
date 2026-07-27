@@ -1,25 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7efe1;
-  --foreground: #2b1710;
+  --background: #f0f4f8;
+  --foreground: #0f172a;
 
-  --color-brand-maroon-950: #2c0a05;
-  --color-brand-maroon-900: #3d0f08;
-  --color-brand-maroon-800: #5a1a10;
-  --color-brand-maroon-700: #7a2b1c;
-  --color-brand-maroon-600: #8f3520;
+  /* Primary — Navy Blue (class prefix: maroon-*) */
+  --color-brand-maroon-950: #080f1e;
+  --color-brand-maroon-900: #0f1f3d;
+  --color-brand-maroon-800: #1e3a8a;
+  --color-brand-maroon-700: #1d4ed8;
+  --color-brand-maroon-600: #2563eb;
+  --color-brand-maroon-500: #3b82f6;
+  --color-brand-maroon-50:  #eff6ff;
 
-  --color-brand-cream-50: #fbf5ea;
-  --color-brand-cream-100: #f7efe1;
-  --color-brand-cream-200: #efe2c9;
+  /* Surfaces — Slate (class prefix: cream-*) */
+  --color-brand-cream-50:  #f8fafc;
+  --color-brand-cream-100: #f0f4f8;
+  --color-brand-cream-200: #e2e8f0;
+  --color-brand-cream-300: #cbd5e1;
+  --color-brand-cream-400: #94a3b8;
 
-  --color-brand-orange-600: #c9711f;
-  --color-brand-orange-500: #db8a3c;
-  --color-brand-orange-400: #e6a25c;
+  /* Accent — Bright Blue (class prefix: orange-*) */
+  --color-brand-orange-600: #2563eb;
+  --color-brand-orange-500: #3b82f6;
+  --color-brand-orange-400: #60a5fa;
+  --color-brand-orange-200: #bfdbfe;
+  --color-brand-orange-100: #dbeafe;
+  --color-brand-orange-50:  #eff6ff;
 
-  --color-brand-ink: #2b1710;
-  --color-brand-muted: #7a6a5c;
+  /* Text */
+  --color-brand-ink:   #0f172a;
+  --color-brand-muted: #64748b;
 }
 
 @theme inline {
@@ -30,13 +41,20 @@
   --color-maroon-800: var(--color-brand-maroon-800);
   --color-maroon-700: var(--color-brand-maroon-700);
   --color-maroon-600: var(--color-brand-maroon-600);
-  --color-cream-50: var(--color-brand-cream-50);
-  --color-cream-100: var(--color-brand-cream-100);
-  --color-cream-200: var(--color-brand-cream-200);
+  --color-maroon-500: var(--color-brand-maroon-500);
+  --color-maroon-50:  var(--color-brand-maroon-50);
+  --color-cream-50:   var(--color-brand-cream-50);
+  --color-cream-100:  var(--color-brand-cream-100);
+  --color-cream-200:  var(--color-brand-cream-200);
+  --color-cream-300:  var(--color-brand-cream-300);
+  --color-cream-400:  var(--color-brand-cream-400);
   --color-orange-600: var(--color-brand-orange-600);
   --color-orange-500: var(--color-brand-orange-500);
   --color-orange-400: var(--color-brand-orange-400);
-  --color-ink: var(--color-brand-ink);
+  --color-orange-200: var(--color-brand-orange-200);
+  --color-orange-100: var(--color-brand-orange-100);
+  --color-orange-50:  var(--color-brand-orange-50);
+  --color-ink:   var(--color-brand-ink);
   --color-muted: var(--color-brand-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

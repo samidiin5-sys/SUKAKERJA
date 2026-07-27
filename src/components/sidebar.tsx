@@ -27,6 +27,7 @@ export default function Sidebar({
   const pathname = usePathname()
   const router = useRouter()
   const isSuperAdmin = data.roleSistem === 'super_admin'
+  const isOwner = data.roleSistem === 'owner'
 
   async function tanganiLogout() {
     const supabase = createClient()
@@ -37,7 +38,10 @@ export default function Sidebar({
 
   const navUtama: ItemNav[] = [
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
-    ...(isSuperAdmin ? [] : [{ href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> }]),
+    ...(!isSuperAdmin && !isOwner ? [
+      { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
+      { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
+    ] : []),
   ]
 
   const navAdmin: ItemNav[] = [
@@ -45,6 +49,13 @@ export default function Sidebar({
     { href: '/admin/divisi', label: 'Kelola Divisi', icon: <IkonPapan /> },
     { href: '/admin/data-terhapus', label: 'Data Terhapus', icon: <IkonSampah /> },
     { href: '/admin/log-sistem', label: 'Log Sistem', icon: <IkonLog /> },
+  ]
+
+  const navOwner: ItemNav[] = [
+    { href: '/admin/karyawan', label: 'Data Karyawan', icon: <IkonOrang /> },
+    { href: '/admin/divisi', label: 'Kelola Divisi', icon: <IkonPapan /> },
+    { href: '/admin/data-terhapus', label: 'Data Terhapus', icon: <IkonSampah /> },
+    { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
   ]
 
   const isi = (
@@ -99,6 +110,15 @@ export default function Sidebar({
           <>
             <SeksiNav judul="Admin" collapsed={collapsed} />
             {navAdmin.map((item) => (
+              <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
+            ))}
+          </>
+        )}
+
+        {isOwner && (
+          <>
+            <SeksiNav judul="Operasional" collapsed={collapsed} />
+            {navOwner.map((item) => (
               <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
             ))}
           </>
@@ -310,6 +330,15 @@ function IkonKeluar() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+    </svg>
+  )
+}
+function IkonPanduan() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
     </svg>
   )
 }

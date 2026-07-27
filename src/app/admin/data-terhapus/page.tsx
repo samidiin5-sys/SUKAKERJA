@@ -7,7 +7,7 @@ import DaftarTerhapus from './daftar-terhapus'
 export default async function HalamanDataTerhapus() {
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin') {
+  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
     redirect('/dashboard')
   }
 

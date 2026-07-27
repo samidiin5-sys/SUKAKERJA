@@ -1,6 +1,6 @@
 'use server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { pastikanSuperAdmin } from '@/lib/auth/otorisasi'
+import { pastikanSuperAdmin, pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
 
 export type LogEntry = {
   id: string
@@ -26,7 +26,7 @@ export type FilterLog = {
 const PER_HALAMAN = 50
 
 export async function ambilLogSistem(filter: FilterLog = {}): Promise<{ entries: LogEntry[]; total: number }> {
-  await pastikanSuperAdmin()
+  await pastikanOwnerAtauSuperAdmin()
   const admin = createAdminClient()
   const halaman = filter.halaman ?? 1
 

@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import type { DataShell } from '@/lib/shell-data'
 import type { AdminDashboardData } from './actions'
 import { ambilDetailDashboardAdmin } from './actions'
+import KartuTilt from '@/components/kartu-tilt'
 
 function dapatkanSapaan(): string {
   const jam = new Date().getHours()
@@ -206,7 +207,7 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
       {/* 2. Statistic Cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {/* Karyawan Aktif */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[10px] font-extrabold tracking-wider text-muted/75 uppercase">Karyawan Aktif</span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800">
@@ -220,10 +221,10 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
           </div>
           <p className="text-3xl font-black text-maroon-800 leading-none">{karyawanCount}</p>
           <p className="mt-1.5 text-[10px] font-semibold text-muted leading-tight">Akun aktif yang dapat mengakses sistem.</p>
-        </div>
+        </KartuTilt>
 
         {/* Divisi Aktif */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[10px] font-extrabold tracking-wider text-muted/75 uppercase">Divisi Aktif</span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
@@ -235,10 +236,10 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
           </div>
           <p className="text-3xl font-black text-orange-500 leading-none">{divisiCount}</p>
           <p className="mt-1.5 text-[10px] font-semibold text-muted leading-tight">Divisi fungsional yang beroperasi.</p>
-        </div>
+        </KartuTilt>
 
         {/* Task Task Aktif */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[10px] font-extrabold tracking-wider text-muted/75 uppercase">Tugas Aktif</span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-600">
@@ -250,10 +251,10 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
           </div>
           <p className="text-3xl font-black text-maroon-800 leading-none">{taskCount}</p>
           <p className="mt-1.5 text-[10px] font-semibold text-muted leading-tight">Tugas di To Do, Dikerjakan, & Review.</p>
-        </div>
+        </KartuTilt>
 
         {/* Task Terlambat */}
-        <div className={`group rounded-2xl border p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${
+        <KartuTilt className={`rounded-2xl border p-4 shadow-sm ${
           terlambatCount > 0 ? 'border-red-200 bg-red-50/20' : 'border-cream-200 bg-white'
         }`}>
           <div className="mb-3 flex items-center justify-between">
@@ -269,11 +270,11 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
           </div>
           <p className={`text-3xl font-black leading-none ${terlambatCount > 0 ? 'text-red-600' : 'text-maroon-800'}`}>{terlambatCount}</p>
           <p className="mt-1.5 text-[10px] font-semibold text-muted leading-tight">Tugas melewati tenggat penyelesaian.</p>
-        </div>
+        </KartuTilt>
       </div>
 
       {/* 3. Analytics (Trend & Distribusi Status) */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start">
         {/* Task Trend SVG Chart */}
         <div className="lg:col-span-2 rounded-2xl border border-cream-200 bg-white p-4 shadow-sm flex flex-col justify-between min-h-[300px]">
           <div className="mb-4 flex items-center justify-between">
@@ -348,7 +349,7 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
 
               {/* Label X */}
               {dashboardData.trendTask.map((t, i) => (
-                <text key={i} x={30 + i * 60} y="145" textAnchor="middle" className="fill-muted/70 text-[9px] font-bold">
+                <text key={i} x={30 + i * 60} y="145" textAnchor="middle" fill="#94a3b8" fontSize="8" fontWeight="600">
                   {t.tanggal}
                 </text>
               ))}
@@ -529,7 +530,7 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
 
           <div className="space-y-2 flex-1 max-h-[350px] overflow-y-auto pr-1">
             {tugasTerfilter.length === 0 ? (
-              <p className="text-xs text-muted/70 italic py-10 text-center">Tidak ada tugas mencurigakan.</p>
+              <p className="text-xs text-muted/70 italic py-10 text-center">Semua tugas berjalan tepat waktu.</p>
             ) : (
               tugasTerfilter.map((task) => {
                 const prioritasWarna = {

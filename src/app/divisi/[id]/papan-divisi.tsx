@@ -389,7 +389,7 @@ export default function PapanDivisi({
               {/* Left scroll button */}
               <button
                 onClick={scrollKiri}
-                className="absolute left-0 top-1/2 z-10 -translate-y-1/2 hidden h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-md text-maroon-700 hover:bg-white group-hover:flex"
+                className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-md text-maroon-700 hover:bg-white lg:hidden lg:group-hover:flex"
                 aria-label="Scroll kiri"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -419,7 +419,7 @@ export default function PapanDivisi({
               {/* Right scroll button */}
               <button
                 onClick={scrollKanan}
-                className="absolute right-0 top-1/2 z-10 -translate-y-1/2 hidden h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-md text-maroon-700 hover:bg-white group-hover:flex"
+                className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-md text-maroon-700 hover:bg-white lg:hidden lg:group-hover:flex"
                 aria-label="Scroll kanan"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

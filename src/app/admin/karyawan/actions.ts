@@ -1,7 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { pastikanSuperAdmin } from '@/lib/auth/otorisasi'
+import { pastikanSuperAdmin, pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 import { kirimNotifikasi } from '@/lib/notifikasi'
 
@@ -241,7 +241,7 @@ export type Karyawan = {
 }
 
 export async function ambilDaftarKaryawan(): Promise<Karyawan[]> {
-  await pastikanSuperAdmin()
+  await pastikanOwnerAtauSuperAdmin()
 
   const admin = createAdminClient()
 
@@ -280,7 +280,7 @@ export type DetailKaryawan = {
 }
 
 export async function ambilDetailKaryawan(userId: string): Promise<DetailKaryawan | null> {
-  await pastikanSuperAdmin()
+  await pastikanOwnerAtauSuperAdmin()
 
   const admin = createAdminClient()
 
@@ -330,7 +330,7 @@ export async function ambilRingkasanBebanKerja(
   dari: string,
   sampai: string
 ): Promise<RingkasanBeban> {
-  await pastikanSuperAdmin()
+  await pastikanOwnerAtauSuperAdmin()
 
   const admin = createAdminClient()
 

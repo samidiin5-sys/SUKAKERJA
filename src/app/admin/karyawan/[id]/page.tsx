@@ -24,7 +24,7 @@ export default async function HalamanDetailKaryawan({
   const { id } = await params
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin') {
+  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
     redirect('/dashboard')
   }
 

@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ambilDetailDashboardStaff, type DetailDashboardStaff, type TaskDashboardItem } from './actions'
 import type { DataShell } from '@/lib/shell-data'
+import KartuTilt from '@/components/kartu-tilt'
 
 // --- LIGHTWEIGHT UTILITIES ---
 
@@ -327,7 +328,7 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
       {/* 2. STATISTIC CARDS */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Tugas Aktif */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
             <IconTaskAktif />
           </div>
@@ -336,10 +337,10 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
           </p>
           <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Tugas Aktif</p>
           <p className="text-[10px] text-muted/80 mt-0.5">Sedang menunggu / dikerjakan</p>
-        </div>
+        </KartuTilt>
 
         {/* Jatuh Tempo Hari Ini */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
             <IconJatuhTempo />
           </div>
@@ -348,10 +349,10 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
           </p>
           <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Jatuh Tempo Hari Ini</p>
           <p className="text-[10px] text-muted/80 mt-0.5">Perlu diselesaikan hari ini</p>
-        </div>
+        </KartuTilt>
 
         {/* Selesai Minggu Ini */}
-        <div className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-50 text-green-600">
             <IconSelesai />
           </div>
@@ -360,10 +361,10 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
           </p>
           <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Selesai Minggu Ini</p>
           <p className="text-[10px] text-muted/80 mt-0.5">Tugas diselesaikan 7 hari terakhir</p>
-        </div>
+        </KartuTilt>
 
         {/* Tugas Terlambat */}
-        <div className={`group rounded-2xl border p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${detail.statistik.terlambat > 0 ? 'bg-red-50/40 border-red-200' : 'bg-white border-cream-200'}`}>
+        <KartuTilt className={`rounded-2xl border p-4 shadow-sm ${detail.statistik.terlambat > 0 ? 'bg-red-50/40 border-red-200' : 'bg-white border-cream-200'}`}>
           <div className={`flex h-8 w-8 items-center justify-center rounded-xl ${detail.statistik.terlambat > 0 ? 'bg-red-100 text-red-600' : 'bg-cream-100 text-muted'}`}>
             <IconTerlambat />
           </div>
@@ -372,11 +373,11 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
           </p>
           <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Terlambat</p>
           <p className="text-[10px] text-muted/80 mt-0.5">Melewati batas deadline</p>
-        </div>
+        </KartuTilt>
       </div>
 
       {/* MAIN TWO-COLUMN CONTENT */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start">
         
         {/* KOLOM KIRI (LEBIH BESAR): TUGAS PRIORITAS SAYA */}
         <div className="lg:col-span-2 space-y-4">
@@ -482,7 +483,7 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
               <>
                 {/* SVG DONUT CHART */}
                 <div className="relative flex items-center justify-center h-28 w-28 mb-4">
-                  <svg className="transform -rotate-90 w-full h-full">
+                  <svg viewBox="0 0 112 112" className="transform -rotate-90 w-full h-full">
                     <circle
                       cx="56"
                       cy="56"
@@ -545,7 +546,7 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
       </div>
 
       {/* SECONDARY ROW GRID */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* DEADLINE TERDEKAT */}
         <div className="space-y-4">
           <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Deadline Terdekat</h3>
@@ -625,11 +626,10 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {detail.divisiList.map((div) => {
-                return (
+              {detail.divisiList.map((div) => (
                   <div
                     key={div.id}
-                    className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-4 group/card border-cream-200/80 hover:border-orange-500/25"
+                    className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm flex flex-col justify-between gap-4 group/card transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                   >
                     <div>
                       <div className="flex items-center gap-2">
@@ -692,8 +692,7 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
                       </span>
                     </a>
                   </div>
-                )
-              })}
+              ))}
             </div>
           )}
         </div>
@@ -702,60 +701,57 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
         <div className="space-y-4">
           <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Akses Cepat</h3>
           <div className="grid grid-cols-1 gap-2.5">
-            <a
-              href="/tugas-saya"
-              className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md group"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition group-hover:bg-orange-100">
-                <IconTaskAktif />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-ink leading-snug">Tugas Saya</p>
-                <p className="text-[10px] text-muted mt-0.5 leading-none">Semua tugas lintas divisi</p>
-              </div>
-              <span className="transition-transform duration-200 group-hover:translate-x-1">
-                <IconChevronKanan />
-              </span>
-            </a>
-
-            {detail.divisiList.length > 0 && (
-              <a
-                href={`/divisi/${detail.divisiList[0].id}`}
-                className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md group"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800 transition group-hover:bg-maroon-100">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <path d="M9 3v18M15 3v18" />
-                  </svg>
+            <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
+              <a href="/tugas-saya" className="flex items-center gap-3.5 px-4 py-3.5 group">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition group-hover:bg-orange-100">
+                  <IconTaskAktif />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-ink leading-snug">Buka Kanban</p>
-                  <p className="text-[10px] text-muted mt-0.5 leading-none">Papan kerja tim divisi</p>
+                  <p className="text-xs font-bold text-ink leading-snug">Tugas Saya</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none">Semua tugas lintas divisi</p>
                 </div>
                 <span className="transition-transform duration-200 group-hover:translate-x-1">
                   <IconChevronKanan />
                 </span>
               </a>
+            </KartuTilt>
+
+            {detail.divisiList.length > 0 && (
+              <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
+                <a href={`/divisi/${detail.divisiList[0].id}`} className="flex items-center gap-3.5 px-4 py-3.5 group">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800 transition group-hover:bg-maroon-100">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <path d="M9 3v18M15 3v18" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-ink leading-snug">Buka Kanban</p>
+                    <p className="text-[10px] text-muted mt-0.5 leading-none">Papan kerja tim divisi</p>
+                  </div>
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">
+                    <IconChevronKanan />
+                  </span>
+                </a>
+              </KartuTilt>
             )}
 
-            <a
-              href="/ganti-password"
-              className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md group"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cream-100 text-muted transition group-hover:bg-cream-200/60">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m0 0a2 2 0 01-2 2m2-2h3m-3 0H9M3 12a9 9 0 019-9m9 9a9 9 0 01-9 9m0 0c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-ink leading-snug">Ganti Password</p>
-                <p className="text-[10px] text-muted mt-0.5 leading-none">Amankan akun kamu</p>
-              </div>
-              <span className="transition-transform duration-200 group-hover:translate-x-1">
-                <IconChevronKanan />
-              </span>
-            </a>
+            <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
+              <a href="/ganti-password" className="flex items-center gap-3.5 px-4 py-3.5 group">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cream-100 text-muted transition group-hover:bg-cream-200/60">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m0 0a2 2 0 01-2 2m2-2h3m-3 0H9M3 12a9 9 0 019-9m9 9a9 9 0 01-9 9m0 0c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-ink leading-snug">Ganti Password</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none">Amankan akun kamu</p>
+                </div>
+                <span className="transition-transform duration-200 group-hover:translate-x-1">
+                  <IconChevronKanan />
+                </span>
+              </a>
+            </KartuTilt>
           </div>
         </div>
       </div>

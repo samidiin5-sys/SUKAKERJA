@@ -8,7 +8,7 @@ import DaftarDivisi from './daftar-divisi'
 export default async function HalamanKelolaDivisi() {
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin') {
+  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
     redirect('/dashboard')
   }
 

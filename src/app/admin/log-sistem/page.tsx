@@ -1,12 +1,12 @@
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
-import { pastikanSuperAdmin } from '@/lib/auth/otorisasi'
+import { pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
 import { ambilLogSistem } from './actions'
 import { ambilSemuaDivisi } from '@/app/admin/divisi/actions'
 import LogSistemClient from './log-sistem-client'
 
 export default async function HalamanLogSistem() {
-  await pastikanSuperAdmin()
+  await pastikanOwnerAtauSuperAdmin()
   const data = await ambilDataShell()
   const [{ entries, total }, divisiList] = await Promise.all([
     ambilLogSistem({ halaman: 1 }),
