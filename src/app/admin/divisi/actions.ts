@@ -1,7 +1,7 @@
-'use server'
+﻿'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { pastikanSuperAdmin, pastikanOwnerAtauSuperAdmin, ambilSesiPengguna } from '@/lib/auth/otorisasi'
+import { pastikanSuperAdmin, ambilSesiPengguna } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 
 const BOARD_DEFAULT = ['To Do', 'Dikerjakan', 'Review', 'Selesai']
@@ -13,7 +13,7 @@ export async function buatDivisi(
   deskripsi: string,
   warna: string
 ): Promise<HasilBuatDivisi> {
-  const sesi = await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanSuperAdmin()
 
   if (!nama.trim()) {
     return { sukses: false, pesan: 'Nama divisi tidak boleh kosong' }
@@ -78,7 +78,7 @@ export type Divisi = {
 }
 
 export async function ambilSemuaDivisi(): Promise<Divisi[]> {
-  await pastikanOwnerAtauSuperAdmin()
+  await pastikanSuperAdmin()
 
   const admin = createAdminClient()
   const { data } = await admin
@@ -154,7 +154,7 @@ export async function nonaktifkanDivisi(
   divisionId: string,
   konfirmasiNama: string
 ): Promise<HasilNonaktifkanDivisi> {
-  const sesi = await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanSuperAdmin()
   const admin = createAdminClient()
 
   const { data: divisi } = await admin
@@ -199,7 +199,7 @@ export async function nonaktifkanDivisi(
 }
 
 export async function aktifkanKembaliDivisi(divisionId: string): Promise<HasilAksiDivisi> {
-  const sesi = await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanSuperAdmin()
 
   const admin = createAdminClient()
   const { error } = await admin.from('divisions').update({ status: 'aktif' }).eq('id', divisionId)
@@ -221,3 +221,4 @@ export async function aktifkanKembaliDivisi(divisionId: string): Promise<HasilAk
 
   return { sukses: true }
 }
+

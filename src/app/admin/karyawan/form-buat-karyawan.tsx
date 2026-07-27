@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -71,7 +71,7 @@ export default function FormBuatKaryawan({
               onClick={() => salinKeClipboard(berhasilDibuat)}
               className="rounded-lg bg-orange-500 hover:bg-orange-600 px-3 py-1.5 text-[10px] font-bold text-white transition active:scale-95 cursor-pointer"
             >
-              {menyalin ? 'Tersalin ✓' : 'Salin'}
+              {menyalin ? 'Tersalin âœ“' : 'Salin'}
             </button>
           </div>
           <p className="text-[10px] text-orange-800/80 leading-relaxed font-bold">
@@ -171,7 +171,7 @@ export default function FormBuatKaryawan({
         <button
           type="submit"
           disabled={sedangProses}
-          className="rounded-xl bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-500/25 transition active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="w-full rounded-xl bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-500/25 transition active:scale-95 disabled:opacity-50 cursor-pointer sm:w-auto"
         >
           {sedangProses ? 'Membuat Akun...' : 'Buat Akun Karyawan'}
         </button>
@@ -179,3 +179,4 @@ export default function FormBuatKaryawan({
     </div>
   )
 }
+

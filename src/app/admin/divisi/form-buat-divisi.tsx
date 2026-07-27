@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -56,7 +56,7 @@ export default function FormBuatDivisi() {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Warna Identitas:</span>
           <div className="flex items-center gap-2">
             {WARNA_PILIHAN.map((w) => (
@@ -79,7 +79,7 @@ export default function FormBuatDivisi() {
         <button
           type="submit"
           disabled={sedangProses}
-          className="rounded-xl bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-500/25 transition active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="w-full rounded-xl bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-500/25 transition active:scale-95 disabled:opacity-50 cursor-pointer sm:w-auto"
         >
           {sedangProses ? 'Membuat Divisi...' : 'Buat Divisi'}
         </button>
@@ -87,3 +87,4 @@ export default function FormBuatDivisi() {
     </div>
   )
 }
+

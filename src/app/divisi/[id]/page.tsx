@@ -75,43 +75,43 @@ export default async function HalamanPapanDivisi({
 
   return (
     <AppShell data={data}>
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="flex items-center gap-2 text-lg font-black text-maroon-800">
-            <span
-              className="h-3.5 w-3.5 rounded-full"
-              style={{ backgroundColor: divisi.warna }}
-              aria-hidden
-            />
-            {divisi.nama}
-          </h2>
-          {divisi.deskripsi && <p className="text-sm text-muted">{divisi.deskripsi}</p>}
+      <div className="mb-5 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="flex items-center gap-2 text-lg font-black text-maroon-800">
+              <span
+                className="h-3.5 w-3.5 shrink-0 rounded-full"
+                style={{ backgroundColor: divisi.warna }}
+                aria-hidden
+              />
+              <span className="truncate">{divisi.nama}</span>
+            </h2>
+            {divisi.deskripsi && <p className="mt-0.5 text-sm text-muted">{divisi.deskripsi}</p>}
+          </div>
         </div>
 
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <a
             href={`/divisi/${id}/target`}
-            className="rounded-full border border-cream-200 bg-white px-4 py-2 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
+            className="rounded-full border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
           >
             Target & Realisasi
           </a>
           {bolehKelola && (
-            <a href={`/divisi/${id}/tugas-rutin`} className="rounded-full border border-cream-200 bg-white px-4 py-2 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600">
+            <a href={`/divisi/${id}/tugas-rutin`} className="rounded-full border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600">
               Tugas Rutin
             </a>
           )}
-          {/* Count badge — always visible, links to anggota page for viewing */}
           <a
             href={`/divisi/${id}/anggota`}
-            className="rounded-full border border-cream-200 bg-white px-4 py-2 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
+            className="rounded-full border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
           >
             {anggota.length} Anggota
           </a>
-          {/* Kelola button — Super Admin & Owner */}
           {bolehKelola && (
             <a
               href={`/divisi/${id}/anggota`}
-              className="rounded-full border border-maroon-700 bg-maroon-800 px-4 py-2 text-xs font-bold text-cream-50 shadow-sm hover:bg-maroon-700"
+              className="rounded-full border border-maroon-700 bg-maroon-800 px-3 py-1.5 text-xs font-bold text-cream-50 shadow-sm hover:bg-maroon-700"
             >
               Kelola Anggota
             </a>
@@ -119,17 +119,17 @@ export default async function HalamanPapanDivisi({
         </div>
       </div>
 
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-3 gap-2 sm:gap-3">
         {kartuStatistikDivisi.map((k) => (
           <div
             key={k.label}
-            className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-2xl border border-cream-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
           >
-            <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${k.iconBg} ${k.iconText}`}>
+            <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-lg sm:mb-3 sm:h-9 sm:w-9 ${k.iconBg} ${k.iconText}`}>
               {k.icon}
             </div>
-            <p className={`text-3xl font-black ${k.warna}`}>{k.nilai}</p>
-            <p className="mt-1 text-xs font-semibold text-muted">{k.label}</p>
+            <p className={`text-2xl font-black sm:text-3xl ${k.warna}`}>{k.nilai}</p>
+            <p className="mt-0.5 text-[10px] font-semibold text-muted sm:mt-1 sm:text-xs">{k.label}</p>
           </div>
         ))}
       </div>

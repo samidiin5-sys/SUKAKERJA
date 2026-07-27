@@ -1,7 +1,7 @@
-'use server'
+﻿'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { pastikanSuperAdmin, pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
+import { pastikanSuperAdmin } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 
 const BUCKET_LAMPIRAN = 'task-attachments'
@@ -19,7 +19,7 @@ export type TaskTerhapus = {
 }
 
 export async function ambilTaskTerhapus(): Promise<TaskTerhapus[]> {
-  await pastikanOwnerAtauSuperAdmin()
+  await pastikanSuperAdmin()
   const admin = createAdminClient()
 
   const { data } = await admin
@@ -58,7 +58,7 @@ export async function ambilTaskTerhapus(): Promise<TaskTerhapus[]> {
 export type HasilRestore = { sukses: true } | { sukses: false; pesan: string }
 
 export async function restoreTask(taskId: string): Promise<HasilRestore> {
-  const sesi = await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanSuperAdmin()
   const admin = createAdminClient()
 
   const { data: task } = await admin
@@ -155,3 +155,4 @@ export async function hapusPermanenTask(taskId: string): Promise<HasilRestore> {
 
   return { sukses: true }
 }
+

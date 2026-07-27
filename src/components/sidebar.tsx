@@ -53,8 +53,6 @@ export default function Sidebar({
 
   const navOwner: ItemNav[] = [
     { href: '/admin/karyawan', label: 'Data Karyawan', icon: <IkonOrang /> },
-    { href: '/admin/divisi', label: 'Kelola Divisi', icon: <IkonPapan /> },
-    { href: '/admin/data-terhapus', label: 'Data Terhapus', icon: <IkonSampah /> },
     { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
   ]
 

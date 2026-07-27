@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
 import { ambilSemuaDivisi } from './actions'
@@ -8,7 +8,7 @@ import DaftarDivisi from './daftar-divisi'
 export default async function HalamanKelolaDivisi() {
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
+  if (data.roleSistem !== 'super_admin') {
     redirect('/dashboard')
   }
 
@@ -17,6 +17,11 @@ export default async function HalamanKelolaDivisi() {
   return (
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
+        <div className="mb-5">
+          <h2 className="text-lg font-black text-maroon-800">Kelola Divisi</h2>
+          <p className="text-sm text-muted">Buat dan kelola divisi yang ada di perusahaan.</p>
+        </div>
+
         <FormBuatDivisi />
 
         <div className="mt-6">
@@ -28,3 +33,4 @@ export default async function HalamanKelolaDivisi() {
     </AppShell>
   )
 }
+

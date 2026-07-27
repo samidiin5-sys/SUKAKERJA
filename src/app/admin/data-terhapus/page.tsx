@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
 import { ambilTaskTerhapus } from './actions'
@@ -7,7 +7,7 @@ import DaftarTerhapus from './daftar-terhapus'
 export default async function HalamanDataTerhapus() {
   const data = await ambilDataShell()
 
-  if (data.roleSistem !== 'super_admin' && data.roleSistem !== 'owner') {
+  if (data.roleSistem !== 'super_admin') {
     redirect('/dashboard')
   }
 
@@ -28,3 +28,4 @@ export default async function HalamanDataTerhapus() {
     </AppShell>
   )
 }
+

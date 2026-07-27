@@ -23,6 +23,17 @@ export default async function HalamanKelolaKaryawan() {
   return (
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
+        <div className="mb-5">
+          <h2 className="text-lg font-black text-maroon-800">
+            {isSuperAdmin ? 'Kelola Karyawan' : 'Data Karyawan'}
+          </h2>
+          <p className="text-sm text-muted">
+            {isSuperAdmin
+              ? 'Tambah, nonaktifkan, atau reset password akun karyawan.'
+              : 'Daftar seluruh karyawan yang terdaftar di sistem.'}
+          </p>
+        </div>
+
         {isSuperAdmin && (
           <FormBuatKaryawan daftarDivisi={daftarDivisi.map((d) => ({ id: d.id, nama: d.nama }))} />
         )}

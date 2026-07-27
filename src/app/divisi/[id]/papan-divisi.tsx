@@ -297,65 +297,69 @@ export default function PapanDivisi({
         <p className="mb-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-800">{pesanError}</p>
       )}
 
-      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
-        <input
-          type="text"
-          value={cari}
-          onChange={(e) => setCari(e.target.value)}
-          placeholder="Cari task..."
-          className="min-w-0 flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
-        />
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}
-          className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
-        >
-          <option value="semua">Semua Status</option>
-          <option value="aktif">Belum Selesai</option>
-          <option value="selesai">Selesai</option>
-        </select>
-        <select
-          value={filterPrioritas}
-          onChange={(e) => setFilterPrioritas(e.target.value)}
-          className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
-        >
-          <option value="semua">Semua Prioritas</option>
-          {Object.entries(LABEL_PRIORITAS).map(([v, l]) => (
-            <option key={v} value={v}>
-              {l}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filterAssignee}
-          onChange={(e) => setFilterAssignee(e.target.value)}
-          className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
-        >
-          <option value="semua">Semua Penanggung Jawab</option>
-          <option value="saya">Saya</option>
-          <option value="tanpa">Belum Ada Assignee</option>
-          {anggota.map((a) => (
-            <option key={a.id} value={a.id}>
-              {a.nama}
-            </option>
-          ))}
-        </select>
-        {filterAktif && (
-          <button
-            onClick={resetFilter}
-            className="rounded-lg px-3 py-2 text-xs font-semibold text-muted hover:bg-cream-100"
+      <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={cari}
+            onChange={(e) => setCari(e.target.value)}
+            placeholder="Cari task..."
+            className="min-w-0 flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+          />
+          {bolehKirimTugas && (
+            <button
+              onClick={() => setModalKirimTerbuka(true)}
+              className="shrink-0 rounded-lg bg-maroon-800 px-3 py-2 text-xs font-bold text-white hover:bg-maroon-700"
+            >
+              Kirim Tugas
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}
+            className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
           >
-            Reset
-          </button>
-        )}
-        {bolehKirimTugas && (
-          <button
-            onClick={() => setModalKirimTerbuka(true)}
-            className="rounded-lg bg-maroon-800 px-3 py-2 text-xs font-bold text-white hover:bg-maroon-700"
+            <option value="semua">Semua Status</option>
+            <option value="aktif">Belum Selesai</option>
+            <option value="selesai">Selesai</option>
+          </select>
+          <select
+            value={filterPrioritas}
+            onChange={(e) => setFilterPrioritas(e.target.value)}
+            className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
           >
-            Kirim Tugas
-          </button>
-        )}
+            <option value="semua">Semua Prioritas</option>
+            {Object.entries(LABEL_PRIORITAS).map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterAssignee}
+            onChange={(e) => setFilterAssignee(e.target.value)}
+            className="min-w-0 rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
+          >
+            <option value="semua">Semua P. Jawab</option>
+            <option value="saya">Saya</option>
+            <option value="tanpa">Tanpa Assignee</option>
+            {anggota.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.nama}
+              </option>
+            ))}
+          </select>
+          {filterAktif && (
+            <button
+              onClick={resetFilter}
+              className="rounded-lg px-3 py-2 text-xs font-semibold text-muted hover:bg-cream-100"
+            >
+              Reset
+            </button>
+          )}
+        </div>
       </div>
 
       {filterAktif && (
