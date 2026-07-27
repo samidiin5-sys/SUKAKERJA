@@ -106,11 +106,11 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
     if (total === 0) return []
 
     const items = [
-      { label: 'To Do', value: todo, color: '#9d8471', strokeColor: 'stroke-[#9d8471]' },
-      { label: 'Dikerjakan', value: dikerjakan, color: '#f97316', strokeColor: 'stroke-orange-500' },
-      { label: 'Review', value: review, color: '#7a2b1c', strokeColor: 'stroke-maroon-800' },
-      { label: 'Selesai', value: selesai, color: '#10b981', strokeColor: 'stroke-emerald-500' },
-      { label: 'Terlambat', value: terlambat, color: '#ef4444', strokeColor: 'stroke-red-500' }
+      { label: 'To Do', value: todo, color: '#9d8471' },
+      { label: 'Dikerjakan', value: dikerjakan, color: '#f97316' },
+      { label: 'Review', value: review, color: '#1e3a8a' },
+      { label: 'Selesai', value: selesai, color: '#10b981' },
+      { label: 'Terlambat', value: terlambat, color: '#ef4444' },
     ]
 
     let currentOffset = 0
@@ -397,11 +397,11 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
                   cy="40"
                   r="30"
                   fill="none"
-                  className={`${seg.strokeColor} transition-all duration-300`}
                   strokeWidth="9"
                   strokeDasharray={`${2 * Math.PI * 30}`}
                   strokeDashoffset={seg.strokeDashoffset}
                   style={{
+                    stroke: seg.color,
                     transformOrigin: '40px 40px',
                     transform: `rotate(${seg.dashoffset * (360 / (2 * Math.PI * 30))}deg)`
                   }}
