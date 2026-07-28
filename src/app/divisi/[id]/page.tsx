@@ -92,6 +92,12 @@ export default async function HalamanPapanDivisi({
 
         <div className="flex flex-wrap items-center gap-2">
           <a
+            href={`/divisi/${id}/kalender`}
+            className="rounded-full border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
+          >
+            Kalender
+          </a>
+          <a
             href={`/divisi/${id}/target`}
             className="rounded-full border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-maroon-700 shadow-sm hover:border-orange-500 hover:text-orange-600"
           >
