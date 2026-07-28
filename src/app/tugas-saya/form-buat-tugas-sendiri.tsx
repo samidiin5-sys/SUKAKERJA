@@ -254,37 +254,36 @@ export default function FormBuatTugasSendiri() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 items-start">
-                  {/* Prioritas */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-semibold text-muted">Prioritas</label>
-                    <div className="relative">
-                      <div className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full ${
-                        prioritas === 'rendah' ? 'bg-slate-400' :
-                        prioritas === 'sedang' ? 'bg-blue-500' :
-                        prioritas === 'tinggi' ? 'bg-orange-500' :
-                        'bg-red-600'
-                      }`} />
-                      <select
-                        value={prioritas}
-                        onChange={(e) => setPrioritas(e.target.value)}
-                        className="w-full rounded-xl border border-cream-200 bg-cream-50 py-2.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition appearance-none cursor-pointer"
-                      >
-                        <option value="rendah">Rendah</option>
-                        <option value="sedang">Sedang</option>
-                        <option value="tinggi">Tinggi</option>
-                        <option value="mendesak">🔥 Mendesak</option>
-                      </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                      </div>
+                {/* Prioritas — full width */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-muted">Prioritas</label>
+                  <div className="relative">
+                    <div className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full ${
+                      prioritas === 'rendah' ? 'bg-slate-400' :
+                      prioritas === 'sedang' ? 'bg-blue-500' :
+                      prioritas === 'tinggi' ? 'bg-orange-500' :
+                      'bg-red-600'
+                    }`} />
+                    <select
+                      value={prioritas}
+                      onChange={(e) => setPrioritas(e.target.value)}
+                      className="w-full rounded-xl border border-cream-200 bg-cream-50 py-2.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition appearance-none cursor-pointer"
+                    >
+                      <option value="rendah">Rendah</option>
+                      <option value="sedang">Sedang</option>
+                      <option value="tinggi">Tinggi</option>
+                      <option value="mendesak">🔥 Mendesak</option>
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
                     </div>
                   </div>
+                </div>
 
-                  {/* Deadline */}
-                  <div className="relative" data-datepicker>
+                {/* Deadline — full width */}
+                <div data-datepicker>
                   <label className="mb-2 block text-xs font-semibold text-muted">
                     Deadline <span className="font-normal text-muted/60">(opsional)</span>
                   </label>
@@ -316,9 +315,9 @@ export default function FormBuatTugasSendiri() {
 
                   {/* Dropdown Picker */}
                   {showDatePicker && (
-                    <div className="absolute left-0 bottom-full z-50 mb-1 w-72 rounded-2xl border border-cream-200 bg-white p-3 shadow-xl">
+                    <div className="mt-1.5 rounded-2xl border border-cream-200 bg-white p-2.5 shadow-sm">
                       {/* Shortcuts */}
-                      <div className="mb-3 space-y-0.5">
+                      <div className="mb-2 space-y-0">
                         {[
                           { label: 'Hari Ini', sub: new Date().toLocaleDateString('id-ID', { weekday: 'short' }), type: 'today' as const },
                           { label: 'Besok', sub: new Date(Date.now()+86400000).toLocaleDateString('id-ID', { weekday: 'short' }), type: 'tomorrow' as const },
@@ -329,10 +328,10 @@ export default function FormBuatTugasSendiri() {
                             key={s.type}
                             type="button"
                             onClick={() => setDeadlineShortcut(s.type)}
-                            className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition hover:bg-cream-50"
+                            className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left transition hover:bg-cream-50"
                           >
-                            <span className="text-sm font-semibold text-ink">{s.label}</span>
-                            <span className="text-xs text-muted">{s.sub}</span>
+                            <span className="text-xs font-semibold text-ink">{s.label}</span>
+                            <span className="text-[11px] text-muted">{s.sub}</span>
                           </button>
                         ))}
                       </div>
@@ -377,7 +376,7 @@ export default function FormBuatTugasSendiri() {
                                 key={day}
                                 type="button"
                                 onClick={() => selectCalendarDay(day)}
-                                className={`mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition ${
+                                className={`mx-auto flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold transition ${
                                   isSelected ? 'bg-orange-500 text-white' :
                                   isToday ? 'border border-orange-400 text-orange-600' :
                                   'hover:bg-cream-100 text-ink'
@@ -433,7 +432,6 @@ export default function FormBuatTugasSendiri() {
                       </div>
                     </div>
                   )}
-                  </div>
                 </div>
 
                 {pesan && (
