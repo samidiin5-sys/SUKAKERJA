@@ -71,6 +71,54 @@ export async function ajukanLembur(
   return { sukses: true }
 }
 
+export async function tetapkanLemburStaff(
+  divisionId: string,
+  staffIds: string[],
+  tanggal: string,
+  jamMulai: string,
+  jamSelesai: string,
+  alasan: string
+): Promise<HasilAksi> {
+  const sesi = await pastikanOwnerAtauSuperAdmin()
+
+  if (staffIds.length === 0) return { sukses: false, pesan: 'Pilih minimal 1 staff.' }
+  if (!alasan.trim() || alasan.trim().length < 10) return { sukses: false, pesan: 'Alasan minimal 10 karakter' }
+  if (jamMulai >= jamSelesai) return { sukses: false, pesan: 'Jam selesai harus lebih dari jam mulai' }
+
+  const admin = createAdminClient()
+  const sekarang = new Date().toISOString()
+
+  const records = staffIds.map((uid) => ({
+    user_id: uid,
+    division_id: divisionId,
+    tanggal,
+    jam_mulai: jamMulai,
+    jam_selesai: jamSelesai,
+    alasan: alasan.trim(),
+    status: 'disetujui' as const,
+    reviewed_by: sesi.id,
+    reviewed_at: sekarang,
+  }))
+
+  const { error } = await admin.from('lembur').insert(records)
+  if (error) return { sukses: false, pesan: 'Gagal menetapkan lembur. Coba lagi.' }
+
+  const { data: divisi } = await admin.from('divisions').select('nama').eq('id', divisionId).single()
+  const divisiNama = (divisi as any)?.nama ?? 'divisi'
+
+  await Promise.all(
+    staffIds.map((uid) =>
+      kirimNotifikasi({
+        userId: uid,
+        jenis: 'lembur_disetujui',
+        pesan: `Kamu mendapat lembur pada ${tanggal} di ${divisiNama} (${jamMulai}–${jamSelesai}).`,
+      })
+    )
+  )
+
+  return { sukses: true }
+}
+
 export async function ambilLemburSaya(): Promise<LemburSaya[]> {
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()

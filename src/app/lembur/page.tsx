@@ -16,11 +16,22 @@ export default async function HalamanLembur() {
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
         <div className="mb-5">
-          <h2 className="text-lg font-black text-maroon-800">Pengajuan Lembur</h2>
-          <p className="text-sm text-muted">Ajukan lembur dan pantau status persetujuannya.</p>
+          <h2 className="text-lg font-black text-maroon-800">
+            {sesi.roleSistem !== 'user' ? 'Tetapkan Lembur' : 'Pengajuan Lembur'}
+          </h2>
+          <p className="text-sm text-muted">
+            {sesi.roleSistem !== 'user'
+              ? 'Tetapkan lembur untuk staff divisimu — langsung disetujui.'
+              : 'Ajukan lembur dan pantau status persetujuannya.'}
+          </p>
         </div>
 
-        <FormLembur divisiSaya={data.divisiSaya} sesiId={sesi.id} sesiNama={sesi.nama} />
+        <FormLembur
+          divisiSaya={data.divisiSaya}
+          sesiId={sesi.id}
+          sesiNama={sesi.nama}
+          isOwnerOrAdmin={sesi.roleSistem !== 'user'}
+        />
 
         <div className="mt-6">
           <h3 className="mb-3 text-xs font-bold tracking-widest text-muted">RIWAYAT PENGAJUAN</h3>

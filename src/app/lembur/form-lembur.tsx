@@ -1,18 +1,39 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ajukanLembur, ambilAnggotaUntukLembur, type AnggotaLembur } from './actions'
+import { ajukanLembur, tetapkanLemburStaff, ambilAnggotaUntukLembur, type AnggotaLembur } from './actions'
 
 type DivisiSaya = { id: string; nama: string; warna: string; role: string }
+
+function IkonCentang() {
+  return (
+    <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function KotakCentang({ checked, onChange }: { checked: boolean; onChange?: () => void }) {
+  return (
+    <span
+      onClick={onChange}
+      className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 transition ${checked ? 'border-maroon-800 bg-maroon-800' : 'border-cream-300 bg-white'} ${onChange ? 'cursor-pointer' : 'cursor-default'}`}
+    >
+      {checked && <IkonCentang />}
+    </span>
+  )
+}
 
 export default function FormLembur({
   divisiSaya,
   sesiId,
   sesiNama,
+  isOwnerOrAdmin,
 }: {
   divisiSaya: DivisiSaya[]
   sesiId: string
   sesiNama: string
+  isOwnerOrAdmin: boolean
 }) {
   const [divisionId, setDivisionId] = useState(divisiSaya[0]?.id ?? '')
   const [tanggal, setTanggal] = useState('')
@@ -22,7 +43,7 @@ export default function FormLembur({
   const [sedangKirim, setSedangKirim] = useState(false)
   const [pesan, setPesan] = useState<{ sukses: boolean; teks: string } | null>(null)
   const [anggota, setAnggota] = useState<AnggotaLembur[]>([])
-  const [peserta, setPeserta] = useState<Set<string>>(new Set([sesiId]))
+  const [dipilih, setDipilih] = useState<Set<string>>(new Set(isOwnerOrAdmin ? [] : [sesiId]))
   const [muatAnggota, setMuatAnggota] = useState(false)
 
   useEffect(() => {
@@ -30,14 +51,14 @@ export default function FormLembur({
     setMuatAnggota(true)
     ambilAnggotaUntukLembur(divisionId).then((data) => {
       setAnggota(data)
-      setPeserta(new Set([sesiId]))
+      setDipilih(new Set(isOwnerOrAdmin ? [] : [sesiId]))
       setMuatAnggota(false)
     })
-  }, [divisionId, sesiId])
+  }, [divisionId, sesiId, isOwnerOrAdmin])
 
-  function togglePeserta(id: string) {
-    if (id === sesiId) return
-    setPeserta((prev) => {
+  function togglePilih(id: string) {
+    if (!isOwnerOrAdmin && id === sesiId) return
+    setDipilih((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
@@ -47,39 +68,70 @@ export default function FormLembur({
 
   async function tanganiKirim(e: React.FormEvent) {
     e.preventDefault()
+    if (dipilih.size === 0) {
+      setPesan({ sukses: false, teks: 'Pilih minimal 1 orang.' })
+      return
+    }
     setSedangKirim(true)
     setPesan(null)
-    const hasil = await ajukanLembur(divisionId, tanggal, jamMulai, jamSelesai, alasan, Array.from(peserta))
+
+    let hasil
+    if (isOwnerOrAdmin) {
+      hasil = await tetapkanLemburStaff(divisionId, Array.from(dipilih), tanggal, jamMulai, jamSelesai, alasan)
+    } else {
+      hasil = await ajukanLembur(divisionId, tanggal, jamMulai, jamSelesai, alasan, Array.from(dipilih))
+    }
+
     setSedangKirim(false)
     if (!hasil.sukses) {
       setPesan({ sukses: false, teks: hasil.pesan })
       return
     }
-    const jumlah = peserta.size
+
+    const jumlah = dipilih.size
     setPesan({
       sukses: true,
-      teks: jumlah > 1 ? `Pengajuan lembur untuk ${jumlah} orang berhasil dikirim!` : 'Pengajuan lembur berhasil dikirim!',
+      teks: isOwnerOrAdmin
+        ? `Lembur untuk ${jumlah} staff berhasil ditetapkan!`
+        : jumlah > 1
+          ? `Pengajuan lembur untuk ${jumlah} orang berhasil dikirim!`
+          : 'Pengajuan lembur berhasil dikirim!',
     })
     setTanggal('')
     setJamMulai('')
     setJamSelesai('')
     setAlasan('')
-    setPeserta(new Set([sesiId]))
+    setDipilih(new Set(isOwnerOrAdmin ? [] : [sesiId]))
   }
 
   if (divisiSaya.length === 0) {
     return (
       <div className="rounded-2xl border border-cream-200 bg-white p-4 text-center">
-        <p className="text-sm text-muted">Kamu belum terdaftar di divisi manapun.</p>
+        <p className="text-sm text-muted">Belum ada divisi aktif.</p>
       </div>
     )
   }
 
-  const anggotaLainnya = anggota.filter((a) => a.id !== sesiId)
+  const daftarPilih = isOwnerOrAdmin ? anggota : anggota
+  const anggotaLain = anggota.filter((a) => a.id !== sesiId)
 
   return (
     <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-4 text-xs font-bold tracking-widest text-muted">AJUKAN LEMBUR BARU</h3>
+      <h3 className="mb-4 text-xs font-bold tracking-widest text-muted">
+        {isOwnerOrAdmin ? 'TETAPKAN LEMBUR UNTUK STAFF' : 'AJUKAN LEMBUR BARU'}
+      </h3>
+
+      {isOwnerOrAdmin && (
+        <div className="mb-3 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5">
+          <svg className="mt-0.5 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+          </svg>
+          <p className="text-xs text-blue-700">
+            Lembur yang kamu tetapkan langsung <strong>disetujui</strong> dan staff akan mendapat notifikasi.
+          </p>
+        </div>
+      )}
+
       <form onSubmit={tanganiKirim} className="space-y-3">
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
@@ -95,55 +147,59 @@ export default function FormLembur({
           </select>
         </div>
 
-        {/* Siapa yang lembur */}
+        {/* Pilih staff */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Siapa yang Lembur</label>
+          <label className="mb-1.5 block text-xs font-semibold text-muted">
+            {isOwnerOrAdmin ? 'Staff yang Lembur' : 'Siapa yang Lembur'}
+          </label>
           {muatAnggota ? (
             <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
           ) : (
             <div className="space-y-0.5 rounded-lg border border-cream-200 bg-cream-50 p-2">
-              {/* Current user — always selected */}
-              <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
-                <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 border-maroon-800 bg-maroon-800">
-                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <span className="text-sm font-semibold text-ink">{sesiNama}</span>
-                <span className="ml-auto rounded bg-maroon-100 px-1.5 py-0.5 text-[10px] font-bold text-maroon-700">Kamu</span>
-              </div>
+              {/* Mode staff: current user always checked */}
+              {!isOwnerOrAdmin && (
+                <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
+                  <KotakCentang checked />
+                  <span className="text-sm font-semibold text-ink">{sesiNama}</span>
+                  <span className="ml-auto rounded bg-maroon-100 px-1.5 py-0.5 text-[10px] font-bold text-maroon-700">Kamu</span>
+                </div>
+              )}
 
-              {anggotaLainnya.length > 0 && (
+              {/* Mode staff: other members below divider */}
+              {!isOwnerOrAdmin && anggotaLain.length > 0 && (
                 <div className="border-t border-cream-200 pt-0.5">
-                  {anggotaLainnya.map((a) => (
+                  {anggotaLain.map((a) => (
                     <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-cream-100 transition">
-                      <input
-                        type="checkbox"
-                        className="sr-only"
-                        checked={peserta.has(a.id)}
-                        onChange={() => togglePeserta(a.id)}
-                      />
-                      <span className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 transition ${peserta.has(a.id) ? 'border-maroon-800 bg-maroon-800' : 'border-cream-300 bg-white'}`}>
-                        {peserta.has(a.id) && (
-                          <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-                            <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
-                      </span>
+                      <input type="checkbox" className="sr-only" checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
+                      <KotakCentang checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
                       <span className="text-sm text-ink">{a.nama}</span>
                     </label>
                   ))}
                 </div>
               )}
 
-              {anggotaLainnya.length === 0 && (
+              {/* Mode owner/admin: all staff as checkboxes */}
+              {isOwnerOrAdmin && anggota.length === 0 && (
+                <p className="px-2 py-1.5 text-xs text-muted">Tidak ada staff di divisi ini.</p>
+              )}
+              {isOwnerOrAdmin && anggota.map((a) => (
+                <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-cream-100 transition">
+                  <input type="checkbox" className="sr-only" checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
+                  <KotakCentang checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
+                  <span className="text-sm text-ink">{a.nama}</span>
+                </label>
+              ))}
+
+              {!isOwnerOrAdmin && anggotaLain.length === 0 && (
                 <p className="px-2 pt-0.5 text-xs text-muted">Tidak ada anggota lain di divisi ini.</p>
               )}
             </div>
           )}
-          {peserta.size > 1 && (
+          {dipilih.size > (isOwnerOrAdmin ? 0 : 1) && (
             <p className="mt-1 text-xs font-semibold text-orange-700">
-              Lembur untuk {peserta.size} orang — pengajuan akan dibuat untuk masing-masing.
+              {isOwnerOrAdmin
+                ? `${dipilih.size} staff dipilih`
+                : `Lembur untuk ${dipilih.size} orang — pengajuan akan dibuat untuk masing-masing.`}
             </p>
           )}
         </div>
@@ -202,10 +258,14 @@ export default function FormLembur({
 
         <button
           type="submit"
-          disabled={sedangKirim}
+          disabled={sedangKirim || dipilih.size === 0}
           className="w-full rounded-xl bg-maroon-800 py-2.5 text-sm font-bold text-white hover:bg-maroon-700 disabled:opacity-50 sm:w-auto sm:px-6"
         >
-          {sedangKirim ? 'Mengirim...' : 'Ajukan Lembur'}
+          {sedangKirim
+            ? 'Memproses...'
+            : isOwnerOrAdmin
+              ? 'Tetapkan Lembur'
+              : 'Ajukan Lembur'}
         </button>
       </form>
     </div>
