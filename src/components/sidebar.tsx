@@ -70,14 +70,14 @@ export default function Sidebar({
     { href: '/admin/log-sistem', label: 'Log Sistem', icon: <IkonLog /> },
     { href: '/lembur', label: 'Tetapkan Lembur', icon: <IkonJam /> },
     { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
-    { href: '/admin/tugas-tersedia', label: 'Review Tugas Bebas', icon: <IkonClipboard /> },
+    { href: '/admin/tugas-tersedia', label: 'Tugas Bebas', icon: <IkonClipboard /> },
   ]
 
   const navOwner: ItemNav[] = [
     { href: '/admin/karyawan', label: 'Data Karyawan', icon: <IkonOrang /> },
     { href: '/lembur', label: 'Tetapkan Lembur', icon: <IkonJam /> },
     { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
-    { href: '/admin/tugas-tersedia', label: 'Review Tugas Bebas', icon: <IkonClipboard /> },
+    { href: '/admin/tugas-tersedia', label: 'Tugas Bebas', icon: <IkonClipboard /> },
     { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
   ]
 
