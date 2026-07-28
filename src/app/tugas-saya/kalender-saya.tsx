@@ -21,8 +21,8 @@ function mulaiMinggu(d: Date): Date {
   return x
 }
 
-function formatIso(d: Date): string {
-  return d.toISOString().split('T')[0]
+function formatLokal(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function formatJam(iso: string): string {
@@ -32,7 +32,7 @@ function formatJam(iso: string): string {
 }
 
 function isHariIni(d: Date): boolean {
-  return formatIso(d) === formatIso(new Date())
+  return formatLokal(d) === formatLokal(new Date())
 }
 
 export default function KalenderSaya({ tasksAwal, awalMingguIso }: { tasksAwal: TaskKalenderSaya[]; awalMingguIso: string }) {
@@ -94,7 +94,7 @@ export default function KalenderSaya({ tasksAwal, awalMingguIso }: { tasksAwal: 
     return arr
   })()
 
-  function taskHari(d: Date) { return tasks.filter((t) => t.dueDate.startsWith(formatIso(d))) }
+  function taskHari(d: Date) { return tasks.filter((t) => formatLokal(new Date(t.dueDate)) === formatLokal(d)) }
 
   return (
     <div>

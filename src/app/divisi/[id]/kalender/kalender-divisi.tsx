@@ -22,8 +22,8 @@ function mulaiMinggu(tanggal: Date): Date {
   return d
 }
 
-function formatIso(tanggal: Date): string {
-  return tanggal.toISOString().split('T')[0]
+function formatLokal(tanggal: Date): string {
+  return `${tanggal.getFullYear()}-${String(tanggal.getMonth() + 1).padStart(2, '0')}-${String(tanggal.getDate()).padStart(2, '0')}`
 }
 
 function formatTanggal(iso: string): string {
@@ -44,8 +44,7 @@ function isSamaHari(isoA: string, isoB: string): boolean {
 }
 
 function isHariIni(tanggal: Date): boolean {
-  const sekarang = new Date()
-  return formatIso(tanggal) === formatIso(sekarang)
+  return formatLokal(tanggal) === formatLokal(new Date())
 }
 
 function CardTask({ task, onClick }: { task: TaskKalender; onClick: () => void }) {
@@ -272,8 +271,7 @@ export default function KalenderDivisi({
   })()
 
   function taskUntukHari(tanggal: Date): TaskKalender[] {
-    const iso = formatIso(tanggal)
-    return tasks.filter((t) => t.dueDate.startsWith(iso))
+    return tasks.filter((t) => formatLokal(new Date(t.dueDate)) === formatLokal(tanggal))
   }
 
   return (
