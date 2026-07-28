@@ -415,26 +415,18 @@ export default function FormBuatTugasSendiri() {
                           {showTimePicker && (
                             <div className="mt-2 flex items-center gap-2">
                               <input
-                                type="text"
-                                inputMode="numeric"
-                                placeholder="HH:MM"
+                                type="time"
                                 value={selectedTime}
-                                maxLength={5}
                                 onChange={(e) => {
-                                  let val = e.target.value.replace(/[^0-9:]/g, '')
-                                  if (val.length === 2 && !val.includes(':')) val += ':'
-                                  if (val.length > 5) val = val.slice(0, 5)
-                                  setSelectedTime(val)
-                                  const parts = val.split(':')
-                                  if (parts.length === 2 && parts[0].length === 2 && parts[1].length === 2) {
-                                    const h = parseInt(parts[0]), m = parseInt(parts[1])
-                                    if (h >= 0 && h <= 23 && m >= 0 && m <= 59 && dueDate) {
-                                      const d = new Date(dueDate); d.setHours(h, m)
-                                      setDueDate(d.toISOString().slice(0, 16))
-                                    }
+                                  setSelectedTime(e.target.value)
+                                  if (dueDate && e.target.value) {
+                                    const d = new Date(dueDate)
+                                    const [h, m] = e.target.value.split(':')
+                                    d.setHours(parseInt(h), parseInt(m))
+                                    setDueDate(d.toISOString().slice(0, 16))
                                   }
                                 }}
-                                className="flex-1 rounded-xl border border-cream-200 bg-cream-50 px-3 py-1.5 text-xs outline-none focus:border-orange-500"
+                                className="flex-1 rounded-xl border border-cream-200 bg-cream-50 px-3 py-1.5 text-xs outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
                               />
                               {selectedTime && (
                                 <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(d.toISOString().slice(0,16)) }}}
