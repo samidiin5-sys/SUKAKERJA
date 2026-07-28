@@ -318,7 +318,7 @@ export default function FormBuatTugasSendiri() {
                     {/* Floating Dropdown Picker */}
                     {showDatePicker && (
                       <div
-                        className="absolute right-0 top-full z-[100] mt-1 w-64 rounded-2xl border border-cream-200 bg-white p-3 shadow-2xl"
+                        className="absolute right-0 bottom-full z-[100] mb-1 w-64 rounded-2xl border border-cream-200 bg-white p-3 shadow-2xl"
                         style={{ maxHeight: '420px', overflowY: 'auto' }}
                       >
                         {/* Shortcuts */}
