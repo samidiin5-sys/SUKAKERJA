@@ -60,7 +60,7 @@ export default function FormBuatTugasSendiri() {
     else label = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
 
     const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0
-    if (hasTime) label += ` · ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
+    if (hasTime) label += ` · ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
     return label
   }
 
@@ -124,6 +124,10 @@ export default function FormBuatTugasSendiri() {
     e.preventDefault()
     if (!divisionId || !boardId) {
       setPesan({ sukses: false, teks: 'Pilih divisi dan kolom (board).' })
+      return
+    }
+    if (!dueDate) {
+      setPesan({ sukses: false, teks: 'Deadline wajib diisi.' })
       return
     }
 
@@ -287,7 +291,7 @@ export default function FormBuatTugasSendiri() {
                   {/* Deadline */}
                   <div className="relative" data-datepicker>
                     <label className="mb-1.5 block text-xs font-semibold text-muted">
-                      Deadline <span className="font-normal text-muted/60">(opsional)</span>
+                      Deadline <span className="text-red-500">*</span>
                     </label>
 
                     {/* Trigger Button */}
