@@ -63,13 +63,10 @@ export async function ambilTaskKalender(
 
   return ((tasks as unknown as BarisTask[] | null) ?? [])
     .filter((t) => {
-      if (t.hanya_assignee && isStaff) {
-        return t.task_assignees.some((a) => a.user_id === sesi.id)
-      }
-      if (isStaff) {
-        return t.task_assignees.some((a) => a.user_id === sesi.id)
-      }
-      return true
+      if (!isStaff) return true
+      if (t.hanya_assignee) return t.task_assignees.some((a) => a.user_id === sesi.id)
+      if (t.is_recurring) return true
+      return t.task_assignees.some((a) => a.user_id === sesi.id)
     })
     .map((t) => ({
       id: t.id,

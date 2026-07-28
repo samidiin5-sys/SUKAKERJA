@@ -36,7 +36,7 @@ function formatJam(iso: string): string {
   const jam = d.getHours()
   const menit = d.getMinutes()
   if (jam === 0 && menit === 0) return ''
-  return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  return `${String(jam).padStart(2, '0')}:${String(menit).padStart(2, '0')}`
 }
 
 function isSamaHari(isoA: string, isoB: string): boolean {

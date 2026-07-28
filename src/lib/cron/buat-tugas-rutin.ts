@@ -55,7 +55,7 @@ export async function jalankanBuatTugasRutin() {
           judul: template.judul,
           deskripsi: template.deskripsi,
           prioritas: template.prioritas,
-          due_date: template.due_offset_hari > 0 ? dueDate.toISOString().slice(0, 10) : null,
+          due_date: dueDate.toISOString().slice(0, 10),
           created_by: template.created_by,
           recurring_template_id: template.id,
           is_recurring: true,
