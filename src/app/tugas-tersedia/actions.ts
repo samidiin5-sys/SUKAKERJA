@@ -16,6 +16,7 @@ export type TaskTersedia = {
   dibuatOleh: string
   createdAt: string
   sudahDiajukan: boolean
+  targetScope: 'semua' | 'divisi'
 }
 
 export type ProposalSaya = {
@@ -46,9 +47,19 @@ export async function ambilTaskTersedia(): Promise<TaskTersedia[]> {
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()
 
+  // Ambil divisi yang diikuti user (untuk filter scope='divisi')
+  const { data: divisiUser } = await admin
+    .from('division_members')
+    .select('division_id')
+    .eq('user_id', sesi.id)
+
+  const divisiUserIds = new Set(
+    ((divisiUser ?? []) as { division_id: string }[]).map((d) => d.division_id)
+  )
+
   const { data } = await admin
     .from('tasks')
-    .select('id, judul, deskripsi, prioritas, due_date, created_at, boards!inner(division_id, divisions!inner(nama)), profiles!tasks_created_by_fkey(nama)')
+    .select('id, judul, deskripsi, prioritas, due_date, created_at, target_scope, boards!inner(division_id, divisions!inner(nama)), profiles!tasks_created_by_fkey(nama)')
     .eq('is_pool_task', true)
     .is('deleted_at', null)
     .is('completed_at', null)
@@ -62,22 +73,31 @@ export async function ambilTaskTersedia(): Promise<TaskTersedia[]> {
     prioritas: string
     due_date: string | null
     created_at: string
+    target_scope: string
     boards: { division_id: string; divisions: { nama: string } }
     profiles: { nama: string }
   }
 
-  const tasks = ((data as unknown as Baris[] | null) ?? []).map((t) => ({
-    id: t.id,
-    judul: t.judul,
-    deskripsi: t.deskripsi,
-    prioritas: t.prioritas,
-    dueDate: t.due_date,
-    divisiNama: t.boards.divisions.nama,
-    divisiId: t.boards.division_id,
-    dibuatOleh: t.profiles.nama,
-    createdAt: t.created_at,
-    sudahDiajukan: false,
-  }))
+  const tasks = ((data as unknown as Baris[] | null) ?? [])
+    .filter((t) => {
+      // 'semua' = visible to all staff
+      if (t.target_scope === 'semua') return true
+      // 'divisi' = only visible to members of that division
+      return divisiUserIds.has(t.boards.division_id)
+    })
+    .map((t) => ({
+      id: t.id,
+      judul: t.judul,
+      deskripsi: t.deskripsi,
+      prioritas: t.prioritas,
+      dueDate: t.due_date,
+      divisiNama: t.boards.divisions.nama,
+      divisiId: t.boards.division_id,
+      dibuatOleh: t.profiles.nama,
+      createdAt: t.created_at,
+      sudahDiajukan: false,
+      targetScope: t.target_scope as 'semua' | 'divisi',
+    }))
 
   if (tasks.length === 0) return tasks
 

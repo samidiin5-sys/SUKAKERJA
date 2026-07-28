@@ -50,7 +50,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
     setSedangKirim(true)
     setPesan(null)
     const deadlineISO = deadline ? new Date(deadline).toISOString() : null
-    const hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO)
+    const hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO, lintasDivisi ? 'semua' : 'divisi')
     setSedangKirim(false)
     if (!hasil.sukses) {
       setPesan({ sukses: false, teks: hasil.pesan })

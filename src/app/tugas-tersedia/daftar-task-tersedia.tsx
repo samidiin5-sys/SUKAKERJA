@@ -112,9 +112,15 @@ export default function DaftarTaskTersedia({
                     <span className="rounded bg-cream-100 px-1.5 py-0.5 text-[10px] font-semibold text-muted">
                       {task.divisiNama}
                     </span>
-                    <span className="rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700">
-                      🌐 Lintas Divisi
-                    </span>
+                    {task.targetScope === 'semua' ? (
+                      <span className="rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700">
+                        🌐 Lintas Divisi
+                      </span>
+                    ) : (
+                      <span className="rounded border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700">
+                        🏢 Divisi Ini
+                      </span>
+                    )}
                   </div>
                   <h3 className="mt-1.5 text-sm font-bold text-maroon-800">{task.judul}</h3>
                   {task.deskripsi && (
