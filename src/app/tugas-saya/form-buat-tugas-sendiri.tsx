@@ -47,6 +47,11 @@ export default function FormBuatTugasSendiri() {
 
   const boardsTersedia = divisiList.find((d) => d.id === divisionId)?.boards ?? []
 
+  function lokalDT(d: Date): string {
+    const p = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`
+  }
+
   function formatDeadlineDisplay(dueDate: string): string {
     if (!dueDate) return ''
     const d = new Date(dueDate)
@@ -79,7 +84,7 @@ export default function FormBuatTugasSendiri() {
       target.setDate(now.getDate() + daysToMon)
     }
     target.setHours(0, 0, 0, 0)
-    setDueDate(target.toISOString().slice(0, 16))
+    setDueDate(lokalDT(target))
     setCalendarDate(target)
     if (type !== 'today' && type !== 'tomorrow') setShowDatePicker(false)
   }
@@ -90,7 +95,7 @@ export default function FormBuatTugasSendiri() {
       const [h, m] = selectedTime.split(':')
       d.setHours(parseInt(h), parseInt(m))
     }
-    setDueDate(d.toISOString().slice(0, 16))
+    setDueDate(lokalDT(d))
     setShowDatePicker(false)
   }
 
@@ -431,7 +436,7 @@ export default function FormBuatTugasSendiri() {
                                     const m = selectedTime ? (selectedTime.split(':')[1] ?? '00') : '00'
                                     const val = `${(h || '00').padStart(2, '0')}:${m}`
                                     setSelectedTime(val)
-                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h || '0'), parseInt(m)); setDueDate(d.toISOString().slice(0, 16)) }
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h || '0'), parseInt(m)); setDueDate(lokalDT(d)) }
                                   }}
                                   className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
                                 />
@@ -448,13 +453,13 @@ export default function FormBuatTugasSendiri() {
                                     const h = selectedTime ? (selectedTime.split(':')[0] ?? '00') : '00'
                                     const val = `${h}:${(m || '00').padStart(2, '0')}`
                                     setSelectedTime(val)
-                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h), parseInt(m || '0')); setDueDate(d.toISOString().slice(0, 16)) }
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h), parseInt(m || '0')); setDueDate(lokalDT(d)) }
                                   }}
                                   className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
                                 />
                               </div>
                               {selectedTime && (
-                                <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(d.toISOString().slice(0,16)) }}}
+                                <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(lokalDT(d)) }}}
                                   className="text-xs text-muted hover:text-red-600">Hapus</button>
                               )}
                             </div>
