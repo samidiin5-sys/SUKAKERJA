@@ -822,7 +822,7 @@ export async function simpanAlasanTerlambat(
   await catatAktivitas({
     actorId: sesi.id,
     actorNama: sesi.nama,
-    jenis: 'task_updated',
+    jenis: 'task_diubah',
     objekTipe: 'Task',
     objekId: taskId,
     objekNama: 'alasan keterlambatan',

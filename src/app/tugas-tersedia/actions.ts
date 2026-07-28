@@ -303,7 +303,7 @@ export async function tinjauProposal(
     await catatAktivitas({
       actorId: sesi.id,
       actorNama: sesi.nama,
-      jenis: 'task_updated',
+      jenis: 'task_diubah',
       objekTipe: 'Task',
       objekId: p.task_id,
       objekNama: p.tasks.judul,
