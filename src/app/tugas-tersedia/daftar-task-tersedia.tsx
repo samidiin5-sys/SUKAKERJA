@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ajukanPengambilanTask, type TaskTersedia, type ProposalSaya } from './actions'
+import { ambilTaskBebasLangsung, type TaskTersedia, type ProposalSaya } from './actions'
 
 const WARNA_PRIORITAS: Record<string, string> = {
   mendesak: 'bg-red-100 text-red-700 border-red-200',
@@ -26,132 +26,32 @@ function formatWaktu(iso: string) {
   return ' · ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
-function formatDatetimeLocal(iso: string) {
-  const d = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function ModalProposal({
-  task,
-  onClose,
-  onAjukan,
-}: {
-  task: TaskTersedia
-  onClose: () => void
-  onAjukan: (deadlineDiusulkan: string, pesan: string) => Promise<void>
-}) {
-  const minDatetime = new Date()
-  minDatetime.setMinutes(minDatetime.getMinutes() + 30)
-  const minStr = formatDatetimeLocal(minDatetime.toISOString())
-
-  const [deadline, setDeadline] = useState(task.dueDate ? formatDatetimeLocal(task.dueDate) : '')
-  const [pesan, setPesan] = useState('')
-  const [sedang, setSedang] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  async function tangani(e: React.FormEvent) {
-    e.preventDefault()
-    if (!deadline) { setError('Isi tanggal & jam deadline dulu'); return }
-    setSedang(true)
-    setError(null)
-    try {
-      await onAjukan(deadline, pesan)
-    } catch {
-      setError('Gagal mengajukan. Coba lagi.')
-      setSedang(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-black text-maroon-800">Ajukan Pengambilan Tugas</h2>
-          <button onClick={onClose} className="text-lg text-muted hover:text-ink">✕</button>
-        </div>
-
-        <div className="mb-4 rounded-xl border border-cream-200 bg-cream-50 p-3">
-          <p className="text-xs font-bold text-ink">{task.judul}</p>
-          <p className="mt-0.5 text-[10px] text-muted">{task.divisiNama}</p>
-          {task.dueDate && (
-            <p className="mt-1 text-[10px] text-orange-600">
-              Deadline owner: {formatTanggal(task.dueDate)}{formatWaktu(task.dueDate)}
-            </p>
-          )}
-        </div>
-
-        <form onSubmit={tangani} className="space-y-3">
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">
-              Kapan kamu sanggup selesaikan? <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="datetime-local"
-              value={deadline}
-              min={minStr}
-              onChange={(e) => setDeadline(e.target.value)}
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
-            />
-            <p className="mt-1 text-[10px] text-muted">Pilih tanggal dan jam. Owner akan review deadline ini.</p>
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">
-              Pesan ke owner <span className="text-[10px] font-normal">(opsional)</span>
-            </label>
-            <textarea
-              value={pesan}
-              onChange={(e) => setPesan(e.target.value)}
-              rows={2}
-              placeholder="Kenapa kamu cocok untuk tugas ini, atau catatan apapun..."
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
-            />
-          </div>
-
-          {error && <p className="text-xs text-red-600">{error}</p>}
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl px-4 py-2.5 text-sm font-bold text-muted hover:bg-cream-100"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={sedang}
-              className="rounded-xl bg-maroon-800 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50"
-            >
-              {sedang ? 'Mengajukan...' : 'Kirim Pengajuan'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
-
 export default function DaftarTaskTersedia({
   tasksAwal,
-  proposalSaya,
+  proposalSaya = [],
 }: {
   tasksAwal: TaskTersedia[]
-  proposalSaya: ProposalSaya[]
+  proposalSaya?: ProposalSaya[]
 }) {
   const [tasks, setTasks] = useState<TaskTersedia[]>(tasksAwal)
-  const [modalTask, setModalTask] = useState<TaskTersedia | null>(null)
-  const [pesan, setPesan] = useState<Record<string, string>>({})
+  const [sedangAmbil, setSedangAmbil] = useState<Record<string, boolean>>({})
+  const [pesan, setPesan] = useState<Record<string, { sukses: boolean; teks: string }>>({})
 
-  async function tanganiAjukan(deadlineDiusulkan: string, pesanStaff: string) {
-    if (!modalTask) return
-    const hasil = await ajukanPengambilanTask(modalTask.id, deadlineDiusulkan, pesanStaff)
+  async function tanganiAmbilTugas(taskId: string) {
+    setSedangAmbil((prev) => ({ ...prev, [taskId]: true }))
+    setPesan((prev) => ({ ...prev, [taskId]: { sukses: false, teks: '' } }))
+
+    const hasil = await ambilTaskBebasLangsung(taskId)
+    setSedangAmbil((prev) => ({ ...prev, [taskId]: false }))
+
     if (hasil.sukses) {
-      setTasks((prev) => prev.map((t) => t.id === modalTask.id ? { ...t, sudahDiajukan: true } : t))
-      setModalTask(null)
+      setPesan((prev) => ({ ...prev, [taskId]: { sukses: true, teks: 'Berhasil diambil! Tugas sudah masuk ke Tugas Saya.' } }))
+      // Hapus dari list tugas tersedia setelah 1.5 detik
+      setTimeout(() => {
+        setTasks((prev) => prev.filter((t) => t.id !== taskId))
+      }, 1500)
     } else {
-      throw new Error(hasil.pesan)
+      setPesan((prev) => ({ ...prev, [taskId]: { sukses: false, teks: hasil.pesan } }))
     }
   }
 
@@ -160,17 +60,9 @@ export default function DaftarTaskTersedia({
 
   return (
     <>
-      {modalTask && (
-        <ModalProposal
-          task={modalTask}
-          onClose={() => setModalTask(null)}
-          onAjukan={tanganiAjukan}
-        />
-      )}
-
       {adaProposal && (
         <div className="mb-6">
-          <h2 className="mb-3 text-sm font-black tracking-widest text-maroon-800">PENGAJUAN SAYA</h2>
+          <h2 className="mb-3 text-sm font-black tracking-widest text-maroon-800">PENGAJUAN SAYA (LAMA)</h2>
           <div className="space-y-2">
             {proposalSaya.map((p) => (
               <div key={p.id} className="rounded-xl border border-cream-200 bg-white p-3 shadow-sm">
@@ -227,11 +119,11 @@ export default function DaftarTaskTersedia({
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-muted">
                     {task.dueDate && (
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 font-semibold text-orange-700">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
                         </svg>
-                        {formatTanggal(task.dueDate)}{formatWaktu(task.dueDate)}
+                        Deadline: {formatTanggal(task.dueDate)}{formatWaktu(task.dueDate)}
                       </span>
                     )}
                     <span>Diposting oleh {task.dibuatOleh}</span>
@@ -239,22 +131,19 @@ export default function DaftarTaskTersedia({
                 </div>
               </div>
 
-              {pesan[task.id] && (
-                <p className="mt-2 text-xs text-red-600">{pesan[task.id]}</p>
+              {pesan[task.id]?.teks && (
+                <p className={`mt-2 text-xs font-bold ${pesan[task.id].sukses ? 'text-green-700' : 'text-red-600'}`}>
+                  {pesan[task.id].teks}
+                </p>
               )}
 
-              {task.sudahDiajukan ? (
-                <div className="mt-3 rounded-xl bg-yellow-50 py-2.5 text-center text-xs font-semibold text-yellow-700 border border-yellow-200">
-                  Pengajuan dikirim — menunggu persetujuan owner
-                </div>
-              ) : (
-                <button
-                  onClick={() => setModalTask(task)}
-                  className="mt-3 w-full rounded-xl bg-maroon-800 py-2.5 text-sm font-bold text-white hover:bg-maroon-700 transition"
-                >
-                  Ambil Tugas Ini
-                </button>
-              )}
+              <button
+                onClick={() => tanganiAmbilTugas(task.id)}
+                disabled={sedangAmbil[task.id] || pesan[task.id]?.sukses}
+                className="mt-3 w-full rounded-xl bg-maroon-800 py-2.5 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50"
+              >
+                {sedangAmbil[task.id] ? 'Mengambil Tugas...' : pesan[task.id]?.sukses ? 'Tugas Diambil ✓' : 'Ambil Tugas Ini'}
+              </button>
             </div>
           ))}
         </div>

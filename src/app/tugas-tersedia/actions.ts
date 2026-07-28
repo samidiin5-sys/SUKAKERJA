@@ -159,6 +159,86 @@ export async function ajukanPengambilanTask(
   return { sukses: true }
 }
 
+export async function ambilTaskBebasLangsung(taskId: string): Promise<HasilAksi> {
+  const sesi = await ambilSesiPengguna()
+  const admin = createAdminClient()
+
+  const { data: taskRaw } = await admin
+    .from('tasks')
+    .select('id, judul, is_pool_task, created_by, boards!inner(division_id)')
+    .eq('id', taskId)
+    .eq('is_pool_task', true)
+    .is('deleted_at', null)
+    .is('completed_at', null)
+    .single()
+
+  if (!taskRaw) return { sukses: false, pesan: 'Tugas tidak ditemukan atau sudah diambil oleh staff lain.' }
+
+  const task = taskRaw as unknown as {
+    id: string
+    judul: string
+    created_by: string
+    boards: { division_id: string }
+  }
+
+  const divisionId = task.boards.division_id
+
+  // Auto-join divisi jika belum menjadi anggota
+  const { data: sudahAnggota } = await admin
+    .from('division_members')
+    .select('id')
+    .eq('division_id', divisionId)
+    .eq('user_id', sesi.id)
+    .maybeSingle()
+
+  if (!sudahAnggota) {
+    await admin.from('division_members').insert({
+      division_id: divisionId,
+      user_id: sesi.id,
+      role: 'staff',
+    })
+  }
+
+  // Assign task ke staff
+  const { error: errAssign } = await admin.from('task_assignees').upsert({
+    task_id: taskId,
+    user_id: sesi.id,
+    assigned_by: sesi.id,
+  })
+
+  if (errAssign) return { sukses: false, pesan: 'Gagal mengambil tugas. Silakan coba lagi.' }
+
+  // Update status pool task
+  await admin
+    .from('tasks')
+    .update({ is_pool_task: false })
+    .eq('id', taskId)
+
+  // Catat aktivitas
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'task_diubah',
+    objekTipe: 'Task',
+    objekId: taskId,
+    objekNama: task.judul,
+    divisionId,
+  })
+
+  // Kirim notifikasi ke pembuat task
+  if (task.created_by && task.created_by !== sesi.id) {
+    await kirimNotifikasi({
+      userId: task.created_by,
+      jenis: 'task_ditugaskan',
+      pesan: `${sesi.nama} telah mengambil tugas bebas "${task.judul}".`,
+      taskId,
+      divisionId,
+    })
+  }
+
+  return { sukses: true }
+}
+
 export async function ambilProposalSaya(): Promise<ProposalSaya[]> {
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()

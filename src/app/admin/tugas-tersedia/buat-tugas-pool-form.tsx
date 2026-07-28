@@ -164,7 +164,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
               </svg>
               <p className="text-xs text-orange-700">
-                Tugas bebas bisa diambil oleh semua staff — mereka harus mengajukan deadline ke kamu untuk disetujui sebelum dikerjakan.
+                Tugas bebas bisa langsung diambil oleh staff tanpa pengajuan proposal. Tentukan deadline agar staff tahu batas waktu pengerjaannya.
               </p>
             </div>
 
