@@ -254,31 +254,37 @@ export default function FormBuatTugasSendiri() {
                   />
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-xs font-semibold text-muted">Prioritas</label>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[
-                      { value: 'rendah', label: 'Rendah', icon: '○', bg: 'bg-slate-100 text-slate-600 border-slate-200', active: 'bg-slate-600 text-white border-slate-600' },
-                      { value: 'sedang', label: 'Sedang', icon: '◑', bg: 'bg-blue-50 text-blue-600 border-blue-200', active: 'bg-blue-500 text-white border-blue-500' },
-                      { value: 'tinggi', label: 'Tinggi', icon: '▲', bg: 'bg-orange-50 text-orange-600 border-orange-200', active: 'bg-orange-500 text-white border-orange-500' },
-                      { value: 'mendesak', label: 'Mendesak', icon: '🔥', bg: 'bg-red-50 text-red-600 border-red-200', active: 'bg-red-600 text-white border-red-600' },
-                    ].map((p) => (
-                      <button
-                        key={p.value}
-                        type="button"
-                        onClick={() => setPrioritas(p.value)}
-                        className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-center transition ${
-                          prioritas === p.value ? p.active : p.bg + ' hover:opacity-80'
-                        }`}
+                <div className="grid grid-cols-2 gap-3 items-start">
+                  {/* Prioritas */}
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-muted">Prioritas</label>
+                    <div className="relative">
+                      <div className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full ${
+                        prioritas === 'rendah' ? 'bg-slate-400' :
+                        prioritas === 'sedang' ? 'bg-blue-500' :
+                        prioritas === 'tinggi' ? 'bg-orange-500' :
+                        'bg-red-600'
+                      }`} />
+                      <select
+                        value={prioritas}
+                        onChange={(e) => setPrioritas(e.target.value)}
+                        className="w-full rounded-xl border border-cream-200 bg-cream-50 py-2.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition appearance-none cursor-pointer"
                       >
-                        <span className="text-base leading-none">{p.icon}</span>
-                        <span className="text-[10px] font-bold leading-none">{p.label}</span>
-                      </button>
-                    ))}
+                        <option value="rendah">Rendah</option>
+                        <option value="sedang">Sedang</option>
+                        <option value="tinggi">Tinggi</option>
+                        <option value="mendesak">🔥 Mendesak</option>
+                      </select>
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="relative" data-datepicker>
+                  {/* Deadline */}
+                  <div className="relative" data-datepicker>
                   <label className="mb-2 block text-xs font-semibold text-muted">
                     Deadline <span className="font-normal text-muted/60">(opsional)</span>
                   </label>
@@ -310,7 +316,7 @@ export default function FormBuatTugasSendiri() {
 
                   {/* Dropdown Picker */}
                   {showDatePicker && (
-                    <div className="absolute left-0 top-full z-50 mt-1 w-72 rounded-2xl border border-cream-200 bg-white p-3 shadow-xl">
+                    <div className="absolute left-0 bottom-full z-50 mb-1 w-72 rounded-2xl border border-cream-200 bg-white p-3 shadow-xl">
                       {/* Shortcuts */}
                       <div className="mb-3 space-y-0.5">
                         {[
@@ -427,6 +433,7 @@ export default function FormBuatTugasSendiri() {
                       </div>
                     </div>
                   )}
+                  </div>
                 </div>
 
                 {pesan && (
