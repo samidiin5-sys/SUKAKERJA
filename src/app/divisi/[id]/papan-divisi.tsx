@@ -58,6 +58,7 @@ export default function PapanDivisi({
   bolehKelola,
   bolehKirimTugas,
   currentUserId,
+  isStaff = false,
 }: {
   divisionId: string
   boardsAwal: BoardDenganTask[]
@@ -67,6 +68,7 @@ export default function PapanDivisi({
   bolehKelola: boolean
   bolehKirimTugas: boolean
   currentUserId: string
+  isStaff?: boolean
 }) {
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -81,10 +83,13 @@ export default function PapanDivisi({
   const [cari, setCari] = useState('')
   const [filterStatus, setFilterStatus] = useState<'semua' | 'aktif' | 'selesai'>('semua')
   const [filterPrioritas, setFilterPrioritas] = useState('semua')
-  const [filterAssignee, setFilterAssignee] = useState('semua')
+  const [filterAssignee, setFilterAssignee] = useState(isStaff ? currentUserId : 'semua')
 
   const filterAktif =
-    cari.trim() !== '' || filterStatus !== 'semua' || filterPrioritas !== 'semua' || filterAssignee !== 'semua'
+    cari.trim() !== '' ||
+    filterStatus !== 'semua' ||
+    filterPrioritas !== 'semua' ||
+    (!isStaff && filterAssignee !== 'semua')
 
   function cocokFilter(task: TaskRingkas): boolean {
     if (cari.trim() && !task.judul.toLowerCase().includes(cari.trim().toLowerCase())) return false
@@ -114,7 +119,7 @@ export default function PapanDivisi({
     setCari('')
     setFilterStatus('semua')
     setFilterPrioritas('semua')
-    setFilterAssignee('semua')
+    setFilterAssignee(isStaff ? currentUserId : 'semua')
   }
 
   useEffect(() => {
@@ -339,20 +344,22 @@ export default function PapanDivisi({
               </option>
             ))}
           </select>
-          <select
-            value={filterAssignee}
-            onChange={(e) => setFilterAssignee(e.target.value)}
-            className="min-w-0 rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
-          >
-            <option value="semua">Semua P. Jawab</option>
-            <option value="saya">Saya</option>
-            <option value="tanpa">Tanpa Assignee</option>
-            {anggota.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.nama}
-              </option>
-            ))}
-          </select>
+          {!isStaff && (
+            <select
+              value={filterAssignee}
+              onChange={(e) => setFilterAssignee(e.target.value)}
+              className="min-w-0 rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
+            >
+              <option value="semua">Semua P. Jawab</option>
+              <option value="saya">Saya</option>
+              <option value="tanpa">Tanpa Assignee</option>
+              {anggota.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.nama}
+                </option>
+              ))}
+            </select>
+          )}
           {filterAktif && (
             <button
               onClick={resetFilter}

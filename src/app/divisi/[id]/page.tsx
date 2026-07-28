@@ -143,6 +143,7 @@ export default async function HalamanPapanDivisi({
         bolehKelola={bolehKelola}
         bolehKirimTugas={bolehKirimTugas}
         currentUserId={sesi.id}
+        isStaff={sesi.roleSistem === 'user'}
       />
 
       {(statistik.produktivitas.length > 0 || statistik.tenggatTerdekat.length > 0) && (
