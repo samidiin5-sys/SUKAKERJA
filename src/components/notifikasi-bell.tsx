@@ -84,9 +84,6 @@ export default function NotifikasiBell() {
       router.push('/lembur')
     } else if (item.jenis === 'task_terlambat' && item.divisionId) {
       router.push(`/divisi/${item.divisionId}`)
-    } else if (item.taskId) {
-      // proposal disetujui/ditolak → ke tugas-tersedia untuk lihat status
-      router.push('/tugas-tersedia')
     } else if (item.divisionId) {
       router.push(`/divisi/${item.divisionId}`)
     }
