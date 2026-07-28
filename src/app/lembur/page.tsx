@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
 import { ambilSesiPengguna } from '@/lib/auth/otorisasi'
@@ -7,14 +6,11 @@ import FormLembur from './form-lembur'
 import DaftarLemburSaya from './daftar-lembur-saya'
 
 export default async function HalamanLembur() {
-  const data = await ambilDataShell()
-  const sesi = await ambilSesiPengguna()
-
-  if (sesi.roleSistem !== 'user') {
-    redirect('/admin/lembur')
-  }
-
-  const lemburSaya = await ambilLemburSaya()
+  const [data, sesi, lemburSaya] = await Promise.all([
+    ambilDataShell(),
+    ambilSesiPengguna(),
+    ambilLemburSaya(),
+  ])
 
   return (
     <AppShell data={data}>
@@ -24,7 +20,7 @@ export default async function HalamanLembur() {
           <p className="text-sm text-muted">Ajukan lembur dan pantau status persetujuannya.</p>
         </div>
 
-        <FormLembur divisiSaya={data.divisiSaya} />
+        <FormLembur divisiSaya={data.divisiSaya} sesiId={sesi.id} sesiNama={sesi.nama} />
 
         <div className="mt-6">
           <h3 className="mb-3 text-xs font-bold tracking-widest text-muted">RIWAYAT PENGAJUAN</h3>

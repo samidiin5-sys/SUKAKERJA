@@ -17,13 +17,32 @@ export type LemburSaya = {
 }
 
 export type HasilAksi = { sukses: true } | { sukses: false; pesan: string }
+export type AnggotaLembur = { id: string; nama: string }
+
+export async function ambilAnggotaUntukLembur(divisionId: string): Promise<AnggotaLembur[]> {
+  if (!divisionId) return []
+  const admin = createAdminClient()
+
+  const { data } = await admin
+    .from('division_members')
+    .select('profiles!inner(id, nama, status, deleted_at)')
+    .eq('division_id', divisionId)
+
+  type Baris = { profiles: { id: string; nama: string; status: string; deleted_at: string | null } }
+
+  return ((data as unknown as Baris[] | null) ?? [])
+    .filter((r) => r.profiles.status === 'aktif' && !r.profiles.deleted_at)
+    .map((r) => ({ id: r.profiles.id, nama: r.profiles.nama }))
+    .sort((a, b) => a.nama.localeCompare(b.nama, 'id'))
+}
 
 export async function ajukanLembur(
   divisionId: string,
   tanggal: string,
   jamMulai: string,
   jamSelesai: string,
-  alasan: string
+  alasan: string,
+  pesertaIds: string[] = []
 ): Promise<HasilAksi> {
   const sesi = await ambilSesiPengguna()
   if (!alasan.trim() || alasan.trim().length < 10) {
@@ -33,15 +52,19 @@ export async function ajukanLembur(
     return { sukses: false, pesan: 'Jam selesai harus lebih dari jam mulai' }
   }
 
+  const finalPeserta = pesertaIds.length > 0 ? pesertaIds : [sesi.id]
   const admin = createAdminClient()
-  const { error } = await admin.from('lembur').insert({
-    user_id: sesi.id,
+
+  const records = finalPeserta.map((uid) => ({
+    user_id: uid,
     division_id: divisionId,
     tanggal,
     jam_mulai: jamMulai,
     jam_selesai: jamSelesai,
     alasan: alasan.trim(),
-  })
+  }))
+
+  const { error } = await admin.from('lembur').insert(records)
 
   if (error) return { sukses: false, pesan: 'Gagal mengajukan lembur. Coba lagi.' }
 

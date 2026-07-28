@@ -51,12 +51,15 @@ export default function Sidebar({
     { href: '/admin/divisi', label: 'Kelola Divisi', icon: <IkonPapan /> },
     { href: '/admin/data-terhapus', label: 'Data Terhapus', icon: <IkonSampah /> },
     { href: '/admin/log-sistem', label: 'Log Sistem', icon: <IkonLog /> },
+    { href: '/lembur', label: 'Ajukan Lembur', icon: <IkonJam /> },
+    { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
     { href: '/admin/tugas-tersedia', label: 'Review Tugas Bebas', icon: <IkonClipboard /> },
   ]
 
   const navOwner: ItemNav[] = [
     { href: '/admin/karyawan', label: 'Data Karyawan', icon: <IkonOrang /> },
-    { href: '/admin/lembur', label: 'Pengajuan Lembur', icon: <IkonJam /> },
+    { href: '/lembur', label: 'Ajukan Lembur', icon: <IkonJam /> },
+    { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
     { href: '/admin/tugas-tersedia', label: 'Review Tugas Bebas', icon: <IkonClipboard /> },
     { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
   ]
