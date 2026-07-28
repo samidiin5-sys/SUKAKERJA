@@ -3,6 +3,7 @@ import { ambilDataShell } from '@/lib/shell-data'
 import { ambilStatistikOrganisasi, ambilStatistikPersonal, ambilTugasDikirimOwner } from './actions'
 import StaffDashboard from './staff-dashboard'
 import AdminDashboard from './admin-dashboard'
+import TombolEksporCSV from './tombol-ekspor-csv'
 
 // Redesigned dashboard routes
 function formatTenggat(iso: string): string {
@@ -23,7 +24,10 @@ export default async function HalamanDashboard() {
   return (
     <AppShell data={data}>
       {isSuperAdmin ? (
-        <AdminDashboard data={data} />
+        <>
+          <TombolEksporCSV />
+          <AdminDashboard data={data} />
+        </>
       ) : isOwner ? (
         <>
           {/* Greeting — compact, no big banner */}
@@ -35,6 +39,8 @@ export default async function HalamanDashboard() {
           </div>
 
           <RingkasanOwner />
+
+          <TombolEksporCSV />
 
           {/* Bottom grid */}
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">

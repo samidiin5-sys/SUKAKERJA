@@ -915,3 +915,95 @@ export async function ambilDetailDashboardAdmin(): Promise<AdminDashboardData> {
   }
 }
 
+
+export type HasilEksporCSV = { sukses: true; csv: string } | { sukses: false; pesan: string }
+
+export async function eksporRekapCSV(dari: string, sampai: string): Promise<HasilEksporCSV> {
+  const sesi = await ambilSesiPengguna()
+  if (sesi.roleSistem !== 'super_admin' && sesi.roleSistem !== 'owner') {
+    return { sukses: false, pesan: 'Tidak memiliki akses' }
+  }
+
+  const admin = createAdminClient()
+
+  // Ambil semua divisi aktif
+  const { data: divisions } = await admin
+    .from('divisions')
+    .select('id, nama')
+    .eq('status', 'aktif')
+    .is('deleted_at', null)
+    .order('nama')
+
+  if (!divisions || divisions.length === 0) {
+    return { sukses: false, pesan: 'Tidak ada divisi aktif' }
+  }
+
+  const divIds = divisions.map((d) => d.id)
+
+  // Ambil boards
+  const { data: boards } = await admin
+    .from('boards')
+    .select('id, division_id')
+    .in('division_id', divIds)
+    .is('deleted_at', null)
+
+  const boardIds = (boards ?? []).map((b) => b.id)
+  const boardToDivisi = new Map((boards ?? []).map((b) => [b.id, b.division_id]))
+  const divisiNamaMap = new Map(divisions.map((d) => [d.id, d.nama]))
+
+  // Ambil semua task dalam rentang waktu
+  const { data: tasks } = boardIds.length > 0
+    ? await admin
+        .from('tasks')
+        .select('id, board_id, judul, prioritas, due_date, completed_at, created_at, task_assignees(profiles!task_assignees_user_id_fkey(nama))')
+        .in('board_id', boardIds)
+        .is('deleted_at', null)
+        .gte('created_at', `${dari}T00:00:00Z`)
+        .lte('created_at', `${sampai}T23:59:59Z`)
+    : { data: [] }
+
+  type BarisTask = {
+    id: string
+    board_id: string
+    judul: string
+    prioritas: string
+    due_date: string | null
+    completed_at: string | null
+    created_at: string
+    task_assignees: { profiles: { nama: string } }[]
+  }
+
+  const rows = (tasks as unknown as BarisTask[] | null) ?? []
+  const awalHariIni = new Date()
+  awalHariIni.setHours(0, 0, 0, 0)
+
+  function esc(v: string) { return `"${(v ?? '').replace(/"/g, '""')}"` }
+
+  const BOM = '\uFEFF'
+  const header = 'Divisi,Judul,Prioritas,Assignee,Tgl Dibuat,Deadline,Status\r\n'
+
+  const baris = rows.map((t) => {
+    const divisiId = boardToDivisi.get(t.board_id) ?? ''
+    const divisiNama = divisiNamaMap.get(divisiId) ?? '-'
+    const assignees = t.task_assignees.map((a) => a.profiles.nama).join('; ') || '-'
+    const tglDibuat = new Date(t.created_at).toLocaleDateString('id-ID')
+    const deadline = t.due_date ? new Date(t.due_date).toLocaleDateString('id-ID') : '-'
+    const status = t.completed_at
+      ? 'Selesai'
+      : t.due_date && new Date(t.due_date).getTime() < awalHariIni.getTime()
+      ? 'Terlambat'
+      : 'Berjalan'
+
+    return [
+      esc(divisiNama),
+      esc(t.judul),
+      esc(t.prioritas),
+      esc(assignees),
+      esc(tglDibuat),
+      esc(deadline),
+      esc(status),
+    ].join(',')
+  }).join('\r\n')
+
+  return { sukses: true, csv: BOM + header + baris }
+}
