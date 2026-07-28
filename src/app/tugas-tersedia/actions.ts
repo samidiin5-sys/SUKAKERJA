@@ -104,7 +104,7 @@ export async function ajukanPengambilanTask(
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()
 
-  const { data: task } = await admin
+  const { data: taskRaw } = await admin
     .from('tasks')
     .select('id, judul, is_pool_task, boards!inner(division_id), created_by')
     .eq('id', taskId)
@@ -113,9 +113,13 @@ export async function ajukanPengambilanTask(
     .is('completed_at', null)
     .single()
 
-  if (!task) return { sukses: false, pesan: 'Tugas tidak tersedia atau sudah diambil' }
+  if (!taskRaw) return { sukses: false, pesan: 'Tugas tidak tersedia atau sudah diambil' }
 
-  const divisionId = (task.boards as { division_id: string }).division_id
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const task = taskRaw as any
+  const divisionId: string = task.boards.division_id
+  const ownerId: string = task.created_by
+  const judulTask: string = task.judul
 
   const { error } = await admin.from('task_pool_proposals').upsert(
     {
@@ -137,8 +141,6 @@ export async function ajukanPengambilanTask(
     .eq('division_id', divisionId)
     .eq('role', 'owner')
 
-  const ownerId = (task as { created_by: string }).created_by
-
   const targetIds = new Set<string>([ownerId])
   ;((ownerDivisi ?? []) as { user_id: string }[]).forEach((m) => targetIds.add(m.user_id))
 
@@ -147,7 +149,7 @@ export async function ajukanPengambilanTask(
       kirimNotifikasi({
         userId: uid,
         jenis: 'task_ditugaskan',
-        pesan: `${sesi.nama} mengajukan pengambilan tugas "${(task as { judul: string }).judul}" — tunggu persetujuan.`,
+        pesan: `${sesi.nama} mengajukan pengambilan tugas "${judulTask}" — tunggu persetujuan.`,
         taskId,
         divisionId,
       })
