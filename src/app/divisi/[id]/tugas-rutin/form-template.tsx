@@ -5,7 +5,7 @@ import { buatTemplate, ubahTemplate, type PolaUlang, type RecurringTemplate } fr
 import type { AnggotaDivisi } from '../actions'
 
 const PILIHAN_POLA: { value: PolaUlang; label: string }[] = [
-  { value: 'daily_workday', label: 'Setiap hari kerja (Senin–Jumat)' },
+  { value: 'daily_workday', label: 'Setiap hari kerja (Senin–Sabtu)' },
   { value: 'daily', label: 'Setiap hari' },
   { value: 'weekly', label: 'Setiap minggu' },
   { value: 'monthly', label: 'Setiap bulan' },

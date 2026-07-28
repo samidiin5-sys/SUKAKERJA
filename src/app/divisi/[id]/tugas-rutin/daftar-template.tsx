@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { hapusTemplate, toggleAktifTemplate, ambilRiwayatTemplate, type RecurringTemplate, type TaskDariTemplate } from './actions'
+import { hapusTemplate, toggleAktifTemplate, ambilRiwayatTemplate, triggerBuatTugasRutin, type RecurringTemplate, type TaskDariTemplate } from './actions'
 import type { AnggotaDivisi } from '../actions'
 import FormTemplate from './form-template'
 
@@ -269,10 +269,23 @@ export default function DaftarTemplate({
 }) {
   const [templates, setTemplates] = useState<RecurringTemplate[]>(templatesAwal)
   const [formBuatTerbuka, setFormBuatTerbuka] = useState(false)
+  const [sedangTrigger, setSedangTrigger] = useState(false)
+  const [pesanTrigger, setPesanTrigger] = useState<{ sukses: boolean; teks: string } | null>(null)
 
   async function muatUlang() {
-    // Trigger server revalidation by refreshing the page
     window.location.reload()
+  }
+
+  async function tanganiTrigger() {
+    setSedangTrigger(true)
+    setPesanTrigger(null)
+    const hasil = await triggerBuatTugasRutin(divisionId)
+    setSedangTrigger(false)
+    if (hasil.sukses) {
+      setPesanTrigger({ sukses: true, teks: `Berhasil! ${hasil.dibuat} tugas baru dibuat hari ini.` })
+    } else {
+      setPesanTrigger({ sukses: false, teks: hasil.pesan ?? 'Gagal menjalankan.' })
+    }
   }
 
   if (formBuatTerbuka) {
@@ -290,7 +303,21 @@ export default function DaftarTemplate({
   return (
     <div className="space-y-4">
       {bolehKelola && (
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={tanganiTrigger}
+              disabled={sedangTrigger}
+              className="rounded-xl border border-cream-200 bg-white px-4 py-2.5 text-sm font-bold text-muted shadow-sm transition hover:border-orange-400 hover:text-orange-600 disabled:opacity-50"
+            >
+              {sedangTrigger ? 'Menjalankan...' : '▶ Jalankan Sekarang'}
+            </button>
+            {pesanTrigger && (
+              <span className={`text-xs font-semibold ${pesanTrigger.sukses ? 'text-green-700' : 'text-red-600'}`}>
+                {pesanTrigger.teks}
+              </span>
+            )}
+          </div>
           <button
             onClick={() => setFormBuatTerbuka(true)}
             className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600"

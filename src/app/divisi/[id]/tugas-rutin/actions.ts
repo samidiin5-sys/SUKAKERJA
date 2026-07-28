@@ -2,6 +2,17 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanAnggotaDivisi, pastikanOwner } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
+import { jalankanBuatTugasRutin } from '@/lib/cron/buat-tugas-rutin'
+
+export async function triggerBuatTugasRutin(divisionId: string): Promise<{ sukses: boolean; dibuat: number; pesan?: string }> {
+  await pastikanOwner(divisionId)
+  try {
+    const hasil = await jalankanBuatTugasRutin()
+    return { sukses: true, dibuat: hasil.dibuat }
+  } catch (e) {
+    return { sukses: false, dibuat: 0, pesan: String(e) }
+  }
+}
 
 export type PolaUlang = 'daily_workday' | 'daily' | 'weekly' | 'monthly'
 

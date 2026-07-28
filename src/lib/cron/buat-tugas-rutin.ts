@@ -8,7 +8,7 @@ function hariIniJadwalTemplate(
   tanggalHariIni: string
 ): boolean {
   switch (template.pola) {
-    case 'daily_workday': return hariMinggu >= 1 && hariMinggu <= 5
+    case 'daily_workday': return hariMinggu >= 1 && hariMinggu <= 6
     case 'daily': return true
     case 'weekly': return hariMinggu === template.day_of_week
     case 'monthly': return parseInt(tanggalHariIni.slice(8, 10)) === template.day_of_month
