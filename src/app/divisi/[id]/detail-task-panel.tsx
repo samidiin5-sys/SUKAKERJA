@@ -5,6 +5,7 @@ import {
   ambilDetailTask,
   hapusTask,
   pindahkanTask,
+  simpanAlasanTerlambat,
   tandaiSelesai,
   ubahAssigneeTask,
   ubahJudulTask,
@@ -63,6 +64,9 @@ export default function DetailTaskPanel({
   const [editJudul, setEditJudul] = useState(false)
   const [judulSementara, setJudulSementara] = useState('')
   const [pesanJudul, setPesanJudul] = useState<string | null>(null)
+  const [alasan, setAlasan] = useState('')
+  const [sedangSimpanAlasan, setSedangSimpanAlasan] = useState(false)
+  const [pesanAlasan, setPesanAlasan] = useState<string | null>(null)
 
   useEffect(() => {
     let batal = false
@@ -346,6 +350,55 @@ export default function DetailTaskPanel({
             <div className="border-t border-cream-200/60 pt-4.5">
               <PengumpulanSection divisionId={divisionId} taskId={taskId} currentUserId={currentUserId} />
             </div>
+
+            {/* Alasan keterlambatan — muncul jika task terlambat dan belum selesai */}
+            {detail && !detail.completedAt && detail.dueDate && new Date(detail.dueDate) < new Date() && (
+              <div className="border-t border-red-100 pt-4">
+                <h4 className="mb-2 text-xs font-bold tracking-widest text-red-600">TASK TERLAMBAT</h4>
+                {detail.alasanTerlambat ? (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5">
+                    <p className="text-xs font-semibold text-red-700">Alasan:</p>
+                    <p className="mt-0.5 text-xs text-red-600">{detail.alasanTerlambat}</p>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                    <p className="mb-2 text-xs font-semibold text-red-700">
+                      Task ini melewati tenggat waktu. Wajib isi alasan keterlambatan.
+                    </p>
+                    <textarea
+                      value={alasan}
+                      onChange={(e) => setAlasan(e.target.value)}
+                      placeholder="Jelaskan alasan task belum selesai..."
+                      rows={3}
+                      className="w-full resize-none rounded-lg border border-red-200 bg-white px-3 py-2 text-xs outline-none focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                    />
+                    {pesanAlasan && (
+                      <p className={`mt-1 text-xs ${pesanAlasan.includes('Berhasil') ? 'text-green-700' : 'text-red-700'}`}>
+                        {pesanAlasan}
+                      </p>
+                    )}
+                    <button
+                      onClick={async () => {
+                        if (!alasan.trim()) return
+                        setSedangSimpanAlasan(true)
+                        const hasil = await simpanAlasanTerlambat(divisionId, taskId, alasan)
+                        setSedangSimpanAlasan(false)
+                        if (hasil.sukses) {
+                          setPesanAlasan('Berhasil disimpan!')
+                          setDetail((prev) => prev ? { ...prev, alasanTerlambat: alasan.trim() } : prev)
+                        } else {
+                          setPesanAlasan(hasil.pesan)
+                        }
+                      }}
+                      disabled={sedangSimpanAlasan || !alasan.trim()}
+                      className="mt-2 rounded-lg bg-red-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {sedangSimpanAlasan ? 'Menyimpan...' : 'Kirim Alasan'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {pesan && <p className="text-xs font-bold text-red-700">{pesan}</p>}
 

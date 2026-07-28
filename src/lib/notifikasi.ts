@@ -1,7 +1,14 @@
 import 'server-only'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export type JenisNotifikasi = 'task_ditugaskan' | 'user_reactivated' | 'mention'
+export type JenisNotifikasi =
+  | 'task_ditugaskan'
+  | 'user_reactivated'
+  | 'mention'
+  | 'task_terlambat'
+  | 'task_pool_baru'
+  | 'lembur_disetujui'
+  | 'lembur_ditolak'
 
 /**
  * Mengirim satu notifikasi. Kegagalan pengiriman sengaja tidak melempar

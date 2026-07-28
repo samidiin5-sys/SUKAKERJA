@@ -703,10 +703,12 @@ export type DetailTask = {
   deskripsi: string | null
   prioritas: string
   dueDate: string | null
+  completedAt: string | null
   boardId: string
   assigneeIds: string[]
   isRecurring: boolean
   templatePola: string | null
+  alasanTerlambat: string | null
 }
 
 export async function ambilDetailTask(divisionId: string, taskId: string): Promise<DetailTask | null> {
@@ -715,7 +717,7 @@ export async function ambilDetailTask(divisionId: string, taskId: string): Promi
   const admin = createAdminClient()
   const { data: task } = await admin
     .from('tasks')
-    .select('id, judul, deskripsi, prioritas, due_date, board_id, is_recurring, recurring_template_id, recurring_task_templates(pola), task_assignees(user_id)')
+    .select('id, judul, deskripsi, prioritas, due_date, completed_at, board_id, is_recurring, alasan_terlambat, recurring_template_id, recurring_task_templates(pola), task_assignees(user_id)')
     .eq('id', taskId)
     .single()
 
@@ -729,11 +731,42 @@ export async function ambilDetailTask(divisionId: string, taskId: string): Promi
     deskripsi: task.deskripsi,
     prioritas: task.prioritas,
     dueDate: task.due_date,
+    completedAt: task.completed_at,
     boardId: task.board_id,
     assigneeIds: ((task.task_assignees as unknown as BarisAssignee[]) ?? []).map((a) => a.user_id),
     isRecurring: task.is_recurring,
     templatePola: (task.recurring_task_templates as any)?.pola ?? null,
+    alasanTerlambat: task.alasan_terlambat,
   }
+}
+
+export async function simpanAlasanTerlambat(
+  divisionId: string,
+  taskId: string,
+  alasan: string
+): Promise<HasilBuatTask> {
+  const sesi = await pastikanAnggotaDivisi(divisionId)
+  if (!alasan.trim()) return { sukses: false, pesan: 'Alasan tidak boleh kosong' }
+
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from('tasks')
+    .update({ alasan_terlambat: alasan.trim() })
+    .eq('id', taskId)
+
+  if (error) return { sukses: false, pesan: 'Gagal menyimpan alasan. Coba lagi.' }
+
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'task_updated',
+    objekTipe: 'Task',
+    objekId: taskId,
+    objekNama: 'alasan keterlambatan',
+    divisionId,
+  })
+
+  return { sukses: true }
 }
 
 export async function ubahTask(

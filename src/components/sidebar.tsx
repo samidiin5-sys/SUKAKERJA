@@ -40,6 +40,8 @@ export default function Sidebar({
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
+      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
+      { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
       { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
     ] : []),
   ]
@@ -49,10 +51,13 @@ export default function Sidebar({
     { href: '/admin/divisi', label: 'Kelola Divisi', icon: <IkonPapan /> },
     { href: '/admin/data-terhapus', label: 'Data Terhapus', icon: <IkonSampah /> },
     { href: '/admin/log-sistem', label: 'Log Sistem', icon: <IkonLog /> },
+    { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
   ]
 
   const navOwner: ItemNav[] = [
     { href: '/admin/karyawan', label: 'Data Karyawan', icon: <IkonOrang /> },
+    { href: '/admin/lembur', label: 'Pengajuan Lembur', icon: <IkonJam /> },
+    { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
     { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
   ]
 
@@ -337,6 +342,23 @@ function IkonPanduan() {
       <circle cx="12" cy="12" r="10"/>
       <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
       <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  )
+}
+function IkonClipboard() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+      <rect x="9" y="3" width="6" height="4" rx="1"/>
+      <path d="M9 12h6M9 16h4"/>
+    </svg>
+  )
+}
+function IkonJam() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 6v6l4 2"/>
     </svg>
   )
 }

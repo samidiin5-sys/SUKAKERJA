@@ -78,7 +78,13 @@ export default function NotifikasiBell() {
       setJumlahBelumDibaca((prev) => Math.max(0, prev - 1))
     }
     setTerbuka(false)
-    if (item.divisionId) {
+    if (item.jenis === 'task_pool_baru') {
+      router.push('/tugas-tersedia')
+    } else if (item.jenis === 'lembur_disetujui' || item.jenis === 'lembur_ditolak') {
+      router.push('/lembur')
+    } else if (item.jenis === 'task_terlambat' && item.divisionId) {
+      router.push(`/divisi/${item.divisionId}`)
+    } else if (item.divisionId) {
       router.push(`/divisi/${item.divisionId}`)
     }
   }
