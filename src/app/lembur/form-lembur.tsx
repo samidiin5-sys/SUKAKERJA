@@ -223,7 +223,7 @@ export default function FormLembur({
               value={jamMulai}
               onChange={(e) => setJamMulai(e.target.value)}
               required
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
             />
           </div>
           <div>
@@ -233,7 +233,7 @@ export default function FormLembur({
               value={jamSelesai}
               onChange={(e) => setJamSelesai(e.target.value)}
               required
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
             />
           </div>
         </div>
