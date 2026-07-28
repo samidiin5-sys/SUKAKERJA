@@ -17,6 +17,10 @@ export default function FormBuatTugasSendiri() {
   const [memuat, setMemuat] = useState(false)
   const [sedangKirim, setSedangKirim] = useState(false)
   const [pesan, setPesan] = useState<{ sukses: boolean; teks: string } | null>(null)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [calendarDate, setCalendarDate] = useState(new Date())
+  const [selectedTime, setSelectedTime] = useState('')
+  const [showTimePicker, setShowTimePicker] = useState(false)
 
   useEffect(() => {
     if (!buka) return
@@ -31,7 +35,73 @@ export default function FormBuatTugasSendiri() {
     })
   }, [buka])
 
+  useEffect(() => {
+    if (!showDatePicker) return
+    function handler(e: MouseEvent) {
+      const target = e.target as Element
+      if (!target.closest('[data-datepicker]')) setShowDatePicker(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [showDatePicker])
+
   const boardsTersedia = divisiList.find((d) => d.id === divisionId)?.boards ?? []
+
+  function formatDeadlineDisplay(dueDate: string): string {
+    if (!dueDate) return ''
+    const d = new Date(dueDate)
+    const today = new Date(); today.setHours(0,0,0,0)
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1)
+    const dMidnight = new Date(d); dMidnight.setHours(0,0,0,0)
+
+    let label = ''
+    if (dMidnight.getTime() === today.getTime()) label = 'Hari Ini'
+    else if (dMidnight.getTime() === tomorrow.getTime()) label = 'Besok'
+    else label = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+
+    const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0
+    if (hasTime) label += ` · ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
+    return label
+  }
+
+  function setDeadlineShortcut(type: 'today' | 'tomorrow' | 'weekend' | 'nextweek') {
+    const now = new Date()
+    const target = new Date()
+    if (type === 'today') { /* today */ }
+    else if (type === 'tomorrow') { target.setDate(now.getDate() + 1) }
+    else if (type === 'weekend') {
+      const day = now.getDay()
+      const daysToSat = day === 6 ? 7 : (6 - day)
+      target.setDate(now.getDate() + daysToSat)
+    } else if (type === 'nextweek') {
+      const day = now.getDay()
+      const daysToMon = day === 0 ? 1 : (8 - day)
+      target.setDate(now.getDate() + daysToMon)
+    }
+    target.setHours(0, 0, 0, 0)
+    setDueDate(target.toISOString().slice(0, 16))
+    setCalendarDate(target)
+    if (type !== 'today' && type !== 'tomorrow') setShowDatePicker(false)
+  }
+
+  function selectCalendarDay(day: number) {
+    const d = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day)
+    if (selectedTime) {
+      const [h, m] = selectedTime.split(':')
+      d.setHours(parseInt(h), parseInt(m))
+    }
+    setDueDate(d.toISOString().slice(0, 16))
+    setShowDatePicker(false)
+  }
+
+  function getDaysInMonth(year: number, month: number) {
+    return new Date(year, month + 1, 0).getDate()
+  }
+
+  function getFirstDayOfMonth(year: number, month: number) {
+    const d = new Date(year, month, 1).getDay()
+    return d === 0 ? 6 : d - 1 // Monday = 0
+  }
 
   function tanganiGantiDivisi(id: string) {
     setDivisionId(id)
@@ -44,6 +114,9 @@ export default function FormBuatTugasSendiri() {
     setDeskripsi('')
     setPrioritas('sedang')
     setDueDate('')
+    setSelectedTime('')
+    setShowDatePicker(false)
+    setShowTimePicker(false)
     setPesan(null)
   }
 
@@ -181,32 +254,179 @@ export default function FormBuatTugasSendiri() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted">Prioritas</label>
-                    <select
-                      value={prioritas}
-                      onChange={(e) => setPrioritas(e.target.value)}
-                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
-                    >
-                      <option value="rendah">Rendah</option>
-                      <option value="sedang">Sedang</option>
-                      <option value="tinggi">Tinggi</option>
-                      <option value="mendesak">Mendesak</option>
-                    </select>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold text-muted">Prioritas</label>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[
+                      { value: 'rendah', label: 'Rendah', icon: '○', bg: 'bg-slate-100 text-slate-600 border-slate-200', active: 'bg-slate-600 text-white border-slate-600' },
+                      { value: 'sedang', label: 'Sedang', icon: '◑', bg: 'bg-blue-50 text-blue-600 border-blue-200', active: 'bg-blue-500 text-white border-blue-500' },
+                      { value: 'tinggi', label: 'Tinggi', icon: '▲', bg: 'bg-orange-50 text-orange-600 border-orange-200', active: 'bg-orange-500 text-white border-orange-500' },
+                      { value: 'mendesak', label: 'Mendesak', icon: '🔥', bg: 'bg-red-50 text-red-600 border-red-200', active: 'bg-red-600 text-white border-red-600' },
+                    ].map((p) => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setPrioritas(p.value)}
+                        className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-center transition ${
+                          prioritas === p.value ? p.active : p.bg + ' hover:opacity-80'
+                        }`}
+                      >
+                        <span className="text-base leading-none">{p.icon}</span>
+                        <span className="text-[10px] font-bold leading-none">{p.label}</span>
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted">
-                      Deadline <span className="font-normal text-muted/60">(opsional)</span>
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
-                    />
-                  </div>
+                <div className="relative" data-datepicker>
+                  <label className="mb-2 block text-xs font-semibold text-muted">
+                    Deadline <span className="font-normal text-muted/60">(opsional)</span>
+                  </label>
+
+                  {/* Trigger Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowDatePicker((v) => !v)}
+                    className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                      dueDate
+                        ? 'border-orange-300 bg-orange-50 text-orange-700 font-semibold'
+                        : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300'
+                    }`}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                    {dueDate ? formatDeadlineDisplay(dueDate) : 'Pilih tanggal deadline...'}
+                    {dueDate && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setDueDate(''); setSelectedTime('') }}
+                        className="ml-auto text-orange-400 hover:text-orange-700"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </button>
+
+                  {/* Dropdown Picker */}
+                  {showDatePicker && (
+                    <div className="absolute left-0 top-full z-50 mt-1 w-72 rounded-2xl border border-cream-200 bg-white p-3 shadow-xl">
+                      {/* Shortcuts */}
+                      <div className="mb-3 space-y-0.5">
+                        {[
+                          { label: 'Hari Ini', sub: new Date().toLocaleDateString('id-ID', { weekday: 'short' }), type: 'today' as const },
+                          { label: 'Besok', sub: new Date(Date.now()+86400000).toLocaleDateString('id-ID', { weekday: 'short' }), type: 'tomorrow' as const },
+                          { label: 'Akhir Pekan', sub: (() => { const d = new Date(); const ds = 6-d.getDay(); const t = new Date(d); t.setDate(d.getDate()+ds); return t.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }) })(), type: 'weekend' as const },
+                          { label: 'Minggu Depan', sub: (() => { const d = new Date(); const dm = d.getDay()===0?1:(8-d.getDay()); const t = new Date(d); t.setDate(d.getDate()+dm); return t.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }) })(), type: 'nextweek' as const },
+                        ].map((s) => (
+                          <button
+                            key={s.type}
+                            type="button"
+                            onClick={() => setDeadlineShortcut(s.type)}
+                            className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition hover:bg-cream-50"
+                          >
+                            <span className="text-sm font-semibold text-ink">{s.label}</span>
+                            <span className="text-xs text-muted">{s.sub}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Divider */}
+                      <div className="mb-3 border-t border-cream-100" />
+
+                      {/* Mini Calendar */}
+                      <div>
+                        <div className="mb-2 flex items-center justify-between">
+                          <button type="button" onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth()-1, 1))}
+                            className="rounded-lg p-1 hover:bg-cream-100">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                          </button>
+                          <span className="text-sm font-bold text-ink">
+                            {calendarDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                          </span>
+                          <button type="button" onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth()+1, 1))}
+                            className="rounded-lg p-1 hover:bg-cream-100">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                          </button>
+                        </div>
+
+                        <div className="mb-1 grid grid-cols-7 text-center">
+                          {['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map((h) => (
+                            <div key={h} className="text-[10px] font-bold text-muted py-1">{h}</div>
+                          ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 text-center">
+                          {Array.from({ length: getFirstDayOfMonth(calendarDate.getFullYear(), calendarDate.getMonth()) }).map((_, i) => (
+                            <div key={`empty-${i}`} />
+                          ))}
+                          {Array.from({ length: getDaysInMonth(calendarDate.getFullYear(), calendarDate.getMonth()) }).map((_, i) => {
+                            const day = i + 1
+                            const thisDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day)
+                            const today = new Date(); today.setHours(0,0,0,0)
+                            const isToday = thisDate.getTime() === today.getTime()
+                            const isSelected = dueDate && new Date(dueDate).toDateString() === thisDate.toDateString()
+                            return (
+                              <button
+                                key={day}
+                                type="button"
+                                onClick={() => selectCalendarDay(day)}
+                                className={`mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition ${
+                                  isSelected ? 'bg-orange-500 text-white' :
+                                  isToday ? 'border border-orange-400 text-orange-600' :
+                                  'hover:bg-cream-100 text-ink'
+                                }`}
+                              >
+                                {day}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="mt-3 border-t border-cream-100" />
+
+                      {/* Time Picker */}
+                      <div className="mt-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowTimePicker((v) => !v)}
+                          className="flex w-full items-center gap-2 rounded-xl border border-cream-200 px-3 py-2 text-left text-sm transition hover:bg-cream-50"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                          </svg>
+                          <span className={selectedTime ? 'font-semibold text-ink' : 'text-muted'}>
+                            {selectedTime || 'Tambah Waktu'}
+                          </span>
+                        </button>
+
+                        {showTimePicker && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <input
+                              type="time"
+                              value={selectedTime}
+                              onChange={(e) => {
+                                setSelectedTime(e.target.value)
+                                if (dueDate && e.target.value) {
+                                  const d = new Date(dueDate)
+                                  const [h, m] = e.target.value.split(':')
+                                  d.setHours(parseInt(h), parseInt(m))
+                                  setDueDate(d.toISOString().slice(0, 16))
+                                }
+                              }}
+                              className="flex-1 rounded-xl border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                            />
+                            {selectedTime && (
+                              <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(d.toISOString().slice(0,16)) }}}
+                                className="text-xs text-muted hover:text-red-600">Hapus</button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {pesan && (
