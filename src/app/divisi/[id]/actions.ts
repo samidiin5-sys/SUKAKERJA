@@ -513,6 +513,69 @@ export async function kirimTugasOwner(
   return { sukses: true }
 }
 
+export async function kirimTugasPool(
+  divisionId: string,
+  boardId: string,
+  judul: string,
+  deskripsi: string,
+  deadline: string | null
+): Promise<HasilBuatTask & { taskId?: string }> {
+  const sesi = await pastikanOwner(divisionId)
+
+  const judulBersih = judul.trim()
+  if (!judulBersih) return { sukses: false, pesan: 'Judul tugas tidak boleh kosong' }
+  if (judulBersih.length > 200) return { sukses: false, pesan: 'Judul tugas maksimal 200 karakter' }
+
+  const admin = createAdminClient()
+  const { data: taskBaru, error } = await admin
+    .from('tasks')
+    .insert({
+      board_id: boardId,
+      judul: judulBersih,
+      deskripsi: deskripsi.trim() || null,
+      due_date: deadline || null,
+      created_by: sesi.id,
+      is_pool_task: true,
+      hanya_assignee: false,
+    })
+    .select('id')
+    .single()
+
+  if (error || !taskBaru) return { sukses: false, pesan: 'Gagal membuat tugas pool. Coba lagi.' }
+
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'task_dibuat',
+    objekTipe: 'Task',
+    objekId: taskBaru.id,
+    objekNama: judulBersih,
+    divisionId,
+  })
+
+  // Kirim notif ke semua staff aktif
+  const { data: semuaStaff } = await admin
+    .from('profiles')
+    .select('id')
+    .eq('status', 'aktif')
+    .is('deleted_at', null)
+    .eq('role_sistem', 'user')
+
+  await Promise.all(
+    ((semuaStaff ?? []) as { id: string }[]).map((u) =>
+      kirimNotifikasi({
+        userId: u.id,
+        jenis: 'task_pool_baru',
+        pesan: `Ada tugas baru yang bisa kamu ambil: "${judulBersih}"`,
+        taskId: taskBaru.id,
+        divisionId,
+      })
+    )
+  )
+
+  return { sukses: true, taskId: taskBaru.id }
+}
+
 export async function pindahkanTask(
   divisionId: string,
   taskId: string,

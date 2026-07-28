@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { kirimTugasOwner, type AnggotaDivisi, type BoardDenganTask } from './actions'
+import { kirimTugasOwner, kirimTugasPool, type AnggotaDivisi, type BoardDenganTask } from './actions'
 
 export default function KirimTugasModal({
   divisionId,
@@ -21,6 +21,7 @@ export default function KirimTugasModal({
   const [deskripsi, setDeskripsi] = useState('')
   const [deadline, setDeadline] = useState('')
   const [tagged, setTagged] = useState<Set<string>>(new Set())
+  const [isPool, setIsPool] = useState(false)
   const [pesanError, setPesanError] = useState<string | null>(null)
   const [sedangKirim, setSedangKirim] = useState(false)
 
@@ -45,24 +46,26 @@ export default function KirimTugasModal({
       setPesanError('Pilih board tujuan')
       return
     }
-    if (tagged.size === 0) {
+    if (!isPool && tagged.size === 0) {
       setPesanError('Tag minimal 1 staff yang akan menerima tugas ini')
       return
     }
 
+    // Convert datetime-local value to ISO string
+    const deadlineISO = deadline ? new Date(deadline).toISOString() : null
+
     setSedangKirim(true)
-    const hasil = await kirimTugasOwner(
-      divisionId,
-      boardId,
-      judul,
-      deskripsi,
-      deadline || null,
-      Array.from(tagged)
-    )
+    let hasil: { sukses: boolean; pesan?: string }
+
+    if (isPool) {
+      hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO)
+    } else {
+      hasil = await kirimTugasOwner(divisionId, boardId, judul, deskripsi, deadlineISO, Array.from(tagged))
+    }
     setSedangKirim(false)
 
     if (!hasil.sukses) {
-      setPesanError(hasil.pesan)
+      setPesanError((hasil as { sukses: false; pesan: string }).pesan)
       return
     }
 
@@ -80,6 +83,23 @@ export default function KirimTugasModal({
         </div>
 
         <form onSubmit={tanganiKirim} className="space-y-3">
+          {/* Pool task toggle */}
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5">
+            <input
+              type="checkbox"
+              checked={isPool}
+              onChange={(e) => {
+                setIsPool(e.target.checked)
+                if (e.target.checked) setTagged(new Set())
+              }}
+              className="h-4 w-4 accent-orange-500"
+            />
+            <div>
+              <p className="text-xs font-bold text-orange-700">Tugas Bebas (Pool Task)</p>
+              <p className="text-[10px] text-orange-600">Siapa saja bisa ambil tugas ini — staff harus konfirmasi deadline ke owner.</p>
+            </div>
+          </label>
+
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Board Tujuan</label>
             <select
@@ -128,9 +148,11 @@ export default function KirimTugasModal({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-muted">Deadline</label>
+              <label className="mb-1 block text-xs font-semibold text-muted">
+                Deadline {isPool && <span className="text-orange-600">(opsional)</span>}
+              </label>
               <input
-                type="date"
+                type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
@@ -138,33 +160,35 @@ export default function KirimTugasModal({
             </div>
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">
-              Tag Staff Penerima {tagged.size > 0 && `(${tagged.size})`}
-            </label>
-            <p className="mb-1.5 text-[11px] text-muted">
-              Cuma staff yang di-tag di sini yang bisa lihat tugas ini.
-            </p>
-            <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-cream-200 bg-cream-50 p-2">
-              {anggota.length === 0 && (
-                <p className="px-1 py-1 text-xs text-muted">Divisi ini belum punya anggota.</p>
-              )}
-              {anggota.map((a) => (
-                <label
-                  key={a.id}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-cream-100"
-                >
-                  <input
-                    type="checkbox"
-                    checked={tagged.has(a.id)}
-                    onChange={() => toggleTag(a.id)}
-                    className="h-4 w-4 accent-orange-500"
-                  />
-                  <span className="text-ink">{a.nama}</span>
-                </label>
-              ))}
+          {!isPool && (
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-muted">
+                Tag Staff Penerima {tagged.size > 0 && `(${tagged.size})`}
+              </label>
+              <p className="mb-1.5 text-[11px] text-muted">
+                Cuma staff yang di-tag di sini yang bisa lihat tugas ini.
+              </p>
+              <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-cream-200 bg-cream-50 p-2">
+                {anggota.length === 0 && (
+                  <p className="px-1 py-1 text-xs text-muted">Divisi ini belum punya anggota.</p>
+                )}
+                {anggota.map((a) => (
+                  <label
+                    key={a.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-cream-100"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={tagged.has(a.id)}
+                      onChange={() => toggleTag(a.id)}
+                      className="h-4 w-4 accent-orange-500"
+                    />
+                    <span className="text-ink">{a.nama}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {pesanError && <p className="text-sm text-red-700">{pesanError}</p>}
 
@@ -181,7 +205,7 @@ export default function KirimTugasModal({
               disabled={sedangKirim}
               className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600 disabled:opacity-50"
             >
-              {sedangKirim ? 'Mengirim...' : 'Kirim Tugas'}
+              {sedangKirim ? 'Mengirim...' : isPool ? 'Post Tugas Bebas' : 'Kirim Tugas'}
             </button>
           </div>
         </form>
