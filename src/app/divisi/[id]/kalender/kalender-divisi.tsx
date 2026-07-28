@@ -279,36 +279,32 @@ export default function KalenderDivisi({
   return (
     <div>
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => mode === 'minggu' ? navigasiMinggu(-1) : navigasiBulan(-1)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <span className="text-sm font-bold text-maroon-800">
-            {mode === 'minggu' ? labelMinggu : `${BULAN[bulanSaat.getMonth()]} ${bulanSaat.getFullYear()}`}
-          </span>
-          <button
-            onClick={() => mode === 'minggu' ? navigasiMinggu(1) : navigasiBulan(1)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-          <button
-            onClick={keHariIni}
-            className="rounded-lg border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-muted hover:bg-cream-50"
-          >
-            Hari Ini
-          </button>
-          {sedangMuat && <span className="text-xs text-muted animate-pulse">Memuat...</span>}
-        </div>
-
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => mode === 'minggu' ? navigasiMinggu(-1) : navigasiBulan(-1)}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <span className="min-w-[140px] text-center text-sm font-bold text-maroon-800">
+          {mode === 'minggu' ? labelMinggu : `${BULAN[bulanSaat.getMonth()]} ${bulanSaat.getFullYear()}`}
+        </span>
+        <button
+          onClick={() => mode === 'minggu' ? navigasiMinggu(1) : navigasiBulan(1)}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+        <button
+          onClick={keHariIni}
+          className="rounded-lg border border-cream-200 bg-white px-3 py-1.5 text-xs font-bold text-muted hover:bg-cream-50"
+        >
+          Hari Ini
+        </button>
         <div className="flex rounded-lg border border-cream-200 bg-white p-0.5">
           <button
             onClick={() => {
@@ -337,6 +333,7 @@ export default function KalenderDivisi({
             Bulan
           </button>
         </div>
+        {sedangMuat && <span className="text-xs text-muted animate-pulse">Memuat...</span>}
       </div>
 
       {/* Tampilan Mingguan */}
