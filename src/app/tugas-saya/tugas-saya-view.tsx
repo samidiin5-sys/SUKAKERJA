@@ -9,12 +9,14 @@ export default function TugasSayaView({
   tugasAwal,
   tasksKalenderAwal,
   awalMingguIso,
+  viewAwal = 'daftar',
 }: {
   tugasAwal: TugasSaya[]
   tasksKalenderAwal: TaskKalenderSaya[]
   awalMingguIso: string
+  viewAwal?: 'daftar' | 'kalender'
 }) {
-  const [view, setView] = useState<'daftar' | 'kalender'>('daftar')
+  const [view, setView] = useState<'daftar' | 'kalender'>(viewAwal)
 
   return (
     <div>

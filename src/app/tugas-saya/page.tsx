@@ -10,8 +10,13 @@ function mulaiMinggu(d: Date): Date {
   return x
 }
 
-export default async function HalamanTugasSaya() {
-  const data = await ambilDataShell()
+export default async function HalamanTugasSaya({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>
+}) {
+  const [data, params] = await Promise.all([ambilDataShell(), searchParams])
+  const viewAwal = params.view === 'kalender' ? 'kalender' : 'daftar'
 
   const awalMinggu = mulaiMinggu(new Date())
   const akhirMinggu = new Date(awalMinggu)
@@ -29,6 +34,7 @@ export default async function HalamanTugasSaya() {
         tugasAwal={tugas}
         tasksKalenderAwal={tasksKalender}
         awalMingguIso={awalMinggu.toISOString()}
+        viewAwal={viewAwal as 'daftar' | 'kalender'}
       />
     </AppShell>
   )
