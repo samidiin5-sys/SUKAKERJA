@@ -140,7 +140,7 @@ export default function FormBuatTugasSendiri() {
   async function tanganiSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!divisionId || !boardId) {
-      setPesan({ sukses: false, teks: 'Pilih divisi dan kolom (board).' })
+      setPesan({ sukses: false, teks: 'Pilih divisi terlebih dahulu.' })
       return
     }
     if (!dueDate) {
@@ -209,43 +209,22 @@ export default function FormBuatTugasSendiri() {
               </div>
             ) : (
               <form onSubmit={tanganiSubmit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
-                    <select
-                      value={divisionId}
-                      onChange={(e) => tanganiGantiDivisi(e.target.value)}
-                      required
-                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
-                    >
-                      {divisiList.map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.nama}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted">Kolom (Board)</label>
-                    <select
-                      value={boardId}
-                      onChange={(e) => setBoardId(e.target.value)}
-                      required
-                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
-                    >
-                      {boardsTersedia.length === 0 ? (
-                        <option value="">Tidak ada kolom</option>
-                      ) : (
-                        boardsTersedia.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.nama}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
+                  <select
+                    value={divisionId}
+                    onChange={(e) => tanganiGantiDivisi(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
+                  >
+                    {divisiList.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.nama}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-muted">
