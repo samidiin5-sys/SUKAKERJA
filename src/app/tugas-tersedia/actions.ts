@@ -230,7 +230,7 @@ export async function ambilTaskBebasLangsung(taskId: string): Promise<HasilAksi>
     await kirimNotifikasi({
       userId: task.created_by,
       jenis: 'task_ditugaskan',
-      pesan: `${sesi.nama} telah mengambil tugas bebas "${task.judul}".`,
+      pesan: `${sesi.nama} telah mengambil tugas terbuka "${task.judul}".`,
       taskId,
       divisionId,
     })

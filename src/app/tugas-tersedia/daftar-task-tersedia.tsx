@@ -96,8 +96,8 @@ export default function DaftarTaskTersedia({
               <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-muted">Tidak ada tugas tersedia saat ini.</p>
-          <p className="mt-1 text-xs text-muted/70">Pantau halaman ini secara berkala.</p>
+          <p className="text-sm font-semibold text-muted">Tidak ada tugas terbuka tersedia saat ini.</p>
+          <p className="mt-1 text-xs text-muted/70">Tugas Terbuka yang tersedia untuk diambil dari semua divisi akan muncul di sini.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -111,6 +111,9 @@ export default function DaftarTaskTersedia({
                     </span>
                     <span className="rounded bg-cream-100 px-1.5 py-0.5 text-[10px] font-semibold text-muted">
                       {task.divisiNama}
+                    </span>
+                    <span className="rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700">
+                      🌐 Lintas Divisi
                     </span>
                   </div>
                   <h3 className="mt-1.5 text-sm font-bold text-maroon-800">{task.judul}</h3>

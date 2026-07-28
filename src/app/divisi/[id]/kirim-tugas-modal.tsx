@@ -95,7 +95,7 @@ export default function KirimTugasModal({
               className="h-4 w-4 accent-orange-500"
             />
             <div>
-              <p className="text-xs font-bold text-orange-700">Tugas Bebas (Pool Task)</p>
+              <p className="text-xs font-bold text-orange-700">Tugas Terbuka (Pool Task)</p>
               <p className="text-[10px] text-orange-600">Siapa saja bisa ambil tugas ini — staff harus konfirmasi deadline ke owner.</p>
             </div>
           </label>
@@ -205,7 +205,7 @@ export default function KirimTugasModal({
               disabled={sedangKirim}
               className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600 disabled:opacity-50"
             >
-              {sedangKirim ? 'Mengirim...' : isPool ? 'Post Tugas Bebas' : 'Kirim Tugas'}
+              {sedangKirim ? 'Mengirim...' : isPool ? 'Post Tugas Terbuka' : 'Kirim Tugas'}
             </button>
           </div>
         </form>

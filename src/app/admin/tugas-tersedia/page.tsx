@@ -11,9 +11,9 @@ export default async function HalamanAdminTugasTersedia() {
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
         <div className="mb-5">
-          <h2 className="text-lg font-black text-maroon-800">Tugas Bebas</h2>
+          <h2 className="text-lg font-black text-maroon-800">Tugas Terbuka</h2>
           <p className="text-sm text-muted">
-            Kelola dan buat tugas bebas baru yang bisa diambil langsung oleh staff.
+            Buat tugas terbuka yang bisa diambil oleh semua staff lintas divisi.
           </p>
         </div>
 

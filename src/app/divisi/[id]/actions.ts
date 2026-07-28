@@ -518,7 +518,8 @@ export async function kirimTugasPool(
   boardId: string,
   judul: string,
   deskripsi: string,
-  deadline: string | null
+  deadline: string | null,
+  targetScope: 'semua' | 'divisi' = 'semua'
 ): Promise<HasilBuatTask & { taskId?: string }> {
   const sesi = await pastikanOwner(divisionId)
 
@@ -536,12 +537,13 @@ export async function kirimTugasPool(
       due_date: deadline || null,
       created_by: sesi.id,
       is_pool_task: true,
+      target_scope: targetScope,
       hanya_assignee: false,
     })
     .select('id')
     .single()
 
-  if (error || !taskBaru) return { sukses: false, pesan: 'Gagal membuat tugas pool. Coba lagi.' }
+  if (error || !taskBaru) return { sukses: false, pesan: 'Gagal membuat tugas terbuka. Coba lagi.' }
 
   await catatAktivitas({
     actorId: sesi.id,
@@ -553,20 +555,30 @@ export async function kirimTugasPool(
     divisionId,
   })
 
-  // Kirim notif ke semua staff aktif
-  const { data: semuaStaff } = await admin
-    .from('profiles')
-    .select('id')
-    .eq('status', 'aktif')
-    .is('deleted_at', null)
-    .eq('role_sistem', 'user')
+  // Kirim notif ke staff terpilih
+  let targetUserIds: string[] = []
+  if (targetScope === 'divisi') {
+    const { data: divMembers } = await admin
+      .from('division_members')
+      .select('user_id')
+      .eq('division_id', divisionId)
+    targetUserIds = ((divMembers ?? []) as { user_id: string }[]).map((m) => m.user_id)
+  } else {
+    const { data: semuaStaff } = await admin
+      .from('profiles')
+      .select('id')
+      .eq('status', 'aktif')
+      .is('deleted_at', null)
+      .eq('role_sistem', 'user')
+    targetUserIds = ((semuaStaff ?? []) as { id: string }[]).map((u) => u.id)
+  }
 
   await Promise.all(
-    ((semuaStaff ?? []) as { id: string }[]).map((u) =>
+    targetUserIds.map((uid) =>
       kirimNotifikasi({
-        userId: u.id,
+        userId: uid,
         jenis: 'task_pool_baru',
-        pesan: `Ada tugas baru yang bisa kamu ambil: "${judulBersih}"`,
+        pesan: `Ada tugas terbuka baru yang bisa kamu ambil: "${judulBersih}"`,
         taskId: taskBaru.id,
         divisionId,
       })

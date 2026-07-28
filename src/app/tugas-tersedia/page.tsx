@@ -11,8 +11,8 @@ export default async function HalamanTugasTersedia() {
     <AppShell data={data}>
       <div className="mx-auto max-w-2xl">
         <div className="mb-5">
-          <h2 className="text-lg font-black text-maroon-800">Tugas Tersedia</h2>
-          <p className="text-sm text-muted">Tugas bebas yang bisa kamu ambil. Ajukan deadline ke owner untuk dikonfirmasi.</p>
+          <h2 className="text-lg font-black text-maroon-800">Tugas Terbuka</h2>
+          <p className="text-sm text-muted">Tugas Terbuka yang tersedia untuk diambil dari semua divisi. Ambil langsung tanpa pengajuan proposal.</p>
         </div>
         <DaftarTaskTersedia tasksAwal={tasks} proposalSaya={proposalSaya} />
       </div>

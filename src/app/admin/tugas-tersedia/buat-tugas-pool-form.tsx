@@ -13,6 +13,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
   const [judul, setJudul] = useState('')
   const [deskripsi, setDeskripsi] = useState('')
   const [deadline, setDeadline] = useState('')
+  const [lintasDivisi, setLintasDivisi] = useState(true)
   const [muatBoard, setMuatBoard] = useState(false)
   const [sedangKirim, setSedangKirim] = useState(false)
   const [pesan, setPesan] = useState<{ sukses: boolean; teks: string } | null>(null)
@@ -32,6 +33,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
     setJudul('')
     setDeskripsi('')
     setDeadline('')
+    setLintasDivisi(true)
     setPesan(null)
   }
 
@@ -42,7 +44,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       return
     }
     if (!deadline) {
-      setPesan({ sukses: false, teks: 'Deadline wajib diisi untuk Tugas Bebas.' })
+      setPesan({ sukses: false, teks: 'Deadline wajib diisi untuk Tugas Terbuka.' })
       return
     }
     setSedangKirim(true)
@@ -54,7 +56,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       setPesan({ sukses: false, teks: hasil.pesan })
       return
     }
-    setPesan({ sukses: true, teks: 'Tugas bebas berhasil dibuat! Staff aktif sudah diberitahu.' })
+    setPesan({ sukses: true, teks: 'Tugas terbuka berhasil dibuat! Staff aktif sudah diberitahu.' })
     reset()
   }
 
@@ -70,12 +72,12 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Buat Tugas Bebas Baru
+          Buat Tugas Terbuka Baru
         </button>
       ) : (
         <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-xs font-bold tracking-widest text-muted">BUAT TUGAS BEBAS BARU</h3>
+            <h3 className="text-xs font-bold tracking-widest text-muted">BUAT TUGAS TERBUKA BARU</h3>
             <button
               onClick={() => { setBuka(false); reset() }}
               className="text-xs text-muted hover:text-ink"
@@ -125,6 +127,22 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
               </div>
             </div>
 
+            <div className="flex items-center gap-3 rounded-xl border border-cream-200 bg-cream-50 px-3 py-2.5">
+              <input
+                type="checkbox"
+                id="lintasDivisi"
+                checked={lintasDivisi}
+                onChange={(e) => setLintasDivisi(e.target.checked)}
+                className="h-4 w-4 rounded accent-orange-500"
+              />
+              <div>
+                <label htmlFor="lintasDivisi" className="cursor-pointer text-sm font-semibold text-ink">
+                  Tugas Lintas Divisi
+                </label>
+                <p className="text-xs text-muted">Semua staff dari divisi manapun bisa mengambil tugas ini</p>
+              </div>
+            </div>
+
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
               <input
@@ -169,7 +187,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
               </svg>
               <p className="text-xs text-orange-700">
-                Tugas bebas bisa langsung diambil oleh staff tanpa pengajuan proposal. Tentukan deadline agar staff tahu batas waktu pengerjaannya.
+                Tugas terbuka bisa langsung diambil oleh staff tanpa pengajuan proposal. Tentukan deadline agar staff tahu batas waktu pengerjaannya.
               </p>
             </div>
 
@@ -185,7 +203,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 disabled={sedangKirim || boards.length === 0}
                 className="rounded-xl bg-maroon-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-maroon-700 disabled:opacity-50"
               >
-                {sedangKirim ? 'Membuat...' : 'Buat Tugas Bebas'}
+                {sedangKirim ? 'Membuat...' : 'Buat Tugas Terbuka'}
               </button>
               <button
                 type="button"
