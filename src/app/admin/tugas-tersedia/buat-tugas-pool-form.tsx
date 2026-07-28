@@ -41,6 +41,10 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       setPesan({ sukses: false, teks: 'Pilih kolom (board) terlebih dahulu.' })
       return
     }
+    if (!deadline) {
+      setPesan({ sukses: false, teks: 'Deadline wajib diisi untuk Tugas Bebas.' })
+      return
+    }
     setSedangKirim(true)
     setPesan(null)
     const deadlineISO = deadline ? new Date(deadline).toISOString() : null
@@ -149,12 +153,13 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
 
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">
-                Deadline <span className="font-normal text-muted/60">(opsional)</span>
+                Deadline <span className="text-red-500">*</span>
               </label>
               <input
                 type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
+                required
                 className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
               />
             </div>
