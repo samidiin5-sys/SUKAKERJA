@@ -21,6 +21,8 @@ export default function FormBuatTugasSendiri() {
   const [calendarDate, setCalendarDate] = useState(new Date())
   const [selectedTime, setSelectedTime] = useState('')
   const [showTimePicker, setShowTimePicker] = useState(false)
+  const [hStr, setHStr] = useState('')
+  const [mStr, setMStr] = useState('')
 
   useEffect(() => {
     if (!buka) return
@@ -44,6 +46,14 @@ export default function FormBuatTugasSendiri() {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [showDatePicker])
+
+  useEffect(() => {
+    if (showTimePicker) {
+      const [h, m] = selectedTime ? selectedTime.split(':') : ['', '']
+      setHStr(h ?? '')
+      setMStr(m ?? '')
+    }
+  }, [showTimePicker]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const boardsTersedia = divisiList.find((d) => d.id === divisionId)?.boards ?? []
 
@@ -120,6 +130,8 @@ export default function FormBuatTugasSendiri() {
     setPrioritas('sedang')
     setDueDate('')
     setSelectedTime('')
+    setHStr('')
+    setMStr('')
     setShowDatePicker(false)
     setShowTimePicker(false)
     setPesan(null)
@@ -429,15 +441,18 @@ export default function FormBuatTugasSendiri() {
                                   inputMode="numeric"
                                   maxLength={2}
                                   placeholder="00"
-                                  value={selectedTime ? selectedTime.split(':')[0] : ''}
+                                  value={hStr}
                                   onChange={(e) => {
-                                    const h = e.target.value.replace(/\D/g, '').slice(0, 2)
-                                    if (h !== '' && parseInt(h) > 23) return
-                                    const m = selectedTime ? (selectedTime.split(':')[1] ?? '00') : '00'
-                                    const val = `${(h || '00').padStart(2, '0')}:${m}`
+                                    const raw = e.target.value.replace(/\D/g, '').slice(0, 2)
+                                    if (raw !== '' && parseInt(raw) > 23) return
+                                    setHStr(raw)
+                                    const h = raw ? parseInt(raw) : 0
+                                    const m = mStr ? parseInt(mStr) : 0
+                                    const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
                                     setSelectedTime(val)
-                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h || '0'), parseInt(m)); setDueDate(lokalDT(d)) }
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(h, m); setDueDate(lokalDT(d)) }
                                   }}
+                                  onBlur={() => { if (hStr) setHStr(String(parseInt(hStr)).padStart(2,'0')) }}
                                   className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
                                 />
                                 <span className="text-xs font-bold text-muted">:</span>
@@ -446,21 +461,26 @@ export default function FormBuatTugasSendiri() {
                                   inputMode="numeric"
                                   maxLength={2}
                                   placeholder="00"
-                                  value={selectedTime ? selectedTime.split(':')[1] : ''}
+                                  value={mStr}
                                   onChange={(e) => {
-                                    const m = e.target.value.replace(/\D/g, '').slice(0, 2)
-                                    if (m !== '' && parseInt(m) > 59) return
-                                    const h = selectedTime ? (selectedTime.split(':')[0] ?? '00') : '00'
-                                    const val = `${h}:${(m || '00').padStart(2, '0')}`
+                                    const raw = e.target.value.replace(/\D/g, '').slice(0, 2)
+                                    if (raw !== '' && parseInt(raw) > 59) return
+                                    setMStr(raw)
+                                    const h = hStr ? parseInt(hStr) : 0
+                                    const m = raw ? parseInt(raw) : 0
+                                    const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
                                     setSelectedTime(val)
-                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h), parseInt(m || '0')); setDueDate(lokalDT(d)) }
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(h, m); setDueDate(lokalDT(d)) }
                                   }}
+                                  onBlur={() => { if (mStr) setMStr(String(parseInt(mStr)).padStart(2,'0')) }}
                                   className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
                                 />
                               </div>
                               {selectedTime && (
-                                <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(lokalDT(d)) }}}
-                                  className="text-xs text-muted hover:text-red-600">Hapus</button>
+                                <button type="button" onClick={() => {
+                                  setSelectedTime(''); setHStr(''); setMStr('')
+                                  if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(lokalDT(d)) }
+                                }} className="text-xs text-muted hover:text-red-600">Hapus</button>
                               )}
                             </div>
                           )}
