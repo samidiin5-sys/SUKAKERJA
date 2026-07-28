@@ -218,23 +218,73 @@ export default function FormLembur({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Mulai</label>
-            <input
-              type="time"
-              value={jamMulai}
-              onChange={(e) => setJamMulai(e.target.value)}
-              required
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
-            />
+            <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                placeholder="00"
+                value={jamMulai ? jamMulai.split(':')[0] : ''}
+                onChange={(e) => {
+                  const h = e.target.value.replace(/\D/g, '').slice(0, 2)
+                  if (h !== '' && parseInt(h) > 23) return
+                  const m = jamMulai ? (jamMulai.split(':')[1] ?? '00') : '00'
+                  setJamMulai(`${(h || '00').padStart(2, '0')}:${m}`)
+                }}
+                required
+                className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+              />
+              <span className="text-sm font-bold text-muted">:</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                placeholder="00"
+                value={jamMulai ? jamMulai.split(':')[1] : ''}
+                onChange={(e) => {
+                  const m = e.target.value.replace(/\D/g, '').slice(0, 2)
+                  if (m !== '' && parseInt(m) > 59) return
+                  const h = jamMulai ? (jamMulai.split(':')[0] ?? '00') : '00'
+                  setJamMulai(`${h}:${(m || '00').padStart(2, '0')}`)
+                }}
+                className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+              />
+            </div>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Selesai</label>
-            <input
-              type="time"
-              value={jamSelesai}
-              onChange={(e) => setJamSelesai(e.target.value)}
-              required
-              className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
-            />
+            <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                placeholder="00"
+                value={jamSelesai ? jamSelesai.split(':')[0] : ''}
+                onChange={(e) => {
+                  const h = e.target.value.replace(/\D/g, '').slice(0, 2)
+                  if (h !== '' && parseInt(h) > 23) return
+                  const m = jamSelesai ? (jamSelesai.split(':')[1] ?? '00') : '00'
+                  setJamSelesai(`${(h || '00').padStart(2, '0')}:${m}`)
+                }}
+                required
+                className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+              />
+              <span className="text-sm font-bold text-muted">:</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                placeholder="00"
+                value={jamSelesai ? jamSelesai.split(':')[1] : ''}
+                onChange={(e) => {
+                  const m = e.target.value.replace(/\D/g, '').slice(0, 2)
+                  if (m !== '' && parseInt(m) > 59) return
+                  const h = jamSelesai ? (jamSelesai.split(':')[0] ?? '00') : '00'
+                  setJamSelesai(`${h}:${(m || '00').padStart(2, '0')}`)
+                }}
+                className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+              />
+            </div>
           </div>
         </div>
 

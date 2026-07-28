@@ -414,20 +414,41 @@ export default function FormBuatTugasSendiri() {
 
                           {showTimePicker && (
                             <div className="mt-2 flex items-center gap-2">
-                              <input
-                                type="time"
-                                value={selectedTime}
-                                onChange={(e) => {
-                                  setSelectedTime(e.target.value)
-                                  if (dueDate && e.target.value) {
-                                    const d = new Date(dueDate)
-                                    const [h, m] = e.target.value.split(':')
-                                    d.setHours(parseInt(h), parseInt(m))
-                                    setDueDate(d.toISOString().slice(0, 16))
-                                  }
-                                }}
-                                className="flex-1 rounded-xl border border-cream-200 bg-cream-50 px-3 py-1.5 text-xs outline-none focus:border-orange-500 [&::-webkit-datetime-edit-ampm-field]:hidden"
-                              />
+                              <div className="flex flex-1 items-center justify-center gap-1 rounded-xl border border-cream-200 bg-cream-50 px-3 py-1.5">
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  maxLength={2}
+                                  placeholder="00"
+                                  value={selectedTime ? selectedTime.split(':')[0] : ''}
+                                  onChange={(e) => {
+                                    const h = e.target.value.replace(/\D/g, '').slice(0, 2)
+                                    if (h !== '' && parseInt(h) > 23) return
+                                    const m = selectedTime ? (selectedTime.split(':')[1] ?? '00') : '00'
+                                    const val = `${(h || '00').padStart(2, '0')}:${m}`
+                                    setSelectedTime(val)
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h || '0'), parseInt(m)); setDueDate(d.toISOString().slice(0, 16)) }
+                                  }}
+                                  className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
+                                />
+                                <span className="text-xs font-bold text-muted">:</span>
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  maxLength={2}
+                                  placeholder="00"
+                                  value={selectedTime ? selectedTime.split(':')[1] : ''}
+                                  onChange={(e) => {
+                                    const m = e.target.value.replace(/\D/g, '').slice(0, 2)
+                                    if (m !== '' && parseInt(m) > 59) return
+                                    const h = selectedTime ? (selectedTime.split(':')[0] ?? '00') : '00'
+                                    const val = `${h}:${(m || '00').padStart(2, '0')}`
+                                    setSelectedTime(val)
+                                    if (dueDate) { const d = new Date(dueDate); d.setHours(parseInt(h), parseInt(m || '0')); setDueDate(d.toISOString().slice(0, 16)) }
+                                  }}
+                                  className="w-8 bg-transparent text-center text-xs font-semibold text-ink outline-none"
+                                />
+                              </div>
                               {selectedTime && (
                                 <button type="button" onClick={() => { setSelectedTime(''); if (dueDate) { const d = new Date(dueDate); d.setHours(0,0,0,0); setDueDate(d.toISOString().slice(0,16)) }}}
                                   className="text-xs text-muted hover:text-red-600">Hapus</button>
