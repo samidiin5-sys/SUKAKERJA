@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Sidebar from './sidebar'
 import Navbar from './navbar'
 import { createClient } from '@/lib/supabase/client'
+import { shouldRedirectToLogin } from '@/lib/auth/session'
 import type { DataShell } from '@/lib/shell-data'
 
 export default function AppShell({
@@ -22,9 +23,15 @@ export default function AppShell({
     const supabase = createClient()
 
     const cekSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        await supabase.auth.signOut()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (shouldRedirectToLogin({ session, user })) {
         router.replace('/login')
       }
     }
@@ -36,18 +43,12 @@ export default function AppShell({
       void cekSession()
     }
 
-    const handleBeforeUnload = () => {
-      void supabase.auth.signOut()
-    }
-
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('focus', handleVisibilityChange)
-    window.addEventListener('beforeunload', handleBeforeUnload)
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('focus', handleVisibilityChange)
-      window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [router])
 
