@@ -310,16 +310,6 @@ export default function PapanDivisi({
         <p className="mb-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-800">{pesanError}</p>
       )}
 
-      {pantauNama && (
-        <div className="mb-3 flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" className="flex-shrink-0">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-          </svg>
-          <span className="text-xs font-semibold text-orange-700">
-            Menampilkan task milik <span className="font-bold">{pantauNama}</span>
-          </span>
-        </div>
-      )}
 
       <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
         <div className="flex gap-2">
