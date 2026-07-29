@@ -1,7 +1,7 @@
 import 'server-only'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { ambilDivisiSaya, type DivisiSaya } from '@/app/admin/divisi/actions'
+import { ambilDivisiSaya, type DivisiSaya } from '@/app/(main)/admin/divisi/actions'
 
 export type DataShell = {
   nama: string
