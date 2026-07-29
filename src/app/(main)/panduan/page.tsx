@@ -47,13 +47,15 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             ...(isSuperAdmin ? [
               { no: '03', label: 'Kelola Karyawan', anchor: '#karyawan' },
               { no: '04', label: 'Kelola Divisi', anchor: '#divisi' },
+              { no: '05', label: 'Tugas Rutin', anchor: '#tugas-rutin-admin' },
             ] : [
               { no: '03', label: 'Data Karyawan', anchor: '#karyawan' },
+              { no: '04', label: 'Tugas Rutin', anchor: '#tugas-rutin-admin' },
             ]),
-            { no: isSuperAdmin ? '05' : '04', label: 'Tugas Terbuka', anchor: '#tugas-terbuka' },
-            { no: isSuperAdmin ? '06' : '05', label: 'Tetapkan & Review Lembur', anchor: '#lembur' },
-            { no: isSuperAdmin ? '07' : '06', label: 'Log Aktivitas', anchor: '#log' },
-            ...(isSuperAdmin ? [{ no: '08', label: 'Data Terhapus', anchor: '#data-terhapus' }] : []),
+            { no: isSuperAdmin ? '06' : '05', label: 'Tugas Terbuka', anchor: '#tugas-terbuka' },
+            { no: isSuperAdmin ? '07' : '06', label: 'Tetapkan & Review Lembur', anchor: '#lembur' },
+            { no: isSuperAdmin ? '08' : '07', label: 'Log Aktivitas', anchor: '#log' },
+            ...(isSuperAdmin ? [{ no: '09', label: 'Data Terhapus', anchor: '#data-terhapus' }] : []),
           ].map((item) => (
             <a
               key={item.anchor}
@@ -118,13 +120,6 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
           judul="Pantau Produktivitas Staff"
           deskripsi="Buka halaman Anggota dari menu divisi untuk melihat statistik produktivitas tiap staff — jumlah tugas selesai, terlambat, dan sedang berjalan."
         />
-        {isSuperAdmin && (
-          <ItemPanduan
-            judul="Tugas Rutin (Recurring)"
-            deskripsi="Di halaman Tugas Rutin dalam suatu divisi, kamu bisa membuat template tugas yang otomatis dibuat oleh sistem secara harian, mingguan, atau bulanan — tanpa perlu assign manual setiap kali."
-            tip="Tugas rutin berguna untuk pekerjaan berulang seperti laporan mingguan atau backup harian. Kamu bisa atur hari, jam, dan assignee default-nya."
-          />
-        )}
       </SeksiPanduan>
 
       {/* 03: Karyawan */}
@@ -199,10 +194,47 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
         </SeksiPanduan>
       )}
 
+      {/* Tugas Rutin */}
+      <SeksiPanduan
+        id="tugas-rutin-admin"
+        nomor={isSuperAdmin ? '05' : '04'}
+        judul="Tugas Rutin"
+        deskripsi="Tugas rutin adalah template yang membuat tugas baru secara otomatis sesuai jadwal — tanpa perlu assign manual setiap periodenya."
+        icon={<IkonUlang />}
+        warna="green"
+      >
+        <ItemPanduan
+          judul="Cara Mengakses"
+          deskripsi="Buka papan kanban divisi, lalu klik tab 'Tugas Rutin' di navigasi atas (di samping Kalender dan Target). Halaman ini menampilkan semua template aktif untuk divisi tersebut."
+        />
+        <ItemPanduan
+          judul="Buat Template Baru"
+          deskripsi="Klik 'Buat Template', isi judul tugas, pilih pola pengulangan, dan tentukan penanggung jawab (assignee). Sistem akan otomatis membuat tugas baru setiap kali jadwal terpenuhi."
+        />
+        <ItemPanduan
+          judul="Pola Pengulangan"
+          deskripsi="Ada 4 pilihan: (1) Setiap hari kerja — Senin sampai Sabtu, (2) Setiap hari — termasuk Minggu, (3) Setiap minggu — pilih hari spesifik (misal setiap Jumat), (4) Setiap bulan — pilih tanggal spesifik (misal setiap tanggal 1)."
+        />
+        <ItemPanduan
+          judul="Tenggat Otomatis"
+          deskripsi="Isi kolom 'Tenggat Otomatis' dengan jumlah hari setelah tugas dibuat. Contoh: isi '1' artinya tugas yang dibuat hari Senin punya deadline hari Selasa. Isi '0' jika tidak ada tenggat."
+          tip="Tenggat dihitung dari hari tugas dibuat, bukan dari tanggal mulai template."
+        />
+        <ItemPanduan
+          judul="Tanggal Aktif Template"
+          deskripsi="Isi Tanggal Mulai agar template mulai berjalan dari tanggal tersebut. Tanggal Selesai bersifat opsional — kosongkan jika template harus berjalan tanpa batas waktu."
+        />
+        <ItemPanduan
+          judul="Edit atau Nonaktifkan"
+          deskripsi="Klik ikon pensil di kartu template untuk mengubah pengaturannya. Untuk menghentikan sementara, ubah Tanggal Selesai ke hari ini. Untuk menghapus permanen, gunakan tombol hapus di halaman template."
+          tip="Tugas yang sudah terlanjur dibuat dari template tidak ikut terhapus saat template dihapus."
+        />
+      </SeksiPanduan>
+
       {/* Tugas Terbuka */}
       <SeksiPanduan
         id="tugas-terbuka"
-        nomor={isSuperAdmin ? '05' : '04'}
+        nomor={isSuperAdmin ? '06' : '05'}
         judul="Tugas Terbuka"
         deskripsi="Tugas Terbuka (pool) adalah kumpulan template tugas yang bisa diambil dan ditugaskan ke divisi mana saja — berguna untuk proyek lintas divisi atau tugas insidental."
         icon={<IkonClipboard />}
@@ -226,7 +258,7 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       {/* Lembur */}
       <SeksiPanduan
         id="lembur"
-        nomor={isSuperAdmin ? '06' : '05'}
+        nomor={isSuperAdmin ? '07' : '06'}
         judul="Tetapkan & Review Lembur"
         deskripsi="Ada dua alur lembur: kamu yang menetapkan langsung untuk staff, atau staff mengajukan dan kamu tinjaunya."
         icon={<IkonJam />}
@@ -251,7 +283,7 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       {/* Log */}
       <SeksiPanduan
         id="log"
-        nomor={isSuperAdmin ? '07' : '06'}
+        nomor={isSuperAdmin ? '08' : '07'}
         judul="Log Aktivitas"
         deskripsi="Halaman Log mencatat semua aksi penting yang terjadi di sistem — siapa yang melakukan apa dan kapan."
         icon={<IkonLog />}
@@ -271,7 +303,7 @@ function PanduanAdmin({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       {isSuperAdmin && (
         <SeksiPanduan
           id="data-terhapus"
-          nomor="08"
+          nomor="09"
           judul="Data Terhapus"
           deskripsi="Data yang dihapus tidak langsung hilang permanen — tersimpan dulu di sini selama 30 hari sebelum benar-benar dihapus dari sistem."
           icon={<IkonSampah />}
@@ -378,9 +410,10 @@ function PanduanUser() {
             { no: '01', label: 'Dashboard & Statistik', anchor: '#dashboard' },
             { no: '02', label: 'Tugas Saya', anchor: '#tugas-saya' },
             { no: '03', label: 'Papan Kanban & Alur Review', anchor: '#kanban' },
-            { no: '04', label: 'Detail & Checklist Tugas', anchor: '#detail-tugas' },
-            { no: '05', label: 'Komentar & Lampiran', anchor: '#komentar' },
-            { no: '06', label: 'Notifikasi', anchor: '#notifikasi' },
+            { no: '04', label: 'Tugas Rutin', anchor: '#tugas-rutin' },
+            { no: '05', label: 'Detail & Checklist Tugas', anchor: '#detail-tugas' },
+            { no: '06', label: 'Komentar & Lampiran', anchor: '#komentar' },
+            { no: '07', label: 'Notifikasi', anchor: '#notifikasi' },
           ].map((item) => (
             <a
               key={item.no}
@@ -413,23 +446,46 @@ function PanduanUser() {
         <ItemPanduan judul="Alur Kolom" deskripsi="Ada 4 tahapan utama: To Do (belum mulai) → Dikerjakan (sedang dikerjakan) → Review (menunggu persetujuan owner) → Selesai (disetujui & selesai). Tugasmu mengalir dari kiri ke kanan sesuai progres." />
         <ItemPanduan judul="Geser Tugas (Drag & Drop)" deskripsi="Seret kartu tugas ke kolom berikutnya untuk memperbarui statusnya. Saat selesai mengerjakan, seret ke kolom 'Review' agar owner bisa memeriksa hasilmu." tip="Filter aktif akan menonaktifkan drag & drop sementara. Reset filter terlebih dahulu untuk bisa menyeret kartu." />
         <ItemPanduan judul="Proses Persetujuan di Kolom Review" deskripsi="Saat tugasmu ada di kolom Review, owner atau admin divisi akan memeriksa hasilnya. Mereka bisa menekan 'Setujui' — tugas langsung pindah ke Selesai, atau 'Revisi' — tugas dikembalikan ke Dikerjakan dan perlu diperbaiki." tip="Pantau tugasmu secara berkala. Kalau kartu tiba-tiba kembali ke kolom Dikerjakan, artinya owner meminta perbaikan — buka detail tugas untuk lihat catatannya." />
-        <ItemPanduan judul="Tugas Rutin Otomatis" deskripsi="Beberapa tugas dibuat otomatis oleh sistem setiap hari, minggu, atau bulan berdasarkan template yang dibuat admin. Tugas ini langsung muncul di kolommu secara terjadwal — tidak perlu menunggu ditugaskan manual." />
         <ItemPanduan judul="Filter & Pencarian" deskripsi="Gunakan bar filter di atas papan untuk menyaring tugas berdasarkan nama, status, prioritas, atau penanggung jawab. Berguna saat papan sudah punya banyak tugas." />
       </SeksiPanduan>
 
-      <SeksiPanduan id="detail-tugas" nomor="04" judul="Detail & Checklist Tugas" deskripsi="Klik kartu tugas di papan kanban untuk membuka panel detail di sisi kanan. Di sini kamu bisa melihat dan mengelola semua informasi tugas tersebut." icon={<IkonChecklist />} warna="purple">
+      <SeksiPanduan id="tugas-rutin" nomor="04" judul="Tugas Rutin" deskripsi="Tugas rutin adalah tugas yang dibuat otomatis oleh sistem secara terjadwal — kamu tidak perlu menunggu ditugaskan manual setiap periodenya." icon={<IkonUlang />} warna="purple">
+        <ItemPanduan
+          judul="Kenapa tiba-tiba ada tugas baru?"
+          deskripsi="Tugas rutin dibuat dari template yang sudah diatur admin/owner divisimu. Pada waktu yang sudah dijadwalkan, sistem otomatis membuat kartu tugas baru di kolom To Do dengan namamu sebagai assignee."
+          tip="Ini bukan kesalahan sistem — artinya ada pekerjaan berulang yang memang sudah dijadwalkan untukmu."
+        />
+        <ItemPanduan
+          judul="Kapan tugas rutin muncul?"
+          deskripsi="Tergantung pola yang diatur admin: (1) Setiap hari kerja — muncul setiap Senin sampai Sabtu, (2) Setiap hari — muncul termasuk Minggu, (3) Setiap minggu — muncul pada hari tertentu setiap minggunya, (4) Setiap bulan — muncul pada tanggal tertentu setiap bulannya."
+        />
+        <ItemPanduan
+          judul="Tenggat waktu otomatis"
+          deskripsi="Tugas rutin bisa punya tenggat yang dihitung otomatis — misalnya '1 hari setelah dibuat', artinya tugas yang muncul hari Senin harus selesai hari Selasa. Jika tidak ada tenggat, kerjakan sesuai arahan atasanmu."
+        />
+        <ItemPanduan
+          judul="Cara mengerjakannya"
+          deskripsi="Sama persis seperti tugas biasa — kerjakan, lalu seret kartu ke kolom Review saat selesai agar owner bisa menyetujuinya. Tugas rutin juga bisa punya checklist dan lampiran."
+        />
+        <ItemPanduan
+          judul="Apakah bisa ditolak atau dihapus?"
+          deskripsi="Kamu tidak bisa menghapus atau melewati tugas rutin sendiri. Jika ada tugas rutin yang tidak relevan atau salah assign, hubungi Super Admin atau Owner divisimu untuk menonaktifkan templatenya."
+        />
+      </SeksiPanduan>
+
+      <SeksiPanduan id="detail-tugas" nomor="05" judul="Detail & Checklist Tugas" deskripsi="Klik kartu tugas di papan kanban untuk membuka panel detail di sisi kanan. Di sini kamu bisa melihat dan mengelola semua informasi tugas tersebut." icon={<IkonChecklist />} warna="purple">
         <ItemPanduan judul="Informasi Tugas" deskripsi="Panel detail menampilkan: nama tugas, deskripsi, prioritas, deadline, siapa yang membuat tugas, dan siapa saja yang ditugaskan (assignee)." />
         <ItemPanduan judul="Checklist" deskripsi="Jika tugas punya daftar pekerjaan (checklist), klik tiap item untuk menandainya selesai. Progress bar di kartu akan otomatis terupdate sesuai jumlah item yang selesai." tip="Checklist hanya bisa dicentang oleh assignee tugas tersebut atau admin divisi." />
         <ItemPanduan judul="Pindah Kolom" deskripsi="Gunakan dropdown 'Pindah ke Kolom' di panel detail untuk memindahkan tugas ke kolom lain tanpa perlu drag & drop di papan." />
       </SeksiPanduan>
 
-      <SeksiPanduan id="komentar" nomor="05" judul="Komentar & Lampiran" deskripsi="Di panel detail tugas, kamu bisa berkomunikasi dengan rekan satu tim dan berbagi file terkait pekerjaan." icon={<IkonKomentar />} warna="teal">
+      <SeksiPanduan id="komentar" nomor="06" judul="Komentar & Lampiran" deskripsi="Di panel detail tugas, kamu bisa berkomunikasi dengan rekan satu tim dan berbagi file terkait pekerjaan." icon={<IkonKomentar />} warna="teal">
         <ItemPanduan judul="Menulis Komentar" deskripsi="Scroll ke bawah di panel detail, ketik pesanmu di kotak komentar, lalu tekan 'Kirim'. Semua anggota divisi bisa membaca dan membalas komentar." tip="Gunakan komentar untuk update perkembangan, bertanya, atau memberikan catatan kepada rekan kerja — lebih terstruktur daripada grup chat." />
         <ItemPanduan judul="Mengunggah Lampiran" deskripsi="Klik tab 'Lampiran' di panel detail, lalu pilih file dari perangkatmu. Semua anggota divisi bisa mengunduh file yang sudah diunggah." tip="Ukuran file maksimal 10 MB per file. Lampiran mendukung semua format umum (PDF, gambar, dokumen, ZIP)." />
         <ItemPanduan judul="Riwayat Perubahan" deskripsi="Tab 'Riwayat' di panel detail menampilkan semua perubahan yang pernah terjadi pada tugas tersebut — siapa yang mengubah apa dan kapan." />
       </SeksiPanduan>
 
-      <SeksiPanduan id="notifikasi" nomor="06" judul="Notifikasi" deskripsi="Notifikasi memberitahumu secara otomatis saat ada hal penting terkait tugasmu." icon={<IkonBell />} warna="amber">
+      <SeksiPanduan id="notifikasi" nomor="07" judul="Notifikasi" deskripsi="Notifikasi memberitahumu secara otomatis saat ada hal penting terkait tugasmu." icon={<IkonBell />} warna="amber">
         <ItemPanduan judul="Ikon Lonceng" deskripsi="Klik ikon lonceng (🔔) di pojok kanan atas navbar untuk melihat notifikasi terbaru. Titik merah muncul jika ada notifikasi yang belum dibaca." />
         <ItemPanduan judul="Kapan Notifikasi Muncul?" deskripsi="Kamu akan mendapat notifikasi saat: (1) ditugaskan ke sebuah tugas, (2) ada komentar baru di tugas yang kamu ikuti, atau (3) tugas yang kamu kerjakan dipindahkan ke kolom lain oleh admin." />
         <ItemPanduan judul="Tandai Sudah Dibaca" deskripsi="Klik notifikasi untuk membacanya sekaligus menandainya sudah dibaca. Notifikasi yang sudah dibaca akan berubah warna menjadi lebih redup." />
@@ -571,4 +627,7 @@ function IkonLog() {
 }
 function IkonSampah() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+}
+function IkonUlang() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
 }
