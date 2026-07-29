@@ -78,7 +78,7 @@ export default function Navbar({
   }
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-cream-200 bg-white/90 px-4 py-3 backdrop-blur">
+    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-cream-200/80 bg-white/85 px-4 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] backdrop-blur">
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobile}
@@ -101,7 +101,10 @@ export default function Navbar({
             <path d="M9 3v18"/>
           </svg>
         </button>
-        <h1 className="text-sm font-black text-maroon-800 sm:text-base">{judulHalaman(pathname)}</h1>
+        <div className="flex items-center gap-2 rounded-full bg-cream-100 px-2.5 py-1">
+          <span className="h-2 w-2 rounded-full bg-orange-500" />
+          <h1 className="text-sm font-black text-maroon-800 sm:text-base">{judulHalaman(pathname)}</h1>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
@@ -113,7 +116,7 @@ export default function Navbar({
             onClick={() => setProfileOpen(prev => !prev)}
             aria-haspopup="true"
             aria-expanded={profileOpen}
-            className="flex items-center gap-2.5 rounded-lg px-1.5 py-1 transition hover:bg-cream-100 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+            className="flex items-center gap-2.5 rounded-2xl px-1.5 py-1.5 transition hover:bg-cream-100 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             <div className="hidden text-right sm:block">
               <p className="text-xs font-bold leading-tight text-ink">{data.nama}</p>

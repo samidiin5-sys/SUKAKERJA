@@ -83,10 +83,10 @@ export default function Sidebar({
 
   const isi = (
     <>
-      <div className="flex items-center gap-2.5 px-4 py-5">
+      <div className="flex items-center gap-2.5 px-3.5 py-4">
         <div
           title="SukaKerja"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-cream-100 to-white text-maroon-800 shadow-inner border border-cream-200/40 transition-transform hover:scale-105"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-2xl border border-cream-200/40 bg-white/15 text-cream-50 shadow-sm backdrop-blur-sm transition-transform hover:scale-105"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
@@ -109,7 +109,7 @@ export default function Sidebar({
         </AnimatePresence>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-2.5 pb-4">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-4">
         <SeksiNav judul="Menu" collapsed={collapsed} />
         {navUtama.slice(0, 1).map((item) => (
           <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
@@ -252,7 +252,7 @@ export default function Sidebar({
 function SeksiNav({ judul, collapsed }: { judul: string; collapsed: boolean }) {
   if (collapsed) return <div className="my-2 border-t border-cream-50/10" />
   return (
-    <p className="mb-1 mt-3 px-2.5 text-[10px] font-bold tracking-widest text-cream-200/40">
+    <p className="mb-1 mt-3 px-2.5 text-[10px] font-bold tracking-[0.25em] text-cream-200/55">
       {judul.toUpperCase()}
     </p>
   )
@@ -274,10 +274,10 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
       <button
         onClick={() => setBuka((b) => !b)}
         title={collapsed ? grup.label : undefined}
-        className={`group relative flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold transition ${
+        className={`group relative flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${
           isAktif
-            ? 'bg-orange-500 text-white'
-            : 'text-cream-200/80 hover:bg-cream-50/10 hover:text-cream-50'
+            ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+            : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'
         }`}
       >
         <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{grup.icon}</span>
@@ -305,7 +305,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
       </button>
 
       {!collapsed && buka && (
-        <div className="ml-4 mt-0.5 space-y-0.5 border-l border-cream-50/20 pl-3">
+        <div className="ml-4 mt-1 space-y-1 border-l border-cream-50/20 pl-3">
           {grup.children.map((child) => (
             <a
               key={child.href}
@@ -313,7 +313,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
               className={`flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                 isChildAktif(child.href)
                   ? 'text-orange-300'
-                  : 'text-cream-200/60 hover:bg-cream-50/10 hover:text-cream-50'
+                  : 'text-cream-200/65 hover:bg-white/10 hover:text-cream-50'
               }`}
             >
               {child.label}
@@ -330,10 +330,10 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
     <a
       href={item.href}
       title={collapsed ? item.label : undefined}
-      className={`group relative flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold transition ${
+      className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${
         aktif
-          ? 'bg-orange-500 text-white'
-          : 'text-cream-200/80 hover:bg-cream-50/10 hover:text-cream-50'
+          ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+          : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'
       }`}
     >
       <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{item.icon}</span>

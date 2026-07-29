@@ -14,12 +14,13 @@ export default async function HalamanLembur() {
 
   return (
     <AppShell data={data}>
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-5">
-          <h2 className="text-lg font-black text-maroon-800">
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-5 rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Operasional lembur</p>
+          <h2 className="mt-1 text-lg font-black text-maroon-800">
             {sesi.roleSistem !== 'user' ? 'Tetapkan Lembur' : 'Pengajuan Lembur'}
           </h2>
-          <p className="text-sm text-muted">
+          <p className="mt-1 text-sm text-muted">
             {sesi.roleSistem !== 'user'
               ? 'Tetapkan lembur untuk staff divisimu — langsung disetujui.'
               : 'Ajukan lembur dan pantau status persetujuannya.'}
@@ -34,7 +35,10 @@ export default async function HalamanLembur() {
         />
 
         <div className="mt-6">
-          <h3 className="mb-3 text-xs font-bold tracking-widest text-muted">RIWAYAT PENGAJUAN</h3>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-xs font-bold tracking-[0.24em] text-muted">RIWAYAT PENGAJUAN</h3>
+            <span className="rounded-full bg-cream-100 px-2.5 py-1 text-[10px] font-semibold text-muted">Terbaru dulu</span>
+          </div>
           <DaftarLemburSaya daftarAwal={lemburSaya} />
         </div>
       </div>

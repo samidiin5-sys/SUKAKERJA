@@ -124,8 +124,8 @@ export default function FormLembur({
   const anggotaLain = anggota.filter((a) => a.id !== sesiId)
 
   return (
-    <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-4 text-xs font-bold tracking-widest text-muted">
+    <div className="rounded-[24px] border border-cream-200 bg-white p-4 shadow-sm sm:p-5">
+      <h3 className="mb-4 text-xs font-bold tracking-[0.24em] text-muted">
         {isOwnerOrAdmin ? 'TETAPKAN LEMBUR UNTUK STAFF' : 'AJUKAN LEMBUR BARU'}
       </h3>
 
@@ -147,7 +147,7 @@ export default function FormLembur({
             value={divisionId}
             onChange={(e) => setDivisionId(e.target.value)}
             required
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+            className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           >
             {divisiSaya.map((d) => (
               <option key={d.id} value={d.id}>{d.nama}</option>
@@ -219,14 +219,14 @@ export default function FormLembur({
             value={tanggal}
             onChange={(e) => setTanggal(e.target.value)}
             required
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+            className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Mulai</label>
-            <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+            <div className="flex items-center gap-1 rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5">
               <input
                 type="text"
                 inputMode="numeric"
@@ -265,7 +265,7 @@ export default function FormLembur({
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Selesai</label>
-            <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+            <div className="flex items-center gap-1 rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5">
               <input
                 type="text"
                 inputMode="numeric"
@@ -312,7 +312,7 @@ export default function FormLembur({
             placeholder="Jelaskan alasan lembur (min. 10 karakter)..."
             rows={3}
             required
-            className="w-full resize-none rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+            className="w-full resize-none rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
         </div>
 
@@ -325,7 +325,7 @@ export default function FormLembur({
         <button
           type="submit"
           disabled={sedangKirim || dipilih.size === 0}
-          className="w-full rounded-xl bg-maroon-800 py-2.5 text-sm font-bold text-white hover:bg-maroon-700 disabled:opacity-50 sm:w-auto sm:px-6"
+          className="w-full rounded-2xl bg-maroon-800 py-2.5 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50 sm:w-auto sm:px-6"
         >
           {sedangKirim
             ? 'Memproses...'

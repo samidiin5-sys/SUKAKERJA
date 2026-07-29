@@ -14,11 +14,14 @@ export default async function HalamanLogSistem() {
   ])
   return (
     <AppShell data={data}>
-      <div className="mb-5">
-        <h2 className="text-lg font-black text-maroon-800">Log Sistem</h2>
-        <p className="text-sm text-muted">Riwayat semua aktivitas di sistem.</p>
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-5 rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Audit sistem</p>
+          <h2 className="mt-1 text-lg font-black text-maroon-800">Log Sistem</h2>
+          <p className="mt-1 text-sm text-muted">Riwayat semua aktivitas di sistem.</p>
+        </div>
+        <LogSistemClient entriesAwal={entries} totalAwal={total} divisiList={divisiList} />
       </div>
-      <LogSistemClient entriesAwal={entries} totalAwal={total} divisiList={divisiList} />
     </AppShell>
   )
 }

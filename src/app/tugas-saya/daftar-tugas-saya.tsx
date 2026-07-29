@@ -70,15 +70,15 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
   ]
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       {tugasAwal.length > 0 && (
-        <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-center gap-2 rounded-[26px] border border-cream-200 bg-gradient-to-r from-white to-cream-50/80 p-3 shadow-[0_12px_40px_rgba(92,31,33,0.05)]">
           <input
             type="text"
             value={cari}
             onChange={(e) => setCari(e.target.value)}
             placeholder="Cari task..."
-            className="min-w-0 flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+            className="min-w-0 flex-1 rounded-2xl border border-cream-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
           <select
             value={filterPrioritas}
@@ -148,18 +148,26 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
                     <li key={t.id}>
                       <a
                         href={`/divisi/${t.divisiId}`}
-                        className="flex items-center justify-between rounded-xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                        className="group flex items-start justify-between gap-3 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-md"
                       >
-                        <div>
-                          <p className="text-sm font-bold text-ink">{t.judul}</p>
-                          <p className="text-xs text-muted">
-                            {t.divisiNama} &middot; {t.boardNama}
-                          </p>
-                          <p className="mt-1 text-xs font-semibold text-maroon-700">
-                            Ditugaskan oleh {t.ditugaskanOleh}
-                          </p>
+                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-maroon-50 text-maroon-700">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="4" y="5" width="16" height="14" rx="2" />
+                              <path d="M8 3v4M16 3v4M4 10h16" />
+                            </svg>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold text-ink">{t.judul}</p>
+                            <p className="text-xs text-muted">
+                              {t.divisiNama} &middot; {t.boardNama}
+                            </p>
+                            <p className="mt-1 text-xs font-semibold text-maroon-700">
+                              Ditugaskan oleh {t.ditugaskanOleh}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
+                        <div className="flex shrink-0 flex-col items-end text-right">
                           <span className="rounded-full bg-orange-400/20 px-2 py-0.5 text-[10px] font-bold text-orange-800">
                             {LABEL_PRIORITAS[t.prioritas] ?? t.prioritas}
                           </span>

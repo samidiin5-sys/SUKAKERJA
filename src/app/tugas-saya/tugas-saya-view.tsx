@@ -21,10 +21,11 @@ export default function TugasSayaView({
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
         <div>
-          <h2 className="text-lg font-black text-maroon-800">Tugas Saya</h2>
-          <p className="text-sm text-muted">Semua tugas yang ditugaskan ke kamu.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Pusat kerja</p>
+          <h2 className="mt-1 text-lg font-black text-maroon-800">Tugas Saya</h2>
+          <p className="mt-1 text-sm text-muted">Semua tugas yang ditugaskan ke kamu.</p>
         </div>
         <div className="flex items-center gap-2">
           <FormBuatTugasSendiri />

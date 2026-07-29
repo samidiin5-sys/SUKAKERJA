@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Sidebar from './sidebar'
 import Navbar from './navbar'
+import { createClient } from '@/lib/supabase/client'
 import type { DataShell } from '@/lib/shell-data'
 
 export default function AppShell({
@@ -12,11 +14,45 @@ export default function AppShell({
   data: DataShell
   children: React.ReactNode
 }) {
+  const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
 
+  useEffect(() => {
+    const supabase = createClient()
+
+    const cekSession = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        await supabase.auth.signOut()
+        router.replace('/login')
+      }
+    }
+
+    void cekSession()
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') return
+      void cekSession()
+    }
+
+    const handleBeforeUnload = () => {
+      void supabase.auth.signOut()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleVisibilityChange)
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleVisibilityChange)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [router])
+
   return (
-    <div className="flex min-h-screen bg-cream-100 lg:items-start">
+    <div className="flex min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.7),_transparent_42%)] bg-cream-100 lg:items-start">
       <Sidebar
         data={data}
         mobileOpen={mobileOpen}
@@ -31,7 +67,9 @@ export default function AppShell({
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed((c) => !c)}
         />
-        <main className="flex-1 p-4 sm:p-6 pb-20 sm:pb-24">{children}</main>
+        <main className="flex-1 px-3 py-4 pb-20 sm:px-6 sm:py-6 sm:pb-24">
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">{children}</div>
+        </main>
       </div>
       {data.roleSistem !== 'super_admin' && <FloatingLaporMasalah nama={data.nama} />}
     </div>

@@ -15,10 +15,11 @@ export default async function HalamanDataTerhapus() {
 
   return (
     <AppShell data={data}>
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-5">
-          <h2 className="text-lg font-black text-maroon-800">Data Terhapus</h2>
-          <p className="text-sm text-muted">
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-5 rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Pemulihan data</p>
+          <h2 className="mt-1 text-lg font-black text-maroon-800">Data Terhapus</h2>
+          <p className="mt-1 text-sm text-muted">
             Task yang sudah dihapus disimpan di sini selama 90 hari sebelum terhapus permanen.
           </p>
         </div>

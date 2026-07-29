@@ -178,7 +178,7 @@ export default function FormBuatTugasSendiri() {
           setBuka(true)
           resetForm()
         }}
-        className="flex items-center gap-1.5 rounded-xl bg-maroon-800 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-maroon-700 shadow-sm"
+        className="flex items-center gap-1.5 rounded-2xl bg-maroon-800 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-maroon-700"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <path d="M12 5v14M5 12h14" />
@@ -215,7 +215,7 @@ export default function FormBuatTugasSendiri() {
                     value={divisionId}
                     onChange={(e) => tanganiGantiDivisi(e.target.value)}
                     required
-                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
+                    className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   >
                     {divisiList.map((d) => (
                       <option key={d.id} value={d.id}>
@@ -237,7 +237,7 @@ export default function FormBuatTugasSendiri() {
                     placeholder="Contoh: Menyiapkan laporan penjualan mingguan..."
                     required
                     maxLength={200}
-                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+                    className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -250,7 +250,7 @@ export default function FormBuatTugasSendiri() {
                     onChange={(e) => setDeskripsi(e.target.value)}
                     placeholder="Detail instruksi atau rincian pekerjaan..."
                     rows={3}
-                    className="w-full resize-none rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+                    className="w-full resize-none rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -269,7 +269,7 @@ export default function FormBuatTugasSendiri() {
                       <select
                         value={prioritas}
                         onChange={(e) => setPrioritas(e.target.value)}
-                        className="w-full rounded-xl border border-cream-200 bg-cream-50 py-2.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition appearance-none cursor-pointer"
+                        className="w-full rounded-2xl border border-cream-200 bg-cream-50 py-2.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none transition appearance-none cursor-pointer focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                       >
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
@@ -294,7 +294,7 @@ export default function FormBuatTugasSendiri() {
                     <button
                       type="button"
                       onClick={() => setShowDatePicker((v) => !v)}
-                      className={`flex w-full items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-left text-xs transition ${
+                      className={`flex w-full items-center gap-1.5 rounded-2xl border px-2.5 py-2.5 text-left text-xs transition ${
                         dueDate
                           ? 'border-orange-300 bg-orange-50 text-orange-700 font-semibold'
                           : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300'
@@ -479,14 +479,14 @@ export default function FormBuatTugasSendiri() {
                   <button
                     type="button"
                     onClick={() => setBuka(false)}
-                    className="rounded-xl px-4 py-2 text-sm font-bold text-muted hover:bg-cream-100"
+                    className="rounded-2xl px-4 py-2 text-sm font-bold text-muted transition hover:bg-cream-100"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
                     disabled={sedangKirim || !boardId}
-                    className="rounded-xl bg-maroon-800 px-5 py-2 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50"
+                    className="rounded-2xl bg-maroon-800 px-5 py-2 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50"
                   >
                     {sedangKirim ? 'Menyimpan...' : 'Simpan Tugas'}
                   </button>
