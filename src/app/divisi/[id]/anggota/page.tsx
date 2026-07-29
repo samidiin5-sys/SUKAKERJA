@@ -24,13 +24,14 @@ export default async function HalamanAnggotaDivisi({
   }
 
   const bolehKelolaAnggota = data.roleSistem === 'super_admin'
+  const bolehMonitor = data.roleSistem === 'super_admin' || data.roleSistem === 'owner'
 
   let kandidat: Awaited<ReturnType<typeof ambilKaryawanBelumJadiAnggota>> = []
   if (bolehKelolaAnggota) {
     try {
       kandidat = await ambilKaryawanBelumJadiAnggota(id)
     } catch {
-      // ignore — bolehKelolaAnggota is already true, kandidat stays empty
+      // ignore
     }
   }
 
@@ -38,22 +39,32 @@ export default async function HalamanAnggotaDivisi({
 
   return (
     <AppShell data={data}>
-      <a
-        href={`/divisi/${id}`}
-        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-maroon-700 hover:underline"
-      >
-        ← Kembali ke Papan {divisi.nama}
-      </a>
-      <h2 className="mb-5 text-lg font-black text-maroon-800">Anggota Divisi {divisi.nama}</h2>
+      <div className="mb-5">
+        <div className="flex items-center gap-2">
+          <span
+            className="h-3.5 w-3.5 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: divisi.warna }}
+          />
+          <h2 className="text-lg font-black text-maroon-800">{divisi.nama}</h2>
+        </div>
+        <p className="mt-1 text-sm text-muted">
+          {bolehMonitor ? 'Pilih staff untuk melihat ruang kerja mereka.' : `Anggota divisi ${divisi.nama}`}
+        </p>
+      </div>
 
       <div className="mx-auto max-w-2xl">
         {bolehKelolaAnggota && <FormTambahAnggota divisionId={id} kandidat={kandidat} />}
 
-        <div className="mt-6">
+        <div className={bolehKelolaAnggota ? 'mt-6' : ''}>
           <h3 className="mb-3 text-xs font-bold tracking-widest text-muted">
-            ANGGOTA SAAT INI ({anggota.length})
+            STAFF ({anggota.length})
           </h3>
-          <DaftarAnggota divisionId={id} daftarAwal={anggota} bolehKelola={bolehKelolaAnggota} />
+          <DaftarAnggota
+            divisionId={id}
+            daftarAwal={anggota}
+            bolehKelola={bolehKelolaAnggota}
+            bolehMonitor={bolehMonitor}
+          />
         </div>
       </div>
     </AppShell>

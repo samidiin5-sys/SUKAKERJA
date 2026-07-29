@@ -38,7 +38,11 @@ export default function FormLembur({
   const [divisionId, setDivisionId] = useState(divisiSaya[0]?.id ?? '')
   const [tanggal, setTanggal] = useState('')
   const [jamMulai, setJamMulai] = useState('')
+  const [hMulaiStr, setHMulaiStr] = useState('')
+  const [mMulaiStr, setMMulaiStr] = useState('')
   const [jamSelesai, setJamSelesai] = useState('')
+  const [hSelesaiStr, setHSelesaiStr] = useState('')
+  const [mSelesaiStr, setMSelesaiStr] = useState('')
   const [alasan, setAlasan] = useState('')
   const [sedangKirim, setSedangKirim] = useState(false)
   const [pesan, setPesan] = useState<{ sukses: boolean; teks: string } | null>(null)
@@ -99,7 +103,11 @@ export default function FormLembur({
     })
     setTanggal('')
     setJamMulai('')
+    setHMulaiStr('')
+    setMMulaiStr('')
     setJamSelesai('')
+    setHSelesaiStr('')
+    setMSelesaiStr('')
     setAlasan('')
     setDipilih(new Set(isOwnerOrAdmin ? [] : [sesiId]))
   }
@@ -224,13 +232,15 @@ export default function FormLembur({
                 inputMode="numeric"
                 maxLength={2}
                 placeholder="00"
-                value={jamMulai ? jamMulai.split(':')[0] : ''}
+                value={hMulaiStr}
                 onChange={(e) => {
                   const h = e.target.value.replace(/\D/g, '').slice(0, 2)
                   if (h !== '' && parseInt(h) > 23) return
-                  const m = jamMulai ? (jamMulai.split(':')[1] ?? '00') : '00'
-                  setJamMulai(`${(h || '00').padStart(2, '0')}:${m}`)
+                  setHMulaiStr(h)
+                  const m = jamMulai ? jamMulai.split(':')[1] : '00'
+                  setJamMulai(`${h.padStart(2, '0')}:${m}`)
                 }}
+                onBlur={() => setHMulaiStr((h) => h.padStart(2, '0'))}
                 required
                 className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
               />
@@ -240,13 +250,15 @@ export default function FormLembur({
                 inputMode="numeric"
                 maxLength={2}
                 placeholder="00"
-                value={jamMulai ? jamMulai.split(':')[1] : ''}
+                value={mMulaiStr}
                 onChange={(e) => {
                   const m = e.target.value.replace(/\D/g, '').slice(0, 2)
                   if (m !== '' && parseInt(m) > 59) return
-                  const h = jamMulai ? (jamMulai.split(':')[0] ?? '00') : '00'
-                  setJamMulai(`${h}:${(m || '00').padStart(2, '0')}`)
+                  setMMulaiStr(m)
+                  const h = jamMulai ? jamMulai.split(':')[0] : '00'
+                  setJamMulai(`${h}:${m.padStart(2, '0')}`)
                 }}
+                onBlur={() => setMMulaiStr((m) => m.padStart(2, '0'))}
                 className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
               />
             </div>
@@ -259,13 +271,15 @@ export default function FormLembur({
                 inputMode="numeric"
                 maxLength={2}
                 placeholder="00"
-                value={jamSelesai ? jamSelesai.split(':')[0] : ''}
+                value={hSelesaiStr}
                 onChange={(e) => {
                   const h = e.target.value.replace(/\D/g, '').slice(0, 2)
                   if (h !== '' && parseInt(h) > 23) return
-                  const m = jamSelesai ? (jamSelesai.split(':')[1] ?? '00') : '00'
-                  setJamSelesai(`${(h || '00').padStart(2, '0')}:${m}`)
+                  setHSelesaiStr(h)
+                  const m = jamSelesai ? jamSelesai.split(':')[1] : '00'
+                  setJamSelesai(`${h.padStart(2, '0')}:${m}`)
                 }}
+                onBlur={() => setHSelesaiStr((h) => h.padStart(2, '0'))}
                 required
                 className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
               />
@@ -275,13 +289,15 @@ export default function FormLembur({
                 inputMode="numeric"
                 maxLength={2}
                 placeholder="00"
-                value={jamSelesai ? jamSelesai.split(':')[1] : ''}
+                value={mSelesaiStr}
                 onChange={(e) => {
                   const m = e.target.value.replace(/\D/g, '').slice(0, 2)
                   if (m !== '' && parseInt(m) > 59) return
-                  const h = jamSelesai ? (jamSelesai.split(':')[0] ?? '00') : '00'
-                  setJamSelesai(`${h}:${(m || '00').padStart(2, '0')}`)
+                  setMSelesaiStr(m)
+                  const h = jamSelesai ? jamSelesai.split(':')[0] : '00'
+                  setJamSelesai(`${h}:${m.padStart(2, '0')}`)
                 }}
+                onBlur={() => setMSelesaiStr((m) => m.padStart(2, '0'))}
                 className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
               />
             </div>

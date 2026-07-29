@@ -140,6 +140,72 @@ export async function keluarkanAnggota(divisionId: string, userId: string): Prom
   return { sukses: true }
 }
 
+// ---------- Ruang Kerja Staff (monitoring) ----------
+
+export type TaskStaff = {
+  id: string
+  judul: string
+  prioritas: string
+  dueDate: string | null
+  completedAt: string | null
+  boardNama: string
+}
+
+export type RuangKerjaStaff = {
+  staff: { id: string; nama: string; jabatan: string | null; fotoUrl: string | null }
+  tasks: TaskStaff[]
+}
+
+export async function ambilRuangKerjaStaff(divisionId: string, userId: string): Promise<RuangKerjaStaff | null> {
+  await pastikanOwner(divisionId)
+  const admin = createAdminClient()
+
+  const [{ data: profil }, { data: boards }] = await Promise.all([
+    admin.from('profiles').select('id, nama, jabatan, foto_url').eq('id', userId).single(),
+    admin.from('boards').select('id, nama').eq('division_id', divisionId).is('deleted_at', null),
+  ])
+
+  if (!profil) return null
+
+  const boardIds = ((boards ?? []) as { id: string; nama: string }[]).map((b) => b.id)
+  const boardMap = new Map(((boards ?? []) as { id: string; nama: string }[]).map((b) => [b.id, b.nama]))
+
+  if (boardIds.length === 0) {
+    return {
+      staff: { id: userId, nama: (profil as any).nama, jabatan: (profil as any).jabatan, fotoUrl: (profil as any).foto_url },
+      tasks: [],
+    }
+  }
+
+  const { data: tasks } = await admin
+    .from('tasks')
+    .select('id, judul, prioritas, due_date, completed_at, board_id, task_assignees!inner(user_id)')
+    .in('board_id', boardIds)
+    .eq('task_assignees.user_id', userId)
+    .is('deleted_at', null)
+    .order('completed_at', { ascending: true, nullsFirst: true })
+    .order('due_date', { ascending: true, nullsFirst: false })
+
+  type BarisTask = {
+    id: string; judul: string; prioritas: string
+    due_date: string | null; completed_at: string | null; board_id: string
+  }
+
+  const p = profil as unknown as { id: string; nama: string; jabatan: string | null; foto_url: string | null }
+
+  return {
+    staff: { id: p.id, nama: p.nama, jabatan: p.jabatan, fotoUrl: p.foto_url },
+    tasks: ((tasks as unknown as BarisTask[] | null) ?? []).map((t) => ({
+      id: t.id,
+      judul: t.judul,
+      prioritas: t.prioritas,
+      dueDate: t.due_date,
+      completedAt: t.completed_at,
+      boardNama: boardMap.get(t.board_id) ?? '',
+    })),
+  }
+}
+
 // ---------- Statistik Divisi ----------
 
 export type ProduktivitasAnggota = {

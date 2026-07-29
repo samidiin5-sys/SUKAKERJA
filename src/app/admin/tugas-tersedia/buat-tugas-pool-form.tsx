@@ -12,7 +12,10 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
   const [boardId, setBoardId] = useState('')
   const [judul, setJudul] = useState('')
   const [deskripsi, setDeskripsi] = useState('')
-  const [deadline, setDeadline] = useState('')
+  const [deadlineTanggal, setDeadlineTanggal] = useState('')
+  const [deadlineHStr, setDeadlineHStr] = useState('')
+  const [deadlineMStr, setDeadlineMStr] = useState('')
+  const [deadlineJam, setDeadlineJam] = useState('')
   const [lintasDivisi, setLintasDivisi] = useState(true)
   const [muatBoard, setMuatBoard] = useState(false)
   const [sedangKirim, setSedangKirim] = useState(false)
@@ -32,7 +35,10 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
   function reset() {
     setJudul('')
     setDeskripsi('')
-    setDeadline('')
+    setDeadlineTanggal('')
+    setDeadlineHStr('')
+    setDeadlineMStr('')
+    setDeadlineJam('')
     setLintasDivisi(true)
     setPesan(null)
   }
@@ -43,13 +49,14 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       setPesan({ sukses: false, teks: 'Pilih kolom (board) terlebih dahulu.' })
       return
     }
-    if (!deadline) {
+    if (!deadlineTanggal) {
       setPesan({ sukses: false, teks: 'Deadline wajib diisi untuk Tugas Terbuka.' })
       return
     }
     setSedangKirim(true)
     setPesan(null)
-    const deadlineISO = deadline ? new Date(deadline).toISOString() : null
+    const jam = deadlineJam || '00:00'
+    const deadlineISO = new Date(`${deadlineTanggal}T${jam}:00`).toISOString()
     const hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO, lintasDivisi ? 'semua' : 'divisi')
     setSedangKirim(false)
     if (!hasil.sukses) {
@@ -87,61 +94,75 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
           </div>
 
           <form onSubmit={tanganiKirim} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
-                <select
-                  value={divisionId}
-                  onChange={(e) => setDivisionId(e.target.value)}
-                  required
-                  className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">Jangkauan</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLintasDivisi(true)}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-bold transition ${
+                    lintasDivisi
+                      ? 'border-orange-400 bg-orange-50 text-orange-700'
+                      : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300 hover:text-ink'
+                  }`}
                 >
-                  {divisiSaya.map((d) => (
-                    <option key={d.id} value={d.id}>{d.nama}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-muted">Kolom (Board)</label>
-                {muatBoard ? (
-                  <div className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-muted animate-pulse">
-                    Memuat...
-                  </div>
-                ) : (
-                  <select
-                    value={boardId}
-                    onChange={(e) => setBoardId(e.target.value)}
-                    required
-                    disabled={boards.length === 0}
-                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 disabled:opacity-50"
-                  >
-                    {boards.length === 0 ? (
-                      <option value="">Tidak ada kolom</option>
-                    ) : (
-                      boards.map((b) => (
-                        <option key={b.id} value={b.id}>{b.nama}</option>
-                      ))
-                    )}
-                  </select>
-                )}
+                  Semua Staff
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLintasDivisi(false)}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-bold transition ${
+                    !lintasDivisi
+                      ? 'border-orange-400 bg-orange-50 text-orange-700'
+                      : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300 hover:text-ink'
+                  }`}
+                >
+                  Divisi Tertentu
+                </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-cream-200 bg-cream-50 px-3 py-2.5">
-              <input
-                type="checkbox"
-                id="lintasDivisi"
-                checked={lintasDivisi}
-                onChange={(e) => setLintasDivisi(e.target.checked)}
-                className="h-4 w-4 rounded accent-orange-500"
-              />
-              <div>
-                <label htmlFor="lintasDivisi" className="cursor-pointer text-sm font-semibold text-ink">
-                  Tugas Lintas Divisi
-                </label>
-                <p className="text-xs text-muted">Semua staff dari divisi manapun bisa mengambil tugas ini</p>
+            {!lintasDivisi && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
+                  <select
+                    value={divisionId}
+                    onChange={(e) => setDivisionId(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                  >
+                    {divisiSaya.map((d) => (
+                      <option key={d.id} value={d.id}>{d.nama}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-muted">Kolom (Board)</label>
+                  {muatBoard ? (
+                    <div className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-muted animate-pulse">
+                      Memuat...
+                    </div>
+                  ) : (
+                    <select
+                      value={boardId}
+                      onChange={(e) => setBoardId(e.target.value)}
+                      required
+                      disabled={boards.length === 0}
+                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 disabled:opacity-50"
+                    >
+                      {boards.length === 0 ? (
+                        <option value="">Tidak ada kolom</option>
+                      ) : (
+                        boards.map((b) => (
+                          <option key={b.id} value={b.id}>{b.nama}</option>
+                        ))
+                      )}
+                    </select>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
@@ -173,13 +194,50 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
               <label className="mb-1 block text-xs font-semibold text-muted">
                 Deadline <span className="text-red-500">*</span>
               </label>
-              <input
-                type="datetime-local"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                required
-                className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={deadlineTanggal}
+                  onChange={(e) => setDeadlineTanggal(e.target.value)}
+                  required
+                  className="flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                />
+                <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={2}
+                    placeholder="00"
+                    value={deadlineHStr}
+                    onChange={(e) => {
+                      const h = e.target.value.replace(/\D/g, '').slice(0, 2)
+                      if (h !== '' && parseInt(h) > 23) return
+                      setDeadlineHStr(h)
+                      const m = deadlineJam ? deadlineJam.split(':')[1] : '00'
+                      setDeadlineJam(`${h.padStart(2, '0')}:${m}`)
+                    }}
+                    onBlur={() => setDeadlineHStr((h) => h.padStart(2, '0'))}
+                    className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+                  />
+                  <span className="text-sm font-bold text-muted">:</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={2}
+                    placeholder="00"
+                    value={deadlineMStr}
+                    onChange={(e) => {
+                      const m = e.target.value.replace(/\D/g, '').slice(0, 2)
+                      if (m !== '' && parseInt(m) > 59) return
+                      setDeadlineMStr(m)
+                      const h = deadlineJam ? deadlineJam.split(':')[0] : '00'
+                      setDeadlineJam(`${h}:${m.padStart(2, '0')}`)
+                    }}
+                    onBlur={() => setDeadlineMStr((m) => m.padStart(2, '0'))}
+                    className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="flex items-start gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5">

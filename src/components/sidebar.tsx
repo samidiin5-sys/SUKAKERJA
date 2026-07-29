@@ -131,14 +131,17 @@ export default function Sidebar({
         {data.divisiSaya.length > 0 && (
           <>
             <SeksiNav judul="Divisi" collapsed={collapsed} />
-            {data.divisiSaya.map((d) => (
-              <ItemSidebar
-                key={d.id}
-                item={{ href: `/divisi/${d.id}`, label: d.nama, icon: <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: d.warna }} /> }}
-                aktif={pathname === `/divisi/${d.id}`}
-                collapsed={collapsed}
-              />
-            ))}
+            {data.divisiSaya.map((d) => {
+              const href = (isSuperAdmin || isOwner) ? `/divisi/${d.id}/anggota` : `/divisi/${d.id}`
+              return (
+                <ItemSidebar
+                  key={d.id}
+                  item={{ href, label: d.nama, icon: <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: d.warna }} /> }}
+                  aktif={pathname.startsWith(`/divisi/${d.id}`)}
+                  collapsed={collapsed}
+                />
+              )
+            })}
           </>
         )}
 

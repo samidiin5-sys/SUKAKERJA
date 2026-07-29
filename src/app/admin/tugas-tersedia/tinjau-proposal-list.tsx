@@ -8,7 +8,8 @@ function formatTanggal(iso: string) {
 }
 
 function formatWaktu(iso: string) {
-  return new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  const d = new Date(iso)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 export default function TinjauProposalList({ proposalsAwal }: { proposalsAwal: ProposalMenunggu[] }) {

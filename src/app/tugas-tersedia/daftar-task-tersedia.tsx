@@ -22,8 +22,10 @@ function formatTanggal(iso: string) {
 
 function formatWaktu(iso: string) {
   const d = new Date(iso)
-  if (d.getHours() === 0 && d.getMinutes() === 0) return ''
-  return ' · ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  const h = d.getHours()
+  const m = d.getMinutes()
+  if (h === 0 && m === 0) return ''
+  return ` · ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
 export default function DaftarTaskTersedia({
