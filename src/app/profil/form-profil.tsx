@@ -74,70 +74,51 @@ export default function FormProfil({
   return (
     <div className="space-y-5">
       {/* Kartu foto profil */}
-      <div className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden">
-        {/* Banner atas */}
-        <div className="h-28 bg-gradient-to-br from-maroon-950 via-maroon-800 to-maroon-700" />
+      <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-sm">
+        <h2 className="mb-6 text-sm font-bold text-ink">Foto Profil</h2>
 
-        {/* Avatar + info */}
-        <div className="px-6 pb-6">
-          <div className="flex items-end gap-4 -mt-14 mb-4">
-            {/* Avatar besar dengan overlay kamera */}
+        <div className="flex flex-col items-center gap-5">
+          {/* Avatar besar di tengah */}
+          <div className="relative h-36 w-36 flex-shrink-0 overflow-hidden rounded-full bg-maroon-800 shadow-md">
+            {preview ? (
+              <Image
+                src={preview}
+                alt="Foto profil"
+                fill
+                className="object-cover"
+                unoptimized={preview.startsWith('blob:')}
+              />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center text-4xl font-black text-cream-50">
+                {inisial(nama || 'U')}
+              </span>
+            )}
+          </div>
+
+          {/* Tombol & keterangan */}
+          <div className="text-center">
             <button
               type="button"
               onClick={() => inputFotoRef.current?.click()}
               disabled={sedangMenyimpanFoto}
-              className="group relative h-28 w-28 flex-shrink-0 rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-maroon-800 disabled:opacity-70 transition"
-              title="Klik untuk ganti foto"
+              className="rounded-xl border border-cream-200 px-6 py-2.5 text-sm font-bold text-maroon-700 transition hover:border-orange-500 hover:text-orange-600 disabled:opacity-50"
             >
-              {preview ? (
-                <Image
-                  src={preview}
-                  alt="Foto profil"
-                  fill
-                  className="object-cover"
-                  unoptimized={preview.startsWith('blob:')}
-                />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center text-3xl font-black text-cream-50">
-                  {inisial(nama || 'U')}
-                </span>
-              )}
-              {/* Overlay kamera saat hover */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                {sedangMenyimpanFoto ? (
-                  <svg className="h-6 w-6 animate-spin text-white" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                ) : (
-                  <>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                      <circle cx="12" cy="13" r="4"/>
-                    </svg>
-                    <span className="mt-1 text-[10px] font-bold text-white/90">Ganti Foto</span>
-                  </>
-                )}
-              </div>
+              {sedangMenyimpanFoto ? 'Mengunggah...' : 'Ganti Foto'}
             </button>
-
-            <div className="pb-1 min-w-0">
-              <p className="text-lg font-black text-maroon-800 truncate">{nama}</p>
-              <p className="text-xs text-muted mt-0.5">JPG, PNG, atau WebP · maks. 5 MB</p>
-            </div>
+            <p className="mt-2 text-xs text-muted">JPG, PNG, atau WebP · maks. 5 MB</p>
           </div>
-
-          {pesanFoto && (
-            <p className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${pesanFoto.sukses ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-              {pesanFoto.teks}
-            </p>
-          )}
         </div>
+
+        {pesanFoto && (
+          <p className={`mt-5 rounded-xl px-4 py-2.5 text-sm font-semibold ${pesanFoto.sukses ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            {pesanFoto.teks}
+          </p>
+        )}
       </div>
 
       {/* Kartu nama */}
-      <div className="rounded-2xl border border-cream-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-1 text-base font-black text-maroon-800">Nama Tampilan</h2>
+      <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-sm">
+        <h2 className="mb-1 text-sm font-bold text-ink">Nama Tampilan</h2>
         <p className="mb-5 text-xs text-muted">Nama ini yang akan tampil ke seluruh anggota tim.</p>
 
         <form onSubmit={tanganiSimpanNama} className="space-y-4">
@@ -165,7 +146,7 @@ export default function FormProfil({
           <button
             type="submit"
             disabled={sedangMenyimpanNama}
-            className="w-full rounded-xl bg-maroon-800 px-4 py-3 text-sm font-bold text-white shadow-md shadow-maroon-900/20 transition hover:bg-maroon-700 active:scale-[0.99] disabled:opacity-50"
+            className="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 disabled:opacity-50"
           >
             {sedangMenyimpanNama ? 'Menyimpan...' : 'Simpan Nama'}
           </button>
