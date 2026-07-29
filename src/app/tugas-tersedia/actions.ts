@@ -57,7 +57,7 @@ export async function ambilTaskTersedia(): Promise<TaskTersedia[]> {
     ((divisiUser ?? []) as { division_id: string }[]).map((d) => d.division_id)
   )
 
-  const { data } = await admin
+  let { data, error } = await admin
     .from('tasks')
     .select('id, judul, deskripsi, prioritas, due_date, created_at, target_scope, boards!inner(division_id, divisions!inner(nama)), profiles!tasks_created_by_fkey(nama)')
     .eq('is_pool_task', true)
@@ -65,6 +65,20 @@ export async function ambilTaskTersedia(): Promise<TaskTersedia[]> {
     .is('completed_at', null)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  if (error && (error.code === '42703' || error.message.includes('target_scope'))) {
+    const fallbackRes = await admin
+      .from('tasks')
+      .select('id, judul, deskripsi, prioritas, due_date, created_at, boards!inner(division_id, divisions!inner(nama)), profiles!tasks_created_by_fkey(nama)')
+      .eq('is_pool_task', true)
+      .is('deleted_at', null)
+      .is('completed_at', null)
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data = (fallbackRes.data as any[])?.map((item) => ({ ...item, target_scope: 'semua' })) ?? null
+  }
 
   type Baris = {
     id: string
