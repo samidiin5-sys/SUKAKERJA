@@ -70,10 +70,22 @@ export async function ambilTemplates(divisionId: string): Promise<RecurringTempl
 }
 
 type DataTemplate = {
-  boardId: string; judul: string; deskripsi: string; prioritas: string
+  judul: string; deskripsi: string; prioritas: string
   assigneeIds: string[]; pola: PolaUlang; dayOfWeek: number | null
   dayOfMonth: number | null; dueOffsetHari: number
   tanggalMulai: string; tanggalSelesai: string
+}
+
+async function ambilBoardPertama(admin: ReturnType<typeof createAdminClient>, divisionId: string) {
+  const { data } = await admin
+    .from('boards')
+    .select('id')
+    .eq('division_id', divisionId)
+    .is('deleted_at', null)
+    .order('urutan')
+    .limit(1)
+    .single()
+  return data
 }
 
 export async function buatTemplate(divisionId: string, data: DataTemplate): Promise<HasilTemplate> {
@@ -86,8 +98,11 @@ export async function buatTemplate(divisionId: string, data: DataTemplate): Prom
     return { sukses: false, pesan: 'Tanggal dalam bulan wajib diisi untuk pola bulanan' }
 
   const admin = createAdminClient()
+  const boardPertama = await ambilBoardPertama(admin, divisionId)
+  if (!boardPertama) return { sukses: false, pesan: 'Divisi ini belum memiliki board' }
+
   const { data: tmpl, error } = await admin.from('recurring_task_templates').insert({
-    division_id: divisionId, board_id: data.boardId,
+    division_id: divisionId, board_id: boardPertama.id,
     judul: data.judul.trim(), deskripsi: data.deskripsi.trim() || null,
     prioritas: data.prioritas, assignee_ids: data.assigneeIds,
     pola: data.pola, day_of_week: data.dayOfWeek, day_of_month: data.dayOfMonth,
@@ -110,8 +125,11 @@ export async function ubahTemplate(divisionId: string, templateId: string, data:
     return { sukses: false, pesan: 'Tanggal dalam bulan wajib diisi untuk pola bulanan' }
 
   const admin = createAdminClient()
+  const boardPertama = await ambilBoardPertama(admin, divisionId)
+  if (!boardPertama) return { sukses: false, pesan: 'Divisi ini belum memiliki board' }
+
   const { error } = await admin.from('recurring_task_templates').update({
-    board_id: data.boardId, judul: data.judul.trim(),
+    board_id: boardPertama.id, judul: data.judul.trim(),
     deskripsi: data.deskripsi.trim() || null, prioritas: data.prioritas,
     assignee_ids: data.assigneeIds, pola: data.pola,
     day_of_week: data.dayOfWeek, day_of_month: data.dayOfMonth,

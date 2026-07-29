@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
 import { pastikanAnggotaDivisi } from '@/lib/auth/otorisasi'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { ambilAnggotaDivisi, ambilDetailDivisi } from '../actions'
 import { ambilTemplates } from './actions'
 import DaftarTemplate from './daftar-template'
@@ -27,14 +26,11 @@ export default async function HalamanTugasRutin({
     redirect('/dashboard')
   }
 
-  const admin = createAdminClient()
-  const [templates, anggota, { data: boardsRaw }] = await Promise.all([
+  const [templates, anggota] = await Promise.all([
     ambilTemplates(id),
     ambilAnggotaDivisi(id),
-    admin.from('boards').select('id, nama').eq('division_id', id).is('deleted_at', null).order('urutan'),
   ])
 
-  const boards = (boardsRaw ?? []).map(b => ({ id: b.id, nama: b.nama }))
   const bolehKelola = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
 
   return (
@@ -59,7 +55,6 @@ export default async function HalamanTugasRutin({
         <DaftarTemplate
           divisionId={id}
           templatesAwal={templates}
-          boards={boards}
           anggota={anggota}
           bolehKelola={bolehKelola}
         />

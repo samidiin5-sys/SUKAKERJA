@@ -19,19 +19,15 @@ const WARNA_POLA: Record<string, string> = {
   monthly: 'bg-orange-100 text-orange-700',
 }
 
-type Board = { id: string; nama: string }
-
 function KartuTemplate({
   template,
   divisionId,
-  boards,
   anggota,
   bolehKelola,
   onBerubah,
 }: {
   template: RecurringTemplate
   divisionId: string
-  boards: Board[]
   anggota: AnggotaDivisi[]
   bolehKelola: boolean
   onBerubah: () => void
@@ -81,7 +77,6 @@ function KartuTemplate({
     return (
       <FormTemplate
         divisionId={divisionId}
-        boards={boards}
         anggota={anggota}
         templateEdit={template}
         onSelesai={() => { setSedangEdit(false); onBerubah() }}
@@ -257,13 +252,11 @@ function KartuTemplate({
 export default function DaftarTemplate({
   divisionId,
   templatesAwal,
-  boards,
   anggota,
   bolehKelola,
 }: {
   divisionId: string
   templatesAwal: RecurringTemplate[]
-  boards: Board[]
   anggota: AnggotaDivisi[]
   bolehKelola: boolean
 }) {
@@ -292,7 +285,6 @@ export default function DaftarTemplate({
     return (
       <FormTemplate
         divisionId={divisionId}
-        boards={boards}
         anggota={anggota}
         onSelesai={() => { setFormBuatTerbuka(false); muatUlang() }}
         onBatal={() => setFormBuatTerbuka(false)}
@@ -341,7 +333,6 @@ export default function DaftarTemplate({
               key={tmpl.id}
               template={tmpl}
               divisionId={divisionId}
-              boards={boards}
               anggota={anggota}
               bolehKelola={bolehKelola}
               onBerubah={muatUlang}

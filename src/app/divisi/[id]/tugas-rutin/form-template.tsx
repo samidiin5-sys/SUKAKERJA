@@ -28,24 +28,19 @@ const PILIHAN_PRIORITAS = [
   { value: 'mendesak', label: 'Mendesak' },
 ]
 
-type Board = { id: string; nama: string }
-
 export default function FormTemplate({
   divisionId,
-  boards,
   anggota,
   templateEdit,
   onSelesai,
   onBatal,
 }: {
   divisionId: string
-  boards: Board[]
   anggota: AnggotaDivisi[]
   templateEdit?: RecurringTemplate
   onSelesai: () => void
   onBatal: () => void
 }) {
-  const [boardId, setBoardId] = useState(templateEdit?.boardId ?? boards[0]?.id ?? '')
   const [judul, setJudul] = useState(templateEdit?.judul ?? '')
   const [deskripsi, setDeskripsi] = useState(templateEdit?.deskripsi ?? '')
   const [prioritas, setPrioritas] = useState(templateEdit?.prioritas ?? 'sedang')
@@ -69,7 +64,6 @@ export default function FormTemplate({
     setSedangSimpan(true)
 
     const data = {
-      boardId,
       judul,
       deskripsi: deskripsi ?? '',
       prioritas,
@@ -103,20 +97,6 @@ export default function FormTemplate({
       <h3 className="text-sm font-bold text-maroon-800">
         {templateEdit ? 'Ubah Template' : 'Buat Template Baru'}
       </h3>
-
-      <div>
-        <label className="mb-1 block text-xs font-semibold text-muted">Board</label>
-        <select
-          value={boardId}
-          onChange={e => setBoardId(e.target.value)}
-          required
-          className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
-        >
-          {boards.map(b => (
-            <option key={b.id} value={b.id}>{b.nama}</option>
-          ))}
-        </select>
-      </div>
 
       <div>
         <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
