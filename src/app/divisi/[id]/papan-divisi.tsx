@@ -59,6 +59,8 @@ export default function PapanDivisi({
   bolehKirimTugas,
   currentUserId,
   isStaff = false,
+  defaultAssigneeId,
+  pantauNama,
 }: {
   divisionId: string
   boardsAwal: BoardDenganTask[]
@@ -69,6 +71,8 @@ export default function PapanDivisi({
   bolehKirimTugas: boolean
   currentUserId: string
   isStaff?: boolean
+  defaultAssigneeId?: string
+  pantauNama?: string
 }) {
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -83,7 +87,9 @@ export default function PapanDivisi({
   const [cari, setCari] = useState('')
   const [filterStatus, setFilterStatus] = useState<'semua' | 'aktif' | 'selesai'>('semua')
   const [filterPrioritas, setFilterPrioritas] = useState('semua')
-  const [filterAssignee, setFilterAssignee] = useState(isStaff ? currentUserId : 'semua')
+  const [filterAssignee, setFilterAssignee] = useState(
+    defaultAssigneeId ?? (isStaff ? currentUserId : 'semua')
+  )
 
   const filterAktif =
     cari.trim() !== '' ||
@@ -119,7 +125,7 @@ export default function PapanDivisi({
     setCari('')
     setFilterStatus('semua')
     setFilterPrioritas('semua')
-    setFilterAssignee(isStaff ? currentUserId : 'semua')
+    setFilterAssignee(defaultAssigneeId ?? (isStaff ? currentUserId : 'semua'))
   }
 
   useEffect(() => {
@@ -302,6 +308,25 @@ export default function PapanDivisi({
     <>
       {pesanError && (
         <p className="mb-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-800">{pesanError}</p>
+      )}
+
+      {pantauNama && (
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-2.5">
+          <div className="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" className="flex-shrink-0">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span className="text-xs font-bold text-orange-800">
+              Memantau Ruang Kerja: <span className="text-orange-700">{pantauNama}</span>
+            </span>
+          </div>
+          <a
+            href={`/divisi/${divisionId}/anggota`}
+            className="flex-shrink-0 text-xs font-semibold text-orange-600 hover:text-orange-800 hover:underline"
+          >
+            ← Daftar Staff
+          </a>
+        </div>
       )}
 
       <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
