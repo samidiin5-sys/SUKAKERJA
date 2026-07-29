@@ -177,11 +177,23 @@ export async function ambilRuangKerjaStaff(divisionId: string, userId: string): 
     }
   }
 
+  const { data: assigneeRows } = await admin
+    .from('task_assignees')
+    .select('task_id')
+    .eq('user_id', userId)
+
+  const assignedTaskIds = (assigneeRows ?? []).map((r: { task_id: string }) => r.task_id)
+
+  if (assignedTaskIds.length === 0) {
+    const p2 = profil as unknown as { id: string; nama: string; jabatan: string | null; foto_url: string | null }
+    return { staff: { id: p2.id, nama: p2.nama, jabatan: p2.jabatan, fotoUrl: p2.foto_url }, tasks: [] }
+  }
+
   const { data: tasks } = await admin
     .from('tasks')
-    .select('id, judul, prioritas, due_date, completed_at, board_id, task_assignees!inner(user_id)')
+    .select('id, judul, prioritas, due_date, completed_at, board_id')
+    .in('id', assignedTaskIds)
     .in('board_id', boardIds)
-    .eq('task_assignees.user_id', userId)
     .is('deleted_at', null)
     .order('completed_at', { ascending: true, nullsFirst: true })
     .order('due_date', { ascending: true, nullsFirst: false })

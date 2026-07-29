@@ -17,6 +17,7 @@ function judulHalaman(pathname: string): string {
   if (pathname === '/admin/divisi') return 'Kelola Divisi'
   if (pathname === '/admin/data-terhapus') return 'Data Terhapus'
   if (pathname === '/admin/log-sistem') return 'Log Sistem'
+  if (pathname.match(/^\/divisi\/[^/]+\/anggota\/[^/]+$/)) return 'Ruang Kerja Staff'
   if (pathname.match(/^\/divisi\/[^/]+\/anggota$/)) return 'Anggota Divisi'
   if (pathname.match(/^\/divisi\/[^/]+\/tugas-rutin$/)) return 'Tugas Rutin'
   if (pathname.match(/^\/divisi\/[^/]+\/target$/)) return 'Target & Realisasi'
