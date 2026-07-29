@@ -241,15 +241,21 @@ export type Karyawan = {
 }
 
 export async function ambilDaftarKaryawan(): Promise<Karyawan[]> {
-  await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanOwnerAtauSuperAdmin()
 
   const admin = createAdminClient()
 
-  const { data: profil } = await admin
+  let query = admin
     .from('profiles')
     .select('id, nama, jabatan, status, role_sistem, must_change_password, foto_url')
     .is('deleted_at', null)
-    .order('nama')
+
+  // Sembunyikan akun Super Admin jika dipanggil oleh Owner
+  if (sesi.roleSistem !== 'super_admin') {
+    query = query.neq('role_sistem', 'super_admin')
+  }
+
+  const { data: profil } = await query.order('nama')
 
   if (!profil || profil.length === 0) return []
 
@@ -280,7 +286,7 @@ export type DetailKaryawan = {
 }
 
 export async function ambilDetailKaryawan(userId: string): Promise<DetailKaryawan | null> {
-  await pastikanOwnerAtauSuperAdmin()
+  const sesi = await pastikanOwnerAtauSuperAdmin()
 
   const admin = createAdminClient()
 
@@ -292,6 +298,11 @@ export async function ambilDetailKaryawan(userId: string): Promise<DetailKaryawa
     .single()
 
   if (!profil) return null
+
+  // Sembunyikan detail Super Admin dari Owner
+  if (sesi.roleSistem !== 'super_admin' && profil.role_sistem === 'super_admin') {
+    return null
+  }
 
   const { data: authUser } = await admin.auth.admin.getUserById(userId)
 

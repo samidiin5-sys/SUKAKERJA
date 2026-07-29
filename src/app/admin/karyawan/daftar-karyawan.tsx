@@ -155,7 +155,7 @@ export default function DaftarKaryawan({ daftarAwal, isSuperAdmin = false }: { d
             className="rounded-xl border border-cream-200 bg-white px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 transition cursor-pointer"
           >
             <option value="semua">Semua Role</option>
-            <option value="super_admin">Super Admin</option>
+            {isSuperAdmin && <option value="super_admin">Super Admin</option>}
             <option value="owner">Owner</option>
             <option value="user">Staff</option>
           </select>
