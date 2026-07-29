@@ -39,6 +39,7 @@ import {
 import TaskCard, { TaskCardOverlay } from './task-card'
 import DetailTaskPanel from './detail-task-panel'
 import KirimTugasModal from './kirim-tugas-modal'
+import { IkonCentang, IkonClipboard, IkonPeringatan } from '@/components/icons'
 
 function cariBoardTask(taskId: string, daftar: BoardDenganTask[]): BoardDenganTask | undefined {
   return daftar.find((b) => b.tasks.some((t) => t.id === taskId))
@@ -123,6 +124,21 @@ export default function PapanDivisi({
     [boards, cari, filterStatus, filterPrioritas, filterAssignee, currentUserId]
   )
 
+  const statistik = useMemo(() => {
+    const semuaTask = boards.flatMap((b) => b.tasks)
+    const sekarang = new Date()
+    const awalHariIni = new Date(sekarang)
+    awalHariIni.setHours(0, 0, 0, 0)
+    const awalBulanIni = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
+    const aktif = semuaTask.filter((t) => t.completedAt === null)
+    const selesai = semuaTask.filter((t) => t.completedAt !== null)
+    return {
+      totalAktif: aktif.length,
+      selesaiBulanIni: selesai.filter((t) => new Date(t.completedAt!).getTime() >= awalBulanIni.getTime()).length,
+      terlambat: aktif.filter((t) => t.dueDate && new Date(t.dueDate).getTime() < awalHariIni.getTime()).length,
+    }
+  }, [boards])
+
   function resetFilter() {
     setCari('')
     setFilterStatus('semua')
@@ -180,6 +196,11 @@ export default function PapanDivisi({
       const taskDipindah = boardAsal.tasks.find((t) => t.id === activeId)
       if (!taskDipindah) return prev
 
+      const taskDenganStatus = {
+        ...taskDipindah,
+        completedAt: boardTujuan.isCompletionBoard ? new Date().toISOString() : null,
+      }
+
       const indexTujuan = boardTujuan.tasks.findIndex((t) => t.id === overId)
 
       return prev.map((b) => {
@@ -189,7 +210,7 @@ export default function PapanDivisi({
         if (b.id === boardTujuan.id) {
           const tasksBaru = [...b.tasks]
           const posisi = indexTujuan >= 0 ? indexTujuan : tasksBaru.length
-          tasksBaru.splice(posisi, 0, taskDipindah)
+          tasksBaru.splice(posisi, 0, taskDenganStatus)
           return { ...b, tasks: tasksBaru }
         }
         return b
@@ -306,8 +327,50 @@ export default function PapanDivisi({
     )
   }
 
+  const kartuStatistik = [
+    {
+      label: 'Total Task Aktif',
+      nilai: statistik.totalAktif,
+      icon: <IkonClipboard />,
+      iconBg: 'bg-maroon-700',
+      iconText: 'text-white',
+      warna: 'text-maroon-800',
+    },
+    {
+      label: 'Selesai Bulan Ini',
+      nilai: statistik.selesaiBulanIni,
+      icon: <IkonCentang />,
+      iconBg: 'bg-orange-500',
+      iconText: 'text-white',
+      warna: 'text-orange-600',
+    },
+    {
+      label: 'Task Terlambat',
+      nilai: statistik.terlambat,
+      icon: <IkonPeringatan />,
+      iconBg: statistik.terlambat > 0 ? 'bg-red-600' : 'bg-cream-200',
+      iconText: statistik.terlambat > 0 ? 'text-white' : 'text-muted',
+      warna: statistik.terlambat > 0 ? 'text-red-600' : 'text-maroon-800',
+    },
+  ]
+
   return (
     <>
+      <div className="mb-5 grid grid-cols-3 gap-2 sm:gap-3">
+        {kartuStatistik.map((k) => (
+          <div
+            key={k.label}
+            className="rounded-2xl border border-cream-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
+          >
+            <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-lg sm:mb-3 sm:h-9 sm:w-9 ${k.iconBg} ${k.iconText}`}>
+              {k.icon}
+            </div>
+            <p className={`text-2xl font-black sm:text-3xl ${k.warna}`}>{k.nilai}</p>
+            <p className="mt-0.5 text-[10px] font-semibold text-muted sm:mt-1 sm:text-xs">{k.label}</p>
+          </div>
+        ))}
+      </div>
+
       {pesanError && (
         <p className="mb-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-800">{pesanError}</p>
       )}

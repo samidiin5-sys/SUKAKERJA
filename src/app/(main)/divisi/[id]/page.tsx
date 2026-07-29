@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import { IkonCentang, IkonClipboard, IkonPeringatan } from '@/components/icons'
 import { pastikanAnggotaDivisi } from '@/lib/auth/otorisasi'
 import {
   ambilAnggotaDivisi,
@@ -41,33 +40,6 @@ export default async function HalamanPapanDivisi({
   const bolehTambahTask = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
   const bolehKelola = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
   const bolehKirimTugas = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
-
-  const kartuStatistikDivisi = [
-    {
-      label: 'Total Task Aktif',
-      nilai: statistik.totalAktif,
-      icon: <IkonClipboard />,
-      iconBg: 'bg-maroon-700',
-      iconText: 'text-white',
-      warna: 'text-maroon-800',
-    },
-    {
-      label: 'Selesai Bulan Ini',
-      nilai: statistik.selesaiBulanIni,
-      icon: <IkonCentang />,
-      iconBg: 'bg-orange-500',
-      iconText: 'text-white',
-      warna: 'text-orange-600',
-    },
-    {
-      label: 'Task Terlambat',
-      nilai: statistik.terlambat,
-      icon: <IkonPeringatan />,
-      iconBg: statistik.terlambat > 0 ? 'bg-red-600' : 'bg-cream-200',
-      iconText: statistik.terlambat > 0 ? 'text-white' : 'text-muted',
-      warna: statistik.terlambat > 0 ? 'text-red-600' : 'text-maroon-800',
-    },
-  ]
 
   return (
     <>
@@ -119,21 +91,6 @@ export default async function HalamanPapanDivisi({
             </a>
           )}
         </div>
-      </div>
-
-      <div className="mb-5 grid grid-cols-3 gap-2 sm:gap-3">
-        {kartuStatistikDivisi.map((k) => (
-          <div
-            key={k.label}
-            className="rounded-2xl border border-cream-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
-          >
-            <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-lg sm:mb-3 sm:h-9 sm:w-9 ${k.iconBg} ${k.iconText}`}>
-              {k.icon}
-            </div>
-            <p className={`text-2xl font-black sm:text-3xl ${k.warna}`}>{k.nilai}</p>
-            <p className="mt-0.5 text-[10px] font-semibold text-muted sm:mt-1 sm:text-xs">{k.label}</p>
-          </div>
-        ))}
       </div>
 
       <PapanDivisi
