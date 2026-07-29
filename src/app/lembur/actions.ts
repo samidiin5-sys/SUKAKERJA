@@ -3,6 +3,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ambilSesiPengguna, pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
 import { kirimNotifikasi } from '@/lib/notifikasi'
+import { mapLemburReviewFromRows } from './lembur-utils'
 
 export type LemburSaya = {
   id: string
@@ -163,36 +164,36 @@ export async function ambilLemburMenunggu(): Promise<LemburMenunggu[]> {
 
   const { data } = await admin
     .from('lembur')
-    .select('id, tanggal, jam_mulai, jam_selesai, alasan, status, catatan_owner, created_at, divisions(nama), profiles(id, nama)')
-    .eq('status', 'menunggu')
+    .select('id, user_id, division_id, tanggal, jam_mulai, jam_selesai, alasan, status, catatan_owner, created_at')
+    .in('status', ['menunggu', null])
     .order('created_at', { ascending: true })
 
   type Baris = {
     id: string
+    user_id: string
+    division_id: string
     tanggal: string
     jam_mulai: string
     jam_selesai: string
     alasan: string
-    status: 'menunggu' | 'disetujui' | 'ditolak'
+    status: string | null
     catatan_owner: string | null
     created_at: string
-    divisions: { nama: string }
-    profiles: { id: string; nama: string }
   }
 
-  return ((data as unknown as Baris[] | null) ?? []).map((r) => ({
-    id: r.id,
-    divisiNama: r.divisions.nama,
-    tanggal: r.tanggal,
-    jamMulai: r.jam_mulai,
-    jamSelesai: r.jam_selesai,
-    alasan: r.alasan,
-    status: r.status,
-    catatanOwner: r.catatan_owner,
-    createdAt: r.created_at,
-    staffNama: r.profiles.nama,
-    staffId: r.profiles.id,
-  }))
+  const rows = ((data as unknown as Baris[] | null) ?? []).filter((r) => !!r.user_id && !!r.division_id)
+
+  if (rows.length === 0) return []
+
+  const [profilesRes, divisionsRes] = await Promise.all([
+    admin.from('profiles').select('id, nama').in('id', rows.map((r) => r.user_id)),
+    admin.from('divisions').select('id, nama').in('id', rows.map((r) => r.division_id)),
+  ])
+
+  const profiles = ((profilesRes.data as Array<{ id: string; nama: string }> | null) ?? []).filter(Boolean)
+  const divisions = ((divisionsRes.data as Array<{ id: string; nama: string }> | null) ?? []).filter(Boolean)
+
+  return mapLemburReviewFromRows(rows, profiles, divisions)
 }
 
 export async function tinjauLembur(
