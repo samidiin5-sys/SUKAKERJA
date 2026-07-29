@@ -1638,3 +1638,94 @@ export async function hapusPengumpulan(divisionId: string, submissionId: string)
   if (error) return { sukses: false, pesan: 'Gagal menghapus. Coba lagi.' }
   return { sukses: true }
 }
+
+// ---------- Persetujuan Task ----------
+
+export async function setujuiTask(divisionId: string, taskId: string): Promise<HasilBuatTask> {
+  const sesi = await pastikanOwner(divisionId)
+
+  const admin = createAdminClient()
+
+  const [{ data: task }, { data: boardSelesai }] = await Promise.all([
+    admin.from('tasks').select('judul').eq('id', taskId).single(),
+    admin
+      .from('boards')
+      .select('id, nama')
+      .eq('division_id', divisionId)
+      .eq('is_completion_board', true)
+      .single(),
+  ])
+
+  if (!task) return { sukses: false, pesan: 'Task tidak ditemukan' }
+  if (!boardSelesai) return { sukses: false, pesan: 'Divisi ini belum memiliki board penyelesaian' }
+
+  const { error } = await admin
+    .from('tasks')
+    .update({
+      board_id: boardSelesai.id,
+      completed_at: new Date().toISOString(),
+      completed_by: sesi.id,
+    })
+    .eq('id', taskId)
+
+  if (error) return { sukses: false, pesan: 'Gagal menyetujui task. Coba lagi.' }
+
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'task_selesai',
+    objekTipe: 'Task',
+    objekId: taskId,
+    objekNama: task.judul,
+    divisionId,
+  })
+
+  return { sukses: true }
+}
+
+export async function revisiTask(divisionId: string, taskId: string): Promise<HasilBuatTask> {
+  const sesi = await pastikanOwner(divisionId)
+
+  const admin = createAdminClient()
+
+  const { data: task } = await admin.from('tasks').select('judul').eq('id', taskId).single()
+  if (!task) return { sukses: false, pesan: 'Task tidak ditemukan' }
+
+  const { data: semuaBoard } = await admin
+    .from('boards')
+    .select('id, nama, urutan')
+    .eq('division_id', divisionId)
+    .eq('is_completion_board', false)
+    .order('urutan')
+
+  const boards = semuaBoard ?? []
+  const boardTarget =
+    boards.find((b) => b.nama.toLowerCase() === 'dikerjakan') ??
+    boards[1] ??
+    boards[0]
+
+  if (!boardTarget) return { sukses: false, pesan: 'Tidak ada board tujuan revisi' }
+
+  const { error } = await admin
+    .from('tasks')
+    .update({
+      board_id: boardTarget.id,
+      completed_at: null,
+      completed_by: null,
+    })
+    .eq('id', taskId)
+
+  if (error) return { sukses: false, pesan: 'Gagal mengirim task ke revisi. Coba lagi.' }
+
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'task_dipindah',
+    objekTipe: 'Task',
+    objekId: taskId,
+    objekNama: `${task.judul} → ${boardTarget.nama}`,
+    divisionId,
+  })
+
+  return { sukses: true }
+}

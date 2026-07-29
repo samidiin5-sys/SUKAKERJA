@@ -30,6 +30,8 @@ import {
   pindahkanTask,
   ubahUrutanTask,
   ubahUrutanBoard,
+  setujuiTask,
+  revisiTask,
   type AnggotaDivisi,
   type BoardDenganTask,
   type TaskRingkas,
@@ -431,6 +433,7 @@ export default function PapanDivisi({
                     dragDinonaktifkan={filterAktif}
                     bolehReorderBoard={bolehReorderBoard}
                     bolehTambahTask={bolehTambahTask}
+                    bolehKelola={bolehKelola}
                     onPilihTask={(taskId) => setTaskDipilih({ id: taskId, boardId: board.id })}
                   />
                 ))}
@@ -496,6 +499,7 @@ function BoardColumn({
   dragDinonaktifkan = false,
   bolehReorderBoard = false,
   bolehTambahTask = false,
+  bolehKelola = false,
 }: {
   divisionId: string
   board: BoardDenganTask
@@ -503,11 +507,30 @@ function BoardColumn({
   dragDinonaktifkan?: boolean
   bolehReorderBoard?: boolean
   bolehTambahTask?: boolean
+  bolehKelola?: boolean
 }) {
   const router = useRouter()
   const [judulBaru, setJudulBaru] = useState('')
   const [formTerbuka, setFormTerbuka] = useState(false)
   const [sedangProses, setSedangProses] = useState(false)
+  const [loadingTaskId, setLoadingTaskId] = useState<string | null>(null)
+
+  const isReviewBoard = board.nama.toLowerCase() === 'review'
+
+  async function tanganiSetujui(taskId: string) {
+    setLoadingTaskId(taskId)
+    const hasil = await setujuiTask(divisionId, taskId)
+    setLoadingTaskId(null)
+    if (hasil.sukses) router.refresh()
+  }
+
+  async function tanganiRevisi(taskId: string) {
+    setLoadingTaskId(taskId)
+    const hasil = await revisiTask(divisionId, taskId)
+    setLoadingTaskId(null)
+    if (hasil.sukses) router.refresh()
+  }
+
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: board.id })
   const {
     setNodeRef: setSortableRef,
@@ -572,11 +595,30 @@ function BoardColumn({
       <SortableContext items={board.tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
         <div ref={setDropRef} className="min-h-[4px] space-y-2 px-3 pb-1">
           {board.tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={dragDinonaktifkan ? { ...task, bolehGeser: false } : task}
-              onClick={() => onPilihTask(task.id)}
-            />
+            <div key={task.id}>
+              <TaskCard
+                task={dragDinonaktifkan ? { ...task, bolehGeser: false } : task}
+                onClick={() => onPilihTask(task.id)}
+              />
+              {isReviewBoard && bolehKelola && (
+                <div className="mt-1 flex gap-1.5">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); tanganiSetujui(task.id) }}
+                    disabled={loadingTaskId === task.id}
+                    className="flex-1 rounded-lg bg-green-500 px-2 py-1.5 text-xs font-bold text-white transition hover:bg-green-600 disabled:opacity-50"
+                  >
+                    {loadingTaskId === task.id ? '...' : 'Setujui'}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); tanganiRevisi(task.id) }}
+                    disabled={loadingTaskId === task.id}
+                    className="flex-1 rounded-lg border border-orange-300 bg-orange-50 px-2 py-1.5 text-xs font-bold text-orange-600 transition hover:bg-orange-100 disabled:opacity-50"
+                  >
+                    {loadingTaskId === task.id ? '...' : 'Revisi'}
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </SortableContext>
