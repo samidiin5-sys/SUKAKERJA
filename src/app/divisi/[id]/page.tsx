@@ -119,7 +119,7 @@ export default async function HalamanPapanDivisi({
               href={`/divisi/${id}/anggota`}
               className="rounded-full border border-maroon-700 bg-maroon-800 px-3 py-1.5 text-xs font-bold text-cream-50 shadow-sm hover:bg-maroon-700"
             >
-              Kelola Anggota
+              Pantau Staff
             </a>
           )}
         </div>
@@ -172,7 +172,18 @@ export default async function HalamanPapanDivisi({
                     <tbody>
                       {statistik.produktivitas.map((p) => (
                         <tr key={p.id} className="border-t border-cream-100">
-                          <td className="py-1.5 text-ink">{p.nama}</td>
+                          <td className="py-1.5">
+                            {bolehKelola ? (
+                              <a
+                                href={`/divisi/${id}/anggota/${p.id}`}
+                                className="font-semibold text-maroon-800 hover:text-orange-600 hover:underline transition"
+                              >
+                                {p.nama}
+                              </a>
+                            ) : (
+                              <span className="text-ink">{p.nama}</span>
+                            )}
+                          </td>
                           <td className="py-1.5 text-right text-ink">{p.aktif}</td>
                           <td className="py-1.5 text-right text-ink">{p.selesai}</td>
                           <td className={`py-1.5 text-right ${p.terlambat > 0 ? 'font-bold text-red-600' : 'text-ink'}`}>
