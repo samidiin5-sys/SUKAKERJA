@@ -72,6 +72,7 @@ export default function Sidebar({
     { href: '/lembur', label: 'Tetapkan Lembur', icon: <IkonJam /> },
     { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
     { href: '/admin/tugas-tersedia', label: 'Tugas Terbuka', icon: <IkonClipboard /> },
+    { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
   ]
 
   const navOwner: ItemNav[] = [
@@ -80,6 +81,7 @@ export default function Sidebar({
     { href: '/admin/lembur', label: 'Review Lembur', icon: <IkonJam /> },
     { href: '/admin/tugas-tersedia', label: 'Tugas Terbuka', icon: <IkonClipboard /> },
     { href: '/admin/log-sistem', label: 'Log Aktivitas', icon: <IkonLog /> },
+    { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
   ]
 
   const isi = (
