@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import AppShell from '@/components/app-shell'
 import { ambilDataShell } from '@/lib/shell-data'
@@ -36,12 +37,12 @@ export default async function HalamanTugasRutin({
   return (
     <AppShell data={data}>
       <div className="mx-auto max-w-3xl">
-        <a
+        <Link
           href={`/divisi/${id}`}
           className="mb-4 inline-block text-xs font-semibold text-maroon-700 hover:underline"
         >
           ← Kembali ke Papan {divisi.nama}
-        </a>
+        </Link>
 
         <div className="mb-5 flex items-start justify-between gap-3">
           <div>

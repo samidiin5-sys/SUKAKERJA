@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { DataShell } from '@/lib/shell-data'
@@ -116,10 +117,10 @@ export default function Sidebar({
         ))}
         {tugasSayaGrup && (
           <Suspense fallback={
-            <a href={tugasSayaGrup.href} className="flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold text-cream-200/80 hover:bg-cream-50/10 hover:text-cream-50">
+            <Link href={tugasSayaGrup.href} className="flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold text-cream-200/80 hover:bg-cream-50/10 hover:text-cream-50">
               <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{tugasSayaGrup.icon}</span>
               {!collapsed && <span className="truncate">{tugasSayaGrup.label}</span>}
-            </a>
+            </Link>
           }>
             <ItemSidebarGrup grup={tugasSayaGrup} pathname={pathname} collapsed={collapsed} />
           </Suspense>
@@ -307,7 +308,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
       {!collapsed && buka && (
         <div className="ml-4 mt-1 space-y-1 border-l border-cream-50/20 pl-3">
           {grup.children.map((child) => (
-            <a
+            <Link
               key={child.href}
               href={child.href}
               className={`flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
@@ -317,7 +318,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
               }`}
             >
               {child.label}
-            </a>
+            </Link>
           ))}
         </div>
       )}
@@ -327,7 +328,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
 
 function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean; collapsed: boolean }) {
   return (
-    <a
+    <Link
       href={item.href}
       title={collapsed ? item.label : undefined}
       className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${
@@ -344,7 +345,7 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
           {item.label}
         </span>
       )}
-    </a>
+    </Link>
   )
 }
 
