@@ -39,7 +39,7 @@ export default async function HalamanPanduan() {
             {[
               { no: '01', label: 'Dashboard & Statistik', anchor: '#dashboard' },
               { no: '02', label: 'Tugas Saya', anchor: '#tugas-saya' },
-              { no: '03', label: 'Papan Kanban Divisi', anchor: '#kanban' },
+              { no: '03', label: 'Papan Kanban & Alur Review', anchor: '#kanban' },
               { no: '04', label: 'Detail & Checklist Tugas', anchor: '#detail-tugas' },
               { no: '05', label: 'Komentar & Lampiran', anchor: '#komentar' },
               { no: '06', label: 'Notifikasi', anchor: '#notifikasi' },
@@ -123,13 +123,22 @@ export default async function HalamanPanduan() {
             deskripsi="Klik nama divisi di sidebar kiri (misalnya 'IT' atau 'Kreatif'). Papan kanban divisi tersebut akan terbuka dengan semua kolom dan tugasnya."
           />
           <ItemPanduan
-            judul="Memahami Kolom"
-            deskripsi="Secara default ada 4 kolom: To Do (belum dikerjakan), Dikerjakan (sedang dalam proses), Review (menunggu pengecekan), dan Selesai. Tugasmu ada di kolom sesuai statusnya."
+            judul="Alur Kolom"
+            deskripsi="Ada 4 tahapan utama: To Do (belum mulai) → Dikerjakan (sedang dikerjakan) → Review (menunggu persetujuan owner) → Selesai (disetujui & selesai). Tugasmu mengalir dari kiri ke kanan sesuai progres."
           />
           <ItemPanduan
             judul="Geser Tugas (Drag & Drop)"
-            deskripsi="Kamu bisa menyeret kartu tugas dari satu kolom ke kolom lain untuk memperbarui statusnya. Misalnya seret dari 'Dikerjakan' ke 'Review' saat sudah selesai dikerjakan."
+            deskripsi="Seret kartu tugas ke kolom berikutnya untuk memperbarui statusnya. Saat selesai mengerjakan, seret ke kolom 'Review' agar owner bisa memeriksa hasilmu."
             tip="Filter aktif akan menonaktifkan drag & drop sementara. Reset filter terlebih dahulu untuk bisa menyeret kartu."
+          />
+          <ItemPanduan
+            judul="Proses Persetujuan di Kolom Review"
+            deskripsi="Saat tugasmu ada di kolom Review, owner atau admin divisi akan memeriksa hasilnya. Mereka bisa menekan 'Setujui' — tugas langsung pindah ke Selesai, atau 'Revisi' — tugas dikembalikan ke Dikerjakan dan perlu diperbaiki."
+            tip="Pantau tugasmu secara berkala. Kalau kartu tiba-tiba kembali ke kolom Dikerjakan, artinya owner meminta perbaikan — buka detail tugas untuk lihat catatannya."
+          />
+          <ItemPanduan
+            judul="Tugas Rutin Otomatis"
+            deskripsi="Beberapa tugas dibuat otomatis oleh sistem setiap hari, minggu, atau bulan berdasarkan template yang dibuat admin. Tugas ini langsung muncul di kolommu secara terjadwal — tidak perlu menunggu ditugaskan manual."
           />
           <ItemPanduan
             judul="Filter & Pencarian"
@@ -228,6 +237,8 @@ export default async function HalamanPanduan() {
           <ul className="space-y-2.5 text-sm text-ink/80">
             {[
               'Selalu perbarui status tugasmu dengan menggeser kartu ke kolom yang sesuai — ini membantu tim memantau perkembangan pekerjaan.',
+              'Saat selesai mengerjakan tugas, segera seret kartu ke kolom Review agar owner bisa memeriksa dan menyetujuinya.',
+              'Kalau tugasmu dikembalikan ke Dikerjakan (revisi), buka detail tugas dan baca komentar terbaru untuk tahu apa yang perlu diperbaiki.',
               'Gunakan komentar di panel tugas, bukan grup chat eksternal, agar catatan pekerjaan tetap terdokumentasi di satu tempat.',
               'Cek dashboard setiap pagi untuk memantau tugas yang jatuh tempo hari ini.',
               'Jika menemukan masalah atau butuh akses ke divisi tertentu, hubungi Super Admin atau Owner organisasimu.',
