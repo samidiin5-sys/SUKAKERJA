@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { updateProfil, uploadFoto } from './actions'
 
-const MAKS_UKURAN_FOTO = 2 * 1024 * 1024 // 2MB
-const TIPE_FOTO_DIIZINKAN = ['image/jpeg', 'image/png']
+const MAKS_UKURAN_FOTO = 5 * 1024 * 1024 // 5MB
+const TIPE_FOTO_DIIZINKAN = ['image/jpeg', 'image/png', 'image/webp']
 
 export default function FormProfil({
   profilAwal,
@@ -56,7 +56,7 @@ export default function FormProfil({
     }
 
     if (file.size > MAKS_UKURAN_FOTO) {
-      setPesanFoto({ sukses: false, teks: 'Ukuran foto maksimal 2 MB' })
+      setPesanFoto({ sukses: false, teks: 'Ukuran foto maksimal 5 MB' })
       e.target.value = ''
       return
     }
@@ -120,13 +120,13 @@ export default function FormProfil({
             >
               {sedangMenyimpanFoto ? 'Mengunggah...' : 'Ganti Foto'}
             </button>
-            <p className="mt-1.5 text-xs text-muted">JPG atau PNG, maks. 2 MB</p>
+            <p className="mt-1.5 text-xs text-muted">JPG, PNG, atau WebP, maks. 5 MB</p>
           </div>
 
           <input
             ref={inputFotoRef}
             type="file"
-            accept="image/jpeg,image/png"
+            accept="image/jpeg,image/png,image/webp"
             className="hidden"
             onChange={tanganiPilihFoto}
           />
