@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { updateProfil, uploadFoto } from './actions'
+import { updateProfil, buatSignedUrlUpload, simpanFotoUrl } from './actions'
 
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024 // 5MB
 const TIPE_FOTO_DIIZINKAN = ['image/jpeg', 'image/png', 'image/webp']
@@ -42,6 +42,7 @@ export default function FormProfil({
     const file = e.target.files?.[0]
     if (!file) return
     setPesanFoto(null)
+
     if (!TIPE_FOTO_DIIZINKAN.includes(file.type)) {
       setPesanFoto({ sukses: false, teks: 'Format foto harus JPG, PNG, atau WebP' })
       e.target.value = ''
@@ -52,16 +53,40 @@ export default function FormProfil({
       e.target.value = ''
       return
     }
+
     setSedangMenyimpanFoto(true)
-    const formData = new FormData()
-    formData.append('foto', file)
-    const hasil = await uploadFoto(formData)
+
+    // Step 1: minta signed URL dari server (cepat, cuma metadata)
+    const signed = await buatSignedUrlUpload(file.type, file.size)
+    if (!signed.sukses) {
+      setPesanFoto({ sukses: false, teks: signed.pesan })
+      setSedangMenyimpanFoto(false)
+      e.target.value = ''
+      return
+    }
+
+    // Step 2: upload langsung dari browser ke Supabase (file tidak lewat server)
+    const uploadRes = await fetch(signed.signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type, 'x-upsert': 'true' },
+      body: file,
+    })
+    if (!uploadRes.ok) {
+      setPesanFoto({ sukses: false, teks: 'Gagal mengunggah foto. Coba lagi.' })
+      setSedangMenyimpanFoto(false)
+      e.target.value = ''
+      return
+    }
+
+    // Step 3: beritahu server untuk simpan URL ke profil
+    const hasil = await simpanFotoUrl(signed.path)
     setSedangMenyimpanFoto(false)
     if (!hasil.sukses) {
       setPesanFoto({ sukses: false, teks: hasil.pesan })
       e.target.value = ''
       return
     }
+
     setPreview(URL.createObjectURL(file))
     setPesanFoto({ sukses: true, teks: 'Foto berhasil diperbarui.' })
     router.refresh()

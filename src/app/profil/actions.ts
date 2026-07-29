@@ -32,20 +32,31 @@ export type HasilUploadFoto =
   | { sukses: true; fotoUrl: string }
   | { sukses: false; pesan: string }
 
-export async function uploadFoto(formData: FormData): Promise<HasilUploadFoto> {
+// Step 1: server buat signed URL, browser upload langsung ke Supabase
+export type HasilSignedUrl =
+  | { sukses: true; signedUrl: string; path: string }
+  | { sukses: false; pesan: string }
+
+export async function buatSignedUrlUpload(
+  tipe: string,
+  ukuran: number
+): Promise<HasilSignedUrl> {
   const sesi = await ambilSesiPengguna()
-  const file = formData.get('foto') as File | null
-  if (!file || file.size === 0) return { sukses: false, pesan: 'File tidak boleh kosong' }
-  if (file.size > MAKS_UKURAN_FOTO) return { sukses: false, pesan: 'Ukuran foto maksimal 5 MB' }
-  if (!TIPE_FOTO_DIIZINKAN.includes(file.type))
-    return { sukses: false, pesan: 'Format foto harus JPG atau PNG' }
+  if (ukuran > MAKS_UKURAN_FOTO) return { sukses: false, pesan: 'Ukuran foto maksimal 5 MB' }
+  if (!TIPE_FOTO_DIIZINKAN.includes(tipe)) return { sukses: false, pesan: 'Format foto harus JPG, PNG, atau WebP' }
+
+  const ext = tipe === 'image/png' ? 'png' : tipe === 'image/webp' ? 'webp' : 'jpg'
+  const path = `${sesi.id}/${crypto.randomUUID()}.${ext}`
   const admin = createAdminClient()
-  const path = `${sesi.id}/${crypto.randomUUID()}.jpg`
-  const { error: errUpload } = await admin.storage.from(BUCKET_AVATAR).upload(path, file, {
-    contentType: file.type,
-    upsert: true,
-  })
-  if (errUpload) return { sukses: false, pesan: 'Gagal mengunggah foto. Coba lagi.' }
+  const { data, error } = await admin.storage.from(BUCKET_AVATAR).createSignedUploadUrl(path)
+  if (error || !data) return { sukses: false, pesan: 'Gagal membuat URL upload. Coba lagi.' }
+  return { sukses: true, signedUrl: data.signedUrl, path }
+}
+
+// Step 2: setelah browser selesai upload, simpan URL ke profil
+export async function simpanFotoUrl(path: string): Promise<HasilUploadFoto> {
+  const sesi = await ambilSesiPengguna()
+  const admin = createAdminClient()
   const { data: urlData } = admin.storage.from(BUCKET_AVATAR).getPublicUrl(path)
   const fotoUrl = urlData.publicUrl
   await admin.from('profiles').update({ foto_url: fotoUrl }).eq('id', sesi.id)
