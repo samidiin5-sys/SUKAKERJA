@@ -311,21 +311,13 @@ export default function PapanDivisi({
       )}
 
       {pantauNama && (
-        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" className="flex-shrink-0">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-            <span className="text-xs font-bold text-orange-800">
-              Memantau Ruang Kerja: <span className="text-orange-700">{pantauNama}</span>
-            </span>
-          </div>
-          <a
-            href={`/divisi/${divisionId}/anggota`}
-            className="flex-shrink-0 text-xs font-semibold text-orange-600 hover:text-orange-800 hover:underline"
-          >
-            ← Daftar Staff
-          </a>
+        <div className="mb-3 flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" className="flex-shrink-0">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span className="text-xs font-semibold text-orange-700">
+            Menampilkan task milik <span className="font-bold">{pantauNama}</span>
+          </span>
         </div>
       )}
 
