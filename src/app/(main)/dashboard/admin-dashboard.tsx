@@ -193,7 +193,7 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
                 <line x1="19" y1="8" x2="19" y2="14" />
                 <line x1="22" y1="11" x2="16" y2="11" />
               </svg>
-              <span>+ Karyawan</span>
+              <span>Karyawan</span>
             </a>
             <a
               href="/admin/divisi"
@@ -203,7 +203,7 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <span>+ Tambah Divisi</span>
+              <span>Tambah Divisi</span>
             </a>
           </div>
         </div>
