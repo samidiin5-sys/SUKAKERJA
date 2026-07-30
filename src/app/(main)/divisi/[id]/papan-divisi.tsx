@@ -253,6 +253,47 @@ export default function PapanDivisi({
     if (!boardTujuan) return
 
     const pindahAntarKolom = boardAsalAwal && boardAsalAwal.id !== boardTujuan.id
+
+    if (pindahAntarKolom && boardTujuan.isCompletionBoard && !bolehKelola) {
+      const reviewBoard = boards.find((b) => b.nama.toLowerCase() === 'review')
+      if (reviewBoard) {
+        alert(
+          'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.'
+        )
+        const taskObj = boardTujuan.tasks.find((t) => t.id === activeId)
+        if (taskObj) {
+          const taskDenganStatus = {
+            ...taskObj,
+            completedAt: null,
+          }
+          const updatedBoards = boardsFinal.map((b) => {
+            if (b.id === boardTujuan.id) {
+              return { ...b, tasks: b.tasks.filter((t) => t.id !== activeId) }
+            }
+            if (b.id === reviewBoard.id) {
+              if (b.tasks.some((t) => t.id === activeId)) return b
+              return { ...b, tasks: [...b.tasks, taskDenganStatus] }
+            }
+            return b
+          })
+          setBoards(updatedBoards)
+          const indexBaru = reviewBoard.tasks.length
+          const hasil = await pindahkanTask(divisionId, activeId, reviewBoard.id, indexBaru)
+          if (!hasil.sukses) {
+            if (snapshot) setBoards(snapshot)
+            setPesanError(hasil.pesan)
+            return
+          }
+          router.refresh()
+          return
+        }
+      } else {
+        alert('Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.')
+        if (snapshot) setBoards(snapshot)
+        return
+      }
+    }
+
     const urutanTujuan = boardTujuan.tasks.map((t, i) => ({ taskId: t.id, urutan: i }))
     const indexBaru = boardTujuan.tasks.findIndex((t) => t.id === activeId)
 

@@ -113,6 +113,28 @@ export default function DetailTaskPanel({
   }
 
   async function tanganiPindah(boardIdBaru: string) {
+    const boardTujuan = boards.find((b) => b.id === boardIdBaru)
+    if (boardTujuan?.isCompletionBoard && !bolehKelola) {
+      const reviewBoard = boards.find((b) => b.nama.toLowerCase() === 'review')
+      if (reviewBoard) {
+        alert(
+          'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.'
+        )
+        setSedangSimpan(true)
+        const hasil = await pindahkanTask(divisionId, taskId, reviewBoard.id)
+        setSedangSimpan(false)
+        if (!hasil.sukses) {
+          setPesan(hasil.pesan)
+          return
+        }
+        onBerubah()
+        return
+      } else {
+        alert('Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.')
+        return
+      }
+    }
+
     setSedangSimpan(true)
     const hasil = await pindahkanTask(divisionId, taskId, boardIdBaru)
     setSedangSimpan(false)
@@ -124,6 +146,27 @@ export default function DetailTaskPanel({
   }
 
   async function tanganiSelesai() {
+    if (!bolehKelola) {
+      const reviewBoard = boards.find((b) => b.nama.toLowerCase() === 'review')
+      if (reviewBoard) {
+        alert(
+          'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.'
+        )
+        setSedangSimpan(true)
+        const hasil = await pindahkanTask(divisionId, taskId, reviewBoard.id)
+        setSedangSimpan(false)
+        if (!hasil.sukses) {
+          setPesan(hasil.pesan)
+          return
+        }
+        onBerubah()
+        return
+      } else {
+        alert('Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.')
+        return
+      }
+    }
+
     setSedangSimpan(true)
     const hasil = await tandaiSelesai(divisionId, taskId)
     setSedangSimpan(false)

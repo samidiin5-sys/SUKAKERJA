@@ -717,6 +717,13 @@ export async function pindahkanTask(
     return { sukses: false, pesan: 'Tidak boleh memindahkan task ke board divisi lain' }
   }
 
+  if (board.is_completion_board && sesi.roleSistem !== 'super_admin' && sesi.roleSistem !== 'owner') {
+    return {
+      sukses: false,
+      pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review.',
+    }
+  }
+
   const update: Record<string, unknown> = { board_id: boardIdBaru }
   if (board.is_completion_board) {
     update.completed_at = new Date().toISOString()
@@ -792,6 +799,13 @@ export async function ubahUrutanTask(
 
 export async function tandaiSelesai(divisionId: string, taskId: string): Promise<HasilBuatTask> {
   const sesi = await pastikanAnggotaDivisi(divisionId)
+
+  if (sesi.roleSistem !== 'super_admin' && sesi.roleSistem !== 'owner') {
+    return {
+      sukses: false,
+      pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review.',
+    }
+  }
 
   const admin = createAdminClient()
 
