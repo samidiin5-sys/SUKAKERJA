@@ -93,7 +93,7 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
                 ✓ Selesai · {new Date(dipilih.completedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             )}
-            <a href={`/divisi/${dipilih.divisiId}`} onClick={() => setDipilih(null)}
+            <a href={`/divisi/${dipilih.divisiId}?task=${dipilih.id}`} onClick={() => setDipilih(null)}
               className="block w-full rounded-xl bg-maroon-800 py-2.5 text-center text-sm font-bold text-white hover:bg-maroon-700">
               Lihat di Papan Divisi
             </a>

@@ -147,7 +147,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
                   {kelompok[s.kunci].map((t) => (
                     <li key={t.id}>
                       <a
-                        href={`/divisi/${t.divisiId}`}
+                        href={`/divisi/${t.divisiId}?task=${t.id}`}
                         className="group flex items-start justify-between gap-3 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-[0_10px_24px_rgba(92,31,33,0.04)] transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-[0_16px_32px_rgba(92,31,33,0.08)]"
                       >
                         <div className="flex min-w-0 flex-1 items-start gap-3">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   DndContext,
   DragOverlay,
@@ -95,6 +95,18 @@ export default function PapanDivisi({
     defaultAssigneeId ?? (isStaff ? currentUserId : 'semua')
   )
 
+  const searchParams = useSearchParams()
+  const taskIdParam = searchParams.get('task')
+
+  useEffect(() => {
+    if (taskIdParam) {
+      const board = cariBoardTask(taskIdParam, boards)
+      if (board) {
+        setTaskDipilih({ id: taskIdParam, boardId: board.id })
+      }
+    }
+  }, [taskIdParam, boards])
+
   const filterAktif =
     cari.trim() !== '' ||
     filterStatus !== 'semua' ||
@@ -161,6 +173,11 @@ export default function PapanDivisi({
 
   function tutupPanel() {
     setTaskDipilih(null)
+    const params = new URLSearchParams(searchParams.toString())
+    if (params.has('task')) {
+      params.delete('task')
+      router.push(`?${params.toString()}`)
+    }
   }
 
   function tanganiBerubah() {
