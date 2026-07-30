@@ -97,6 +97,7 @@ export default function PanduanLayout({
                 <span className="flex items-center gap-2">
                   <span className="text-[9px] font-bold text-muted/40">{section.nomor}</span>
                   <span>{section.judul}</span>
+                </span>
               </button>
             ))}
           </nav>
@@ -148,6 +149,7 @@ export default function PanduanLayout({
                     </div>
                     {section.content}
                   </div>
+                </div>
                 {index < sections.length - 1 && (
                   <div className="mt-14 border-t border-cream-100" />
                 )}
@@ -214,6 +216,7 @@ export default function PanduanLayout({
             </motion.div>
           )}
         </div>
+      </div>
     </div>
   )
 }
@@ -232,6 +235,7 @@ export function PanduanSub({ judul, children }: { judul: string; children: React
       <div className="ml-3 pl-3 border-l border-cream-100">
         {children}
       </div>
+    </div>
   )
 }
 
