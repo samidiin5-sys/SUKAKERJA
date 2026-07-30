@@ -106,10 +106,12 @@ export default function PapanDivisi({
     if (filterStatus === 'selesai' && !task.completedAt) return false
     if (filterPrioritas !== 'semua' && task.prioritas !== filterPrioritas) return false
     if (filterAssignee === 'saya' && !task.assignees.some((a) => a.id === currentUserId)) return false
+    if (filterAssignee === 'dibuat-saya' && task.ditugaskanOleh !== currentUserId) return false
     if (filterAssignee === 'tanpa' && task.assignees.length > 0) return false
     if (
       filterAssignee !== 'semua' &&
       filterAssignee !== 'saya' &&
+      filterAssignee !== 'dibuat-saya' &&
       filterAssignee !== 'tanpa' &&
       !task.assignees.some((a) => a.id === filterAssignee)
     ) {
@@ -461,10 +463,11 @@ export default function PapanDivisi({
             <select
               value={filterAssignee}
               onChange={(e) => setFilterAssignee(e.target.value)}
-              className="min-w-0 rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
+              className="min-w-0 rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500 font-semibold text-ink cursor-pointer"
             >
               <option value="semua">Semua P. Jawab</option>
-              <option value="saya">Saya</option>
+              <option value="saya">Ditugaskan ke Saya</option>
+              <option value="dibuat-saya">Dibuat oleh Saya</option>
               <option value="tanpa">Tanpa Assignee</option>
               {anggota.map((a) => (
                 <option key={a.id} value={a.id}>
