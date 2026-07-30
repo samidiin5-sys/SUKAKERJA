@@ -266,11 +266,23 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
       return new Date(t.completedAt) >= threshold
     })
 
-    const selesai = filtered.filter(t => t.completedAt !== null || t.isCompletionBoard).length
-    const dikerjakan = filtered.filter(t => t.completedAt === null && !t.isCompletionBoard && !t.boardNama.toLowerCase().includes('to do') && !t.boardNama.toLowerCase().includes('belum dimulai')).length
+    const selesai = filtered.filter(t => t.completedAt !== null || t.isCompletionBoard || t.boardNama.toLowerCase().includes('review')).length
+    const dikerjakan = filtered.filter(t => t.completedAt === null && !t.isCompletionBoard && !t.boardNama.toLowerCase().includes('review') && !t.boardNama.toLowerCase().includes('to do') && !t.boardNama.toLowerCase().includes('belum dimulai')).length
     const belumMulai = filtered.length - selesai - dikerjakan
 
-    const persentase = filtered.length > 0 ? Math.round((selesai / filtered.length) * 100) : 0
+    const totalProgress = filtered.reduce((acc, t) => {
+      if (t.completedAt !== null || t.isCompletionBoard || t.boardNama.toLowerCase().includes('review')) {
+        return acc + 100
+      }
+      if (t.boardNama.toLowerCase().includes('to do') || t.boardNama.toLowerCase().includes('belum dimulai')) {
+        return acc + 0
+      }
+      if (t.checklistTotal > 0) {
+        return acc + (t.checklistSelesai / t.checklistTotal) * 100
+      }
+      return acc + 50
+    }, 0)
+    const persentase = filtered.length > 0 ? Math.round(totalProgress / filtered.length) : 0
 
     return {
       total: filtered.length,
@@ -520,7 +532,7 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
                   <div className="flex items-center justify-between border-b border-cream-50 pb-1.5">
                     <div className="flex items-center gap-1.5">
                       <div className="h-2 w-2 rounded-full bg-green-500" />
-                      <span className="text-muted">Selesai</span>
+                      <span className="text-muted">Selesai & Review</span>
                     </div>
                     <span className="font-bold text-ink">{progressData.selesai} task</span>
                   </div>

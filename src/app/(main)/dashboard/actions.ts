@@ -432,8 +432,8 @@ export async function ambilDetailDashboardStaff(): Promise<DetailDashboardStaff>
   const tujuhHariLalu = new Date(awalHariIni)
   tujuhHariLalu.setDate(tujuhHariLalu.getDate() - 6)
 
-  const aktif = tasks.filter((t) => t.completedAt === null)
-  const selesai = tasks.filter((t) => t.completedAt !== null)
+  const aktif = tasks.filter((t) => t.completedAt === null && !t.isCompletionBoard)
+  const selesai = tasks.filter((t) => t.completedAt !== null || t.isCompletionBoard)
 
   const jatuhTempoHariIni = aktif.filter((t) => {
     if (!t.dueDate) return false
