@@ -336,35 +336,62 @@ export default function DetailTaskPanel({
             <div>
               <label className="mb-2 block text-xs font-bold tracking-wider text-muted uppercase">Penanggung Jawab</label>
               <div className="flex flex-wrap gap-2">
-                {anggota.map((a) => {
-                  const terpilih = assigneeIds.includes(a.id)
-                  const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
-                  return (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => bolehKelola && toggleAssignee(a.id)}
-                      disabled={!bolehKelola}
-                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition-all duration-200 active:scale-95 disabled:active:scale-100 ${
-                        terpilih
-                          ? 'border-maroon-800 bg-maroon-800 text-cream-50 shadow-md shadow-maroon-800/10'
-                          : 'border-cream-200 bg-cream-50/50 hover:bg-cream-100 text-ink'
-                      } ${!bolehKelola ? 'cursor-default opacity-85 active:scale-100' : ''}`}
-                    >
-                      <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-black uppercase ring-1 ${
-                        terpilih ? 'bg-cream-100 text-maroon-800 ring-cream-200/50' : 'bg-maroon-800 text-cream-50 ring-maroon-800/20'
-                      } overflow-hidden shadow-inner`}>
-                        {a.fotoUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={a.fotoUrl} alt={a.nama} className="h-full w-full object-cover rounded-full" />
-                        ) : (
-                          inisial
-                        )}
-                      </div>
-                      <span>{a.nama}</span>
-                    </button>
-                  )
-                })}
+                {bolehKelola ? (
+                  anggota.map((a) => {
+                    const terpilih = assigneeIds.includes(a.id)
+                    const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => toggleAssignee(a.id)}
+                        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                          terpilih
+                            ? 'border-maroon-800 bg-maroon-800 text-cream-50 shadow-md shadow-maroon-800/10'
+                            : 'border-cream-200 bg-cream-50/50 hover:bg-cream-100 text-ink'
+                        }`}
+                      >
+                        <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-black uppercase ring-1 ${
+                          terpilih ? 'bg-cream-100 text-maroon-800 ring-cream-200/50' : 'bg-maroon-800 text-cream-50 ring-maroon-800/20'
+                        } overflow-hidden shadow-inner`}>
+                          {a.fotoUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={a.fotoUrl} alt={a.nama} className="h-full w-full object-cover rounded-full" />
+                          ) : (
+                            inisial
+                          )}
+                        </div>
+                        <span>{a.nama}</span>
+                      </button>
+                    )
+                  })
+                ) : (
+                  (() => {
+                    const assignedMembers = anggota.filter((a) => assigneeIds.includes(a.id))
+                    if (assignedMembers.length === 0) {
+                      return <span className="text-xs font-semibold text-muted italic">Belum ada penanggung jawab</span>
+                    }
+                    return assignedMembers.map((a) => {
+                      const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+                      return (
+                        <div
+                          key={a.id}
+                          className="flex items-center gap-2 rounded-xl border border-maroon-800 bg-maroon-800 text-cream-50 px-3 py-2 text-xs font-bold shadow-md shadow-maroon-800/10"
+                        >
+                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-black uppercase ring-1 bg-cream-100 text-maroon-800 ring-cream-200/50 overflow-hidden shadow-inner">
+                            {a.fotoUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={a.fotoUrl} alt={a.nama} className="h-full w-full object-cover rounded-full" />
+                            ) : (
+                              inisial
+                            )}
+                          </div>
+                          <span>{a.nama}</span>
+                        </div>
+                      )
+                    })
+                  })()
+                )}
               </div>
             </div>
 
