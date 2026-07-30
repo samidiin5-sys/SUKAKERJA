@@ -13,12 +13,7 @@ type ItemNav = {
   icon: React.ReactNode
 }
 
-type ItemNavGrup = {
-  href: string
-  label: string
-  icon: React.ReactNode
-  children: { href: string; label: string }[]
-}
+
 
 export default function Sidebar({
   data,
@@ -48,21 +43,12 @@ export default function Sidebar({
   const navUtama: ItemNav[] = [
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
     ...(!isSuperAdmin && !isOwner ? [
+      { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
       { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
       { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
       { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
     ] : []),
   ]
-
-  const tugasSayaGrup: ItemNavGrup | null = !isSuperAdmin && !isOwner ? {
-    href: '/tugas-saya',
-    label: 'Tugas Saya',
-    icon: <IkonDaftar />,
-    children: [
-      { href: '/tugas-saya', label: 'Daftar' },
-      { href: '/tugas-saya?view=kalender', label: 'Kalender' },
-    ],
-  } : null
 
   const navAdmin: ItemNav[] = [
     { href: '/admin/karyawan', label: 'Kelola Karyawan', icon: <IkonOrang /> },
@@ -114,20 +100,7 @@ export default function Sidebar({
 
       <nav className="flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-4 custom-scrollbar">
         <SeksiNav judul="Menu" collapsed={collapsed} />
-        {navUtama.slice(0, 1).map((item) => (
-          <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
-        ))}
-        {tugasSayaGrup && (
-          <Suspense fallback={
-            <Link href={tugasSayaGrup.href} className="flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold text-cream-200/80 hover:bg-cream-50/10 hover:text-cream-50">
-              <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{tugasSayaGrup.icon}</span>
-              {!collapsed && <span className="truncate">{tugasSayaGrup.label}</span>}
-            </Link>
-          }>
-            <ItemSidebarGrup grup={tugasSayaGrup} pathname={pathname} collapsed={collapsed} />
-          </Suspense>
-        )}
-        {navUtama.slice(1).map((item) => (
+        {navUtama.map((item) => (
           <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
         ))}
 
@@ -263,72 +236,7 @@ function SeksiNav({ judul, collapsed }: { judul: string; collapsed: boolean }) {
   )
 }
 
-function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pathname: string; collapsed: boolean }) {
-  const params = useSearchParams()
-  const viewParam = params.get('view') ?? ''
-  const isAktif = pathname.startsWith(grup.href)
-  const [buka, setBuka] = useState(isAktif)
 
-  function isChildAktif(childHref: string) {
-    if (childHref.includes('view=kalender')) return pathname === grup.href && viewParam === 'kalender'
-    return pathname === grup.href && viewParam !== 'kalender'
-  }
-
-  return (
-    <div>
-      <button
-        onClick={() => setBuka((b) => !b)}
-        title={collapsed ? grup.label : undefined}
-        className={`group relative flex w-full items-center gap-3 rounded-[14px] px-2.5 py-2 text-sm font-semibold transition ${
-          isAktif
-            ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
-            : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'
-        }`}
-      >
-        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{grup.icon}</span>
-        {!collapsed && (
-          <>
-            <span className="flex-1 truncate text-left">{grup.label}</span>
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className={`flex-shrink-0 transition-transform duration-200 ${buka ? 'rotate-180' : ''}`}
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </>
-        )}
-        {collapsed && (
-          <span className="pointer-events-none absolute left-full ml-2 hidden whitespace-nowrap rounded-lg bg-maroon-950 px-2.5 py-1.5 text-xs font-semibold text-cream-50 shadow-lg group-hover:block">
-            {grup.label}
-          </span>
-        )}
-      </button>
-
-      {!collapsed && buka && (
-        <div className="ml-4 mt-1 space-y-1 border-l border-cream-50/20 pl-3">
-          {grup.children.map((child) => (
-            <Link
-              key={child.href}
-              href={child.href}
-              className={`flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
-                isChildAktif(child.href)
-                  ? 'text-orange-300'
-                  : 'text-cream-200/65 hover:bg-white/10 hover:text-cream-50'
-              }`}
-            >
-              {child.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
 
 function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean; collapsed: boolean }) {
   return (
