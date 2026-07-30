@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
@@ -293,35 +293,40 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
 
   return (
     <div className="space-y-6">
-      {/* 1. WELCOME SECTION */}
-      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-cream-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
-        <div>
-          <span className="text-xs font-bold text-orange-600 uppercase tracking-widest">{dapatkanSapaan()}</span>
-          <h2 className="text-2xl font-black text-ink mt-0.5">
-            Halo, {data.nama.split(' ')[0]}
-          </h2>
-          <p className="text-xs text-muted mt-1">{formatTanggalIndonesia()}</p>
-          <p className="text-sm text-ink/90 font-medium mt-3 bg-cream-50 px-3.5 py-2 rounded-xl inline-block border border-cream-100">
-            {ringkasanPekerjaan}
-          </p>
-        </div>
+      {/* 1. WELCOME SECTION — Premium Redesigned Banner */}
+      <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 text-white shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-maroon-500/10 blur-3xl" />
+        
+        <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <span className="text-[10px] font-bold text-blue-200/70 uppercase tracking-widest">{dapatkanSapaan()}</span>
+            <h2 className="text-2xl font-black text-white tracking-tight mt-0.5">
+              Halo, {data.nama.split(' ')[0]} 👋
+            </h2>
+            <p className="text-xs font-semibold text-slate-300 mt-1">{formatTanggalIndonesia()}</p>
+            <p className="text-xs font-semibold text-slate-200 leading-relaxed max-w-xl mt-3.5 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl inline-block">
+              {ringkasanPekerjaan}
+            </p>
+          </div>
 
-        <div className="flex flex-wrap gap-2.5 sm:self-center">
-          <a
-            href="/tugas-saya"
-            className="flex items-center gap-2 rounded-full bg-maroon-800 hover:bg-maroon-700 px-4 py-2 text-xs font-bold text-cream-50 shadow-sm transition"
-          >
-            Lihat Tugas Saya
-            <IconChevronKanan />
-          </a>
-          {detail.divisiList.length > 0 && (
+          <div className="flex flex-wrap gap-2.5 shrink-0">
             <a
-              href={`/divisi/${detail.divisiList[0].id}`}
-              className="flex items-center gap-2 rounded-full border border-cream-200 hover:border-orange-500 bg-white hover:text-orange-600 px-4 py-2 text-xs font-bold text-maroon-700 shadow-sm transition"
+              href="/tugas-saya"
+              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95 cursor-pointer"
             >
-              Buka Kanban
+              Lihat Tugas Saya
+              <IconChevronKanan />
             </a>
-          )}
+            {detail.divisiList.length > 0 && (
+              <a
+                href={`/divisi/${detail.divisiList[0].id}`}
+                className="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-4.5 py-2.5 text-xs font-bold text-white transition-all duration-200 hover:bg-white/20 active:scale-95 cursor-pointer"
+              >
+                Buka Kanban
+              </a>
+            )}
+          </div>
         </div>
       </div>
 

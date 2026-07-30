@@ -162,45 +162,50 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
 
   return (
     <div className="space-y-6">
-      {/* 1. Welcome Section */}
-      <div className="flex flex-col gap-4 rounded-3xl border border-cream-200/40 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-black text-maroon-800 leading-snug">
-            {sapaan}, {shellData.nama.split(' ')[0]} 👋
-          </h2>
-          <p className="mt-0.5 text-xs font-bold text-muted/70">{tanggalHariIni}</p>
-          <p className="mt-2 text-xs font-semibold text-ink/80 leading-relaxed">
-            Perusahaan sedang mengelola <span className="font-bold text-maroon-800">{dashboardData.statistik.totalTaskAktif} tugas aktif</span> 
-            {dashboardData.statistik.totalTaskTerlambat > 0 ? (
-              <span> dan <span className="font-extrabold text-red-600 animate-pulse">{dashboardData.statistik.totalTaskTerlambat} tugas terlambat</span> yang butuh penanganan segera.</span>
-            ) : (
-              ' dan tidak ada tugas yang terlambat saat ini. Kinerja bagus!'
-            )}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 shrink-0">
-          <a
-            href="/admin/karyawan"
-            className="flex items-center gap-1.5 rounded-xl bg-cream-50 hover:bg-cream-100 border border-cream-200/50 px-4 py-2.5 text-xs font-bold text-maroon-800 transition active:scale-95 shadow-sm"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-            <span>Karyawan</span>
-          </a>
-          <a
-            href="/admin/divisi"
-            className="flex items-center gap-1.5 rounded-xl bg-maroon-800 hover:bg-maroon-900 px-4 py-2.5 text-xs font-bold text-cream-50 transition active:scale-95 shadow-md shadow-maroon-800/10"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            <span>Tambah Divisi</span>
-          </a>
+      {/* 1. Welcome Section — Premium Redesigned Banner */}
+      <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 text-white shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-maroon-500/10 blur-3xl" />
+        
+        <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight text-white leading-tight">
+              {sapaan}, {shellData.nama.split(' ')[0]} 👋
+            </h2>
+            <p className="mt-1.5 text-xs font-bold text-slate-300">{tanggalHariIni}</p>
+            <p className="mt-2.5 text-xs font-semibold text-slate-200 leading-relaxed max-w-xl">
+              Perusahaan sedang mengelola <span className="font-extrabold text-blue-200">{dashboardData.statistik.totalTaskAktif} tugas aktif</span> 
+              {dashboardData.statistik.totalTaskTerlambat > 0 ? (
+                <span> dan <span className="font-extrabold text-red-400 animate-pulse">{dashboardData.statistik.totalTaskTerlambat} tugas terlambat</span> yang membutuhkan penanganan segera.</span>
+              ) : (
+                ' dan tidak ada tugas yang terlambat saat ini. Kinerja bagus!'
+              )}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5 shrink-0">
+            <a
+              href="/admin/karyawan"
+              className="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-4.5 py-2 text-xs font-bold text-white transition-all duration-200 hover:bg-white/20 active:scale-95 shadow-sm"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <line x1="19" y1="8" x2="19" y2="14" />
+                <line x1="22" y1="11" x2="16" y2="11" />
+              </svg>
+              <span>+ Karyawan</span>
+            </a>
+            <a
+              href="/admin/divisi"
+              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>+ Tambah Divisi</span>
+            </a>
+          </div>
         </div>
       </div>
 
