@@ -28,19 +28,32 @@ export default async function HalamanDashboard() {
         </>
       ) : isOwner ? (
         <>
-          {/* Greeting — compact, no big banner */}
-          <div className="mb-6 rounded-[28px] border border-cream-200 bg-white/95 p-5 shadow-[0_18px_45px_rgba(92,31,33,0.06)]">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          {/* Greeting — redesigned premium banner */}
+          <div className="relative mb-6 overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 text-white shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-maroon-500/10 blur-3xl" />
+            
+            <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Ringkasan hari ini</p>
-                <h2 className="mt-1 text-xl font-black text-maroon-800">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-blue-200/70">Ringkasan hari ini</p>
+                <h2 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-3xl">
                   Halo, {data.nama.split(' ')[0]} 👋
                 </h2>
-                <p className="mt-1 text-sm text-muted">{formatHariIni()}</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-300">{formatHariIni()}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-maroon-50 px-3 py-1.5 text-xs font-semibold text-maroon-700">Pusat kendali operasional</span>
-                <span className="rounded-full bg-cream-100 px-3 py-1.5 text-xs font-semibold text-muted">Akses cepat untuk tim</span>
+              <div className="flex flex-wrap gap-2.5">
+                <a
+                  href="/admin/log-sistem"
+                  className="rounded-full bg-white/10 border border-white/10 px-4.5 py-2 text-xs font-bold text-white transition-all duration-200 hover:bg-white/20 active:scale-95"
+                >
+                  Log Aktivitas ↗
+                </a>
+                <a
+                  href="/panduan"
+                  className="rounded-full bg-blue-600 px-4.5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95"
+                >
+                  Panduan Sistem ↗
+                </a>
               </div>
             </div>
           </div>
@@ -84,9 +97,9 @@ export default async function HalamanDashboard() {
             <div>
               <h3 className="mb-3 text-[11px] font-bold tracking-widest text-muted">AKSES CEPAT</h3>
               <div className="space-y-2.5">
-                <AksesCepat href="/admin/karyawan" label="Kelola Karyawan" sub="Buat & reset akun" warna="bg-maroon-700" />
-                <AksesCepat href="/admin/divisi" label="Kelola Divisi" sub="Buat & atur divisi" warna="bg-maroon-600" />
-                <AksesCepat href="/admin/data-terhapus" label="Data Terhapus" sub="Pulihkan task terhapus" warna="bg-red-600" />
+                <AksesCepat href="/admin/karyawan" label="Data Karyawan" sub="Daftar seluruh karyawan" warna="bg-maroon-700" />
+                <AksesCepat href="/admin/lembur" label="Review Lembur" sub="Persetujuan lembur staff" warna="bg-orange-500" />
+                <AksesCepat href="/admin/tugas-tersedia" label="Tugas Terbuka" sub="Kelola pool tugas tim" warna="bg-blue-600" />
               </div>
             </div>
           </div>
@@ -264,40 +277,134 @@ async function RingkasanOwner() {
   ])
 
   const kartu = [
-    { label: 'Karyawan Aktif', nilai: statistik.totalKaryawanAktif, warna: 'text-maroon-800', bg: 'bg-maroon-50', dot: 'bg-maroon-700' },
-    { label: 'Divisi Aktif', nilai: statistik.totalDivisiAktif, warna: 'text-orange-600', bg: 'bg-orange-50', dot: 'bg-orange-500' },
-    { label: 'Task Aktif', nilai: statistik.totalTaskAktif, warna: 'text-maroon-800', bg: 'bg-maroon-50', dot: 'bg-maroon-600' },
+    {
+      label: 'Karyawan Aktif',
+      nilai: statistik.totalKaryawanAktif,
+      warna: 'text-maroon-800',
+      bg: 'bg-white',
+      border: 'border-cream-200',
+      href: '/admin/karyawan',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      ),
+      iconBg: 'bg-indigo-50 text-indigo-600',
+    },
+    {
+      label: 'Divisi Aktif',
+      nilai: statistik.totalDivisiAktif,
+      warna: 'text-orange-600',
+      bg: 'bg-white',
+      border: 'border-cream-200',
+      href: null,
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <rect x="3" y="3" width="7" height="9" rx="1" />
+          <rect x="14" y="3" width="7" height="5" rx="1" />
+          <rect x="14" y="12" width="7" height="9" rx="1" />
+          <rect x="3" y="16" width="7" height="5" rx="1" />
+        </svg>
+      ),
+      iconBg: 'bg-amber-50 text-amber-600',
+    },
+    {
+      label: 'Task Aktif',
+      nilai: statistik.totalTaskAktif,
+      warna: 'text-maroon-800',
+      bg: 'bg-white',
+      border: 'border-cream-200',
+      href: null,
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <rect x="8" y="2" width="8" height="4" rx="1" />
+        </svg>
+      ),
+      iconBg: 'bg-emerald-50 text-emerald-600',
+    },
     {
       label: 'Task Terlambat',
       nilai: statistik.totalTaskTerlambat,
-      warna: statistik.totalTaskTerlambat > 0 ? 'text-red-600' : 'text-maroon-800',
-      bg: statistik.totalTaskTerlambat > 0 ? 'bg-red-50' : 'bg-cream-100',
-      dot: statistik.totalTaskTerlambat > 0 ? 'bg-red-500' : 'bg-cream-300',
+      warna: statistik.totalTaskTerlambat > 0 ? 'text-red-700' : 'text-slate-800',
+      bg: statistik.totalTaskTerlambat > 0 ? 'bg-red-50/50 shadow-sm shadow-red-500/5' : 'bg-white',
+      border: statistik.totalTaskTerlambat > 0 ? 'border-red-200' : 'border-cream-200',
+      href: null,
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      ),
+      iconBg: statistik.totalTaskTerlambat > 0 ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600',
     },
   ]
 
   return (
     <>
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {kartu.map((k) => (
-          <div key={k.label} className={`rounded-2xl border border-cream-200 ${k.bg} p-4 shadow-sm`}>
-            <div className="mb-2 flex items-center gap-1.5">
-              <div className={`h-1.5 w-1.5 rounded-full ${k.dot}`} />
-              <p className="text-[11px] font-semibold text-muted">{k.label}</p>
+        {kartu.map((k) => {
+          const cardContent = (
+            <>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted">{k.label}</p>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-xl ${k.iconBg}`}>
+                  {k.icon}
+                </div>
+              </div>
+              <p className={`text-3xl font-black ${k.warna}`}>{k.nilai}</p>
+              {k.href && (
+                <p className="mt-2 text-[10px] font-bold text-maroon-700 group-hover:underline">
+                  Lihat Detail →
+                </p>
+              )}
+            </>
+          )
+
+          return k.href ? (
+            <a
+              key={k.label}
+              href={k.href}
+              className={`group block rounded-2xl border ${k.border} ${k.bg} p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-maroon-200 hover:shadow-md`}
+            >
+              {cardContent}
+            </a>
+          ) : (
+            <div
+              key={k.label}
+              className={`rounded-2xl border ${k.border} ${k.bg} p-4 shadow-sm`}
+            >
+              {cardContent}
             </div>
-            <p className={`text-3xl font-black ${k.warna}`}>{k.nilai}</p>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
-      <div className="mb-5 rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-3 text-[11px] font-bold tracking-widest text-muted">
-          TUGAS YANG SAYA KIRIM {tugasDikirim.length > 0 && `(${tugasDikirim.length})`}
-        </h3>
+      <div className="mb-5 rounded-2xl border border-cream-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between border-b border-cream-100 pb-3">
+          <h3 className="text-[11px] font-bold tracking-widest text-muted">
+            TUGAS YANG SAYA KIRIM {tugasDikirim.length > 0 && `(${tugasDikirim.length})`}
+          </h3>
+        </div>
         {tugasDikirim.length === 0 ? (
-          <p className="text-sm text-muted">
-            Belum ada tugas yang dikirim. Buka papan divisi lalu klik &quot;Kirim Tugas&quot; untuk kirim tugas ke staff.
-          </p>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-cream-50 text-muted">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="9" y1="16" x2="13" y2="16" />
+              </svg>
+            </div>
+            <p className="max-w-md text-xs font-bold text-ink">Belum ada tugas yang Anda kirim</p>
+            <p className="mt-1 max-w-xs text-[11px] text-muted leading-relaxed font-semibold">
+              Buka papan kanban divisi Anda lalu klik tombol &quot;Kirim Tugas&quot; untuk mulai memberikan tugas rutin atau ad-hoc kepada staff.
+            </p>
+          </div>
         ) : (
           <div className="space-y-1.5">
             {tugasDikirim.map((t) => (
