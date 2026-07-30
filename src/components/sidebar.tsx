@@ -112,7 +112,7 @@ export default function Sidebar({
         </AnimatePresence>
       </div>
 
-      <nav className="flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-4">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-4 custom-scrollbar">
         <SeksiNav judul="Menu" collapsed={collapsed} />
         {navUtama.slice(0, 1).map((item) => (
           <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />

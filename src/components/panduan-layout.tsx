@@ -80,23 +80,23 @@ export default function PanduanLayout({
           }`}
           style={isTocSticky ? { top: '6rem' } : undefined}
         >
-          <nav className="space-y-0.5 border-l border-cream-200 pl-4">
-            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-muted/70 uppercase">
+          <nav className="relative border-l border-cream-200 pl-0">
+            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-muted/70 uppercase pl-4">
               Daftar Isi
             </p>
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`block w-full rounded-lg px-3 py-1.5 text-left text-xs font-semibold transition-all duration-200 ${
+                className={`block w-full py-2 text-left text-xs transition-all duration-200 pl-4 border-l-2 -ml-[1px] ${
                   activeId === section.id
-                    ? 'border-l-2 border-orange-500 bg-orange-50/50 text-orange-700 -ml-[18px] pl-[14px]'
-                    : 'text-muted/80 hover:text-ink hover:bg-cream-50'
+                    ? 'border-maroon-600 bg-maroon-50/50 text-maroon-800 font-bold rounded-r-lg'
+                    : 'border-transparent text-muted/70 hover:text-ink hover:bg-cream-50 rounded-r-lg'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold text-muted/40">{section.nomor}</span>
-                  <span>{section.judul}</span>
+                  <span className="text-[9px] font-bold text-muted/40 tabular-nums">{section.nomor}</span>
+                  <span className="truncate">{section.judul}</span>
                 </span>
               </button>
             ))}
