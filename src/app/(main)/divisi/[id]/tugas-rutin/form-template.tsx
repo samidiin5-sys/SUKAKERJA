@@ -93,8 +93,8 @@ export default function FormTemplate({
   const tanggalDalamBulan = Array.from({ length: 31 }, (_, i) => i + 1)
 
   return (
-    <form onSubmit={tanganiSubmit} className="space-y-4 rounded-2xl border border-cream-200 bg-white p-5 shadow-sm">
-      <h3 className="text-sm font-bold text-maroon-800">
+    <form onSubmit={tanganiSubmit} className="space-y-4 rounded-3xl border border-cream-200 bg-white p-5 shadow-[0_14px_40px_rgba(92,31,33,0.05)]">
+      <h3 className="text-sm font-black text-maroon-800 border-b border-cream-100 pb-2">
         {templateEdit ? 'Ubah Template' : 'Buat Template Baru'}
       </h3>
 
@@ -107,7 +107,7 @@ export default function FormTemplate({
           required
           maxLength={255}
           placeholder="Contoh: Laporan harian divisi"
-          className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+          className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
         />
       </div>
 
@@ -117,7 +117,7 @@ export default function FormTemplate({
           <select
             value={pola}
             onChange={e => setPola(e.target.value as PolaUlang)}
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
           >
             {PILIHAN_POLA.map(p => (
               <option key={p.value} value={p.value}>{p.label}</option>
@@ -130,7 +130,7 @@ export default function FormTemplate({
           <select
             value={prioritas}
             onChange={e => setPrioritas(e.target.value)}
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
           >
             {PILIHAN_PRIORITAS.map(p => (
               <option key={p.value} value={p.value}>{p.label}</option>
@@ -146,7 +146,7 @@ export default function FormTemplate({
             value={dayOfWeek ?? ''}
             onChange={e => setDayOfWeek(e.target.value === '' ? null : Number(e.target.value))}
             required
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
           >
             <option value="">Pilih hari...</option>
             {HARI_MINGGU.map(h => (
@@ -163,7 +163,7 @@ export default function FormTemplate({
             value={dayOfMonth ?? ''}
             onChange={e => setDayOfMonth(e.target.value === '' ? null : Number(e.target.value))}
             required
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
           >
             <option value="">Pilih tanggal...</option>
             {tanggalDalamBulan.map(t => (
@@ -177,14 +177,16 @@ export default function FormTemplate({
         <label className="mb-1 block text-xs font-semibold text-muted">
           Tenggat Otomatis (hari setelah dibuat)
         </label>
-        <input
-          type="number"
-          value={dueOffsetHari}
-          onChange={e => setDueOffsetHari(Math.max(0, Number(e.target.value)))}
-          min={0}
-          className="w-32 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
-        />
-        <span className="ml-2 text-xs text-muted">hari (0 = tidak ada tenggat)</span>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            value={dueOffsetHari}
+            onChange={e => setDueOffsetHari(Math.max(0, Number(e.target.value)))}
+            min={0}
+            className="w-24 rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
+          />
+          <span className="text-xs text-muted font-semibold">hari (0 = tidak ada tenggat)</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -195,7 +197,7 @@ export default function FormTemplate({
             value={tanggalMulai}
             onChange={e => setTanggalMulai(e.target.value)}
             required
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
           />
         </div>
         <div>
@@ -204,28 +206,39 @@ export default function FormTemplate({
             type="date"
             value={tanggalSelesai}
             onChange={e => setTanggalSelesai(e.target.value)}
-            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
+            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-muted">Penanggung Jawab</label>
-        <div className="flex flex-wrap gap-2">
-          {anggota.map(a => (
-            <button
-              key={a.id}
-              type="button"
-              onClick={() => toggleAssignee(a.id)}
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                assigneeIds.includes(a.id)
-                  ? 'border-maroon-700 bg-maroon-800 text-cream-50'
-                  : 'border-cream-200 bg-cream-50 text-ink'
-              }`}
-            >
-              {a.nama}
-            </button>
-          ))}
+        <label className="mb-1.5 block text-xs font-semibold text-muted">Penanggung Jawab (Assignee)</label>
+        <div className="flex flex-wrap gap-2 rounded-xl border border-cream-200 bg-cream-50/20 p-3 shadow-inner">
+          {anggota.length === 0 ? (
+            <p className="text-xs text-muted font-bold py-1 w-full text-center">Tidak ada anggota divisi.</p>
+          ) : (
+            anggota.map(a => {
+              const isChecked = assigneeIds.includes(a.id)
+              const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => toggleAssignee(a.id)}
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                    isChecked
+                      ? 'border-maroon-700 bg-maroon-800 text-cream-50 shadow-sm shadow-maroon-800/10'
+                      : 'border-cream-200 bg-cream-50/50 text-ink hover:border-maroon-300'
+                  }`}
+                >
+                  <div className={`flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black ${isChecked ? 'bg-white text-maroon-800' : 'bg-cream-200 text-maroon-800'}`}>
+                    {inisial}
+                  </div>
+                  <span>{a.nama}</span>
+                </button>
+              )
+            })
+          )}
         </div>
       </div>
 
@@ -235,24 +248,24 @@ export default function FormTemplate({
           value={deskripsi}
           onChange={e => setDeskripsi(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-orange-500"
+          className="w-full resize-none rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
         />
       </div>
 
-      {pesan && <p className="text-sm text-red-700">{pesan}</p>}
+      {pesan && <p className="text-xs font-semibold text-red-600">{pesan}</p>}
 
-      <div className="flex items-center justify-end gap-3 border-t border-cream-200 pt-3">
+      <div className="flex items-center justify-end gap-2.5 border-t border-cream-100 pt-3.5">
         <button
           type="button"
           onClick={onBatal}
-          className="rounded-xl border border-cream-200 px-4 py-2.5 text-sm font-bold text-muted transition hover:bg-cream-100"
+          className="rounded-xl border border-cream-200 bg-white px-4 py-2.5 text-xs font-bold text-muted transition hover:bg-cream-50/50 active:scale-95 cursor-pointer shadow-sm"
         >
           Batal
         </button>
         <button
           type="submit"
           disabled={sedangSimpan}
-          className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600 disabled:opacity-50"
+          className="rounded-xl bg-maroon-800 px-4 py-2.5 text-xs font-bold text-cream-50 hover:bg-maroon-900 active:scale-95 transition-all shadow-md shadow-maroon-800/10 cursor-pointer disabled:opacity-50"
         >
           {sedangSimpan ? 'Menyimpan...' : templateEdit ? 'Simpan Perubahan' : 'Buat Template'}
         </button>

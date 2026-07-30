@@ -13,10 +13,10 @@ const LABEL_POLA: Record<string, string> = {
 }
 
 const WARNA_POLA: Record<string, string> = {
-  daily_workday: 'bg-blue-100 text-blue-700',
-  daily: 'bg-green-100 text-green-700',
-  weekly: 'bg-purple-100 text-purple-700',
-  monthly: 'bg-orange-100 text-orange-700',
+  daily_workday: 'bg-blue-50 text-blue-700 border-blue-200/30',
+  daily: 'bg-emerald-50 text-emerald-700 border-emerald-200/30',
+  weekly: 'bg-indigo-50 text-indigo-700 border-indigo-200/30',
+  monthly: 'bg-amber-50 text-amber-700 border-amber-200/30',
 }
 
 function KartuTemplate({
@@ -87,14 +87,16 @@ function KartuTemplate({
 
   return (
     <>
-      <div className="rounded-2xl border border-cream-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="rounded-[22px] border border-cream-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md flex flex-col justify-between">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b border-cream-100 p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-sm font-bold text-maroon-800">{template.judul}</h3>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <h3 className="text-xs font-black text-ink leading-tight">{template.judul}</h3>
             <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                template.isActive ? 'bg-green-100 text-green-700' : 'bg-cream-200 text-muted'
+              className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${
+                template.isActive 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/40' 
+                  : 'bg-cream-100 text-muted border-cream-200/35'
               }`}
             >
               {template.isActive ? 'Aktif' : 'Nonaktif'}
@@ -105,10 +107,10 @@ function KartuTemplate({
               onClick={tanganiToggle}
               disabled={sedangToggle}
               title={template.isActive ? 'Nonaktifkan template' : 'Aktifkan template'}
-              className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold transition disabled:opacity-50 ${
+              className={`shrink-0 rounded-xl px-2.5 py-1 text-[9px] font-black transition disabled:opacity-50 cursor-pointer ${
                 template.isActive
-                  ? 'border border-cream-200 text-muted hover:bg-cream-100'
-                  : 'border border-green-300 text-green-700 hover:bg-green-50'
+                  ? 'border border-cream-200 bg-white text-muted hover:bg-cream-50'
+                  : 'border border-transparent bg-emerald-50 text-emerald-700 hover:bg-emerald-100/70'
               }`}
             >
               {sedangToggle ? '...' : template.isActive ? 'Nonaktifkan' : 'Aktifkan'}
@@ -117,42 +119,46 @@ function KartuTemplate({
         </div>
 
         {/* Body */}
-        <div className="space-y-2 p-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className={`rounded-full px-2 py-0.5 font-bold ${WARNA_POLA[template.pola] ?? 'bg-cream-200 text-muted'}`}>
+        <div className="space-y-2.5 p-4 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+            <span className={`rounded-full border px-2.5 py-0.5 font-bold uppercase ${WARNA_POLA[template.pola] ?? 'bg-cream-100 text-muted'}`}>
               {LABEL_POLA[template.pola] ?? template.pola}
             </span>
-            <span className="text-muted">·</span>
-            <span className="font-semibold text-ink">{template.boardNama}</span>
+            <span className="text-muted/65">&middot;</span>
+            <span className="rounded-full border border-cream-200 bg-cream-50 px-2 py-0.5 font-bold text-muted uppercase">
+              {template.boardNama}
+            </span>
             {template.assigneeIds.length > 0 && (
               <>
-                <span className="text-muted">·</span>
-                <span className="text-muted">{template.assigneeIds.length} penanggung jawab</span>
+                <span className="text-muted/65">&middot;</span>
+                <span className="text-muted font-bold">{template.assigneeIds.length} Assignee</span>
               </>
             )}
           </div>
-          <p className="text-xs text-muted">
-            Mulai: {new Date(template.tanggalMulai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-            {template.tanggalSelesai && (
-              <> · Berakhir: {new Date(template.tanggalSelesai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</>
-            )}
-          </p>
-          {template.lastGeneratedDate && (
-            <p className="text-xs text-muted">
-              Terakhir dibuat: {new Date(template.lastGeneratedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+          <div className="space-y-1">
+            <p className="text-[10px] font-semibold text-muted">
+              Mulai: <span className="text-ink">{new Date(template.tanggalMulai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              {template.tanggalSelesai && (
+                <> &middot; Selesai: <span className="text-ink">{new Date(template.tanggalSelesai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span></>
+              )}
             </p>
-          )}
+            {template.lastGeneratedDate && (
+              <p className="text-[10px] font-semibold text-muted">
+                Terakhir dibuat: <span className="text-ink">{new Date(template.lastGeneratedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </p>
+            )}
+          </div>
           {template.deskripsi && (
-            <p className="text-xs text-muted line-clamp-2">{template.deskripsi}</p>
+            <p className="text-[11px] font-semibold text-muted leading-relaxed line-clamp-2">{template.deskripsi}</p>
           )}
-          {pesan && <p className="text-xs text-red-600">{pesan}</p>}
+          {pesan && <p className="text-[11px] font-semibold text-red-600">{pesan}</p>}
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 border-t border-cream-100 px-4 py-3">
           <button
             onClick={bukaRiwayat}
-            className="rounded-xl border border-cream-200 px-3 py-1.5 text-xs font-bold text-muted transition hover:bg-cream-100 hover:text-ink"
+            className="rounded-xl border border-cream-200 bg-white px-3 py-1.5 text-[11px] font-bold text-muted transition hover:bg-cream-50 cursor-pointer shadow-sm"
           >
             Lihat Riwayat
           </button>
@@ -160,13 +166,13 @@ function KartuTemplate({
             <>
               <button
                 onClick={() => setSedangEdit(true)}
-                className="rounded-xl border border-cream-200 px-3 py-1.5 text-xs font-bold text-maroon-700 transition hover:border-orange-500 hover:text-orange-600"
+                className="rounded-xl border border-transparent bg-cream-50 px-3 py-1.5 text-[11px] font-bold text-maroon-800 transition hover:bg-cream-100 cursor-pointer"
               >
                 Edit
               </button>
               <button
                 onClick={() => setKonfirmHapus(true)}
-                className="rounded-xl border border-red-200 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50"
+                className="rounded-xl border border-transparent bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 transition hover:bg-red-100 cursor-pointer"
               >
                 Hapus
               </button>
@@ -177,24 +183,24 @@ function KartuTemplate({
 
       {/* Modal Konfirmasi Hapus */}
       {konfirmHapus && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-5 border border-cream-200/30 shadow-2xl animate-in zoom-in-95 duration-150">
             <h3 className="text-base font-black text-maroon-800">Hapus template ini?</h3>
-            <p className="mt-1.5 text-sm text-muted">
-              Template &ldquo;{template.judul}&rdquo; akan dihapus. Task yang sudah dibuat dari template ini tidak terpengaruh.
+            <p className="mt-1.5 text-xs text-muted/80 leading-relaxed font-semibold">
+              Template <span className="text-ink font-bold">&ldquo;{template.judul}&rdquo;</span> akan dihapus. Task yang sudah dibuat dari template ini sebelumnya tidak terpengaruh.
             </p>
-            <div className="mt-4 flex justify-end gap-2">
+            <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setKonfirmHapus(false)}
                 disabled={sedangHapus}
-                className="rounded-xl border border-cream-200 px-4 py-2 text-sm font-bold text-muted transition hover:bg-cream-100 disabled:opacity-50"
+                className="rounded-xl border border-cream-200 px-4 py-2 text-xs font-bold text-muted transition hover:bg-cream-100 cursor-pointer disabled:opacity-50"
               >
                 Batal
               </button>
               <button
                 onClick={tanganiHapus}
                 disabled={sedangHapus}
-                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-50"
+                className="rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-700 cursor-pointer disabled:opacity-50"
               >
                 {sedangHapus ? 'Menghapus...' : 'Ya, Hapus'}
               </button>
@@ -205,43 +211,47 @@ function KartuTemplate({
 
       {/* Modal Riwayat */}
       {riwayatTerbuka && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[80vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-black text-maroon-800">Riwayat — {template.judul}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-5 border border-cream-200/30 shadow-2xl animate-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
+            <div className="mb-4 flex items-center justify-between border-b border-cream-100 pb-2">
+              <h3 className="text-sm font-black text-maroon-800">Riwayat — {template.judul}</h3>
               <button
                 onClick={() => setRiwayatTerbuka(false)}
-                className="text-muted hover:text-ink"
+                className="text-xs font-bold text-muted hover:text-ink cursor-pointer transition"
                 aria-label="Tutup"
               >
-                ✕
+                ✕ Tutup
               </button>
             </div>
-            {sedangMuatRiwayat ? (
-              <p className="text-sm text-muted">Memuat...</p>
-            ) : riwayat && riwayat.length === 0 ? (
-              <p className="text-sm text-muted">Belum ada task yang dibuat dari template ini.</p>
-            ) : (
-              <div className="space-y-2">
-                {(riwayat ?? []).map(task => (
-                  <div key={task.id} className="flex items-center justify-between rounded-lg border border-cream-100 px-3 py-2.5">
-                    <div>
-                      <p className="text-sm font-semibold text-ink">{task.judul}</p>
-                      <p className="text-xs text-muted">
-                        Dibuat {new Date(task.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </p>
+            <div className="overflow-y-auto flex-1 custom-scrollbar space-y-2 pr-1">
+              {sedangMuatRiwayat ? (
+                <p className="text-xs font-semibold text-muted animate-pulse">Memuat riwayat...</p>
+              ) : riwayat && riwayat.length === 0 ? (
+                <p className="text-xs font-semibold text-muted text-center py-4">Belum ada task yang dibuat dari template ini.</p>
+              ) : (
+                <div className="space-y-2">
+                  {(riwayat ?? []).map(task => (
+                    <div key={task.id} className="flex items-center justify-between rounded-xl border border-cream-100 bg-cream-50/10 px-3.5 py-2.5">
+                      <div>
+                        <p className="text-xs font-bold text-ink">{task.judul}</p>
+                        <p className="text-[10px] text-muted font-semibold mt-0.5">
+                          Dibuat {new Date(task.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <span
+                        className={`rounded-full border px-2.5 py-0.5 text-[9px] font-bold uppercase ${
+                          task.completedAt 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200/35' 
+                            : 'bg-cream-100 text-muted border-cream-200/35'
+                        }`}
+                      >
+                        {task.completedAt ? 'Selesai' : 'Aktif'}
+                      </span>
                     </div>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        task.completedAt ? 'bg-green-100 text-green-700' : 'bg-cream-200 text-muted'
-                      }`}
-                    >
-                      {task.completedAt ? 'Selesai' : 'Aktif'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -295,24 +305,27 @@ export default function DaftarTemplate({
   return (
     <div className="space-y-4">
       {bolehKelola && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-cream-50/40 p-3 rounded-2xl border border-cream-200/50 shadow-inner">
+          <div className="flex items-center gap-3">
             <button
               onClick={tanganiTrigger}
               disabled={sedangTrigger}
-              className="rounded-xl border border-cream-200 bg-white px-4 py-2.5 text-sm font-bold text-muted shadow-sm transition hover:border-orange-400 hover:text-orange-600 disabled:opacity-50"
+              className="rounded-xl border border-emerald-200 bg-emerald-50/20 px-4 py-2.5 text-xs font-black text-emerald-700 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 active:scale-95 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
             >
-              {sedangTrigger ? 'Menjalankan...' : '▶ Jalankan Sekarang'}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              {sedangTrigger ? 'Menjalankan...' : 'Jalankan Sekarang'}
             </button>
             {pesanTrigger && (
-              <span className={`text-xs font-semibold ${pesanTrigger.sukses ? 'text-green-700' : 'text-red-600'}`}>
+              <span className={`text-[10px] font-bold uppercase ${pesanTrigger.sukses ? 'text-emerald-700 bg-emerald-50 border border-emerald-200/40 px-2 py-0.5 rounded' : 'text-red-600 bg-red-50 border border-red-200/40 px-2 py-0.5 rounded'}`}>
                 {pesanTrigger.teks}
               </span>
             )}
           </div>
           <button
             onClick={() => setFormBuatTerbuka(true)}
-            className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600"
+            className="rounded-xl bg-maroon-800 px-4.5 py-2.5 text-xs font-bold text-cream-50 shadow-md shadow-maroon-800/10 transition hover:bg-maroon-900 active:scale-95 cursor-pointer"
           >
             + Buat Template
           </button>
@@ -320,10 +333,15 @@ export default function DaftarTemplate({
       )}
 
       {templates.length === 0 ? (
-        <div className="rounded-2xl border border-cream-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-sm font-semibold text-muted">Belum ada template tugas rutin.</p>
+        <div className="rounded-[24px] border border-dashed border-cream-200 bg-white p-8 text-center shadow-sm">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cream-50 text-cream-400 mb-3 border border-cream-100 shadow-sm mx-auto">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <p className="text-xs font-bold text-ink">Belum ada template tugas rutin.</p>
           {bolehKelola && (
-            <p className="mt-1 text-xs text-muted">Klik &ldquo;Buat Template&rdquo; untuk mulai membuat tugas berulang otomatis.</p>
+            <p className="mt-1 text-[11px] text-muted font-semibold">Klik &ldquo;Buat Template&rdquo; untuk mulai membuat tugas berulang otomatis.</p>
           )}
         </div>
       ) : (
