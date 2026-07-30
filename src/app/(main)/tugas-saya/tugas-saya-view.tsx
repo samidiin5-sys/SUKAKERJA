@@ -9,12 +9,12 @@ import FormBuatTugasSendiri from './form-buat-tugas-sendiri'
 export default function TugasSayaView({
   tugasAwal,
   tasksKalenderAwal,
-  awalMingguIso,
+  awalBulanIso,
   viewAwal = 'daftar',
 }: {
   tugasAwal: TugasSaya[]
   tasksKalenderAwal: TaskKalenderSaya[]
-  awalMingguIso: string
+  awalBulanIso: string
   viewAwal?: 'daftar' | 'kalender'
 }) {
   const [view, setView] = useState<'daftar' | 'kalender'>(viewAwal)
@@ -55,7 +55,7 @@ export default function TugasSayaView({
       {view === 'daftar' ? (
         <DaftarTugasSaya tugasAwal={tugasAwal} />
       ) : (
-        <KalenderSaya tasksAwal={tasksKalenderAwal} awalMingguIso={awalMingguIso} />
+        <KalenderSaya tasksAwal={tasksKalenderAwal} awalBulanIso={awalBulanIso} />
       )}
     </div>
   )

@@ -22,17 +22,13 @@ export default async function HalamanKalenderDivisi({
   const sesi = await pastikanAnggotaDivisi(id)
 
   const sekarang = new Date()
-  const awalMinggu = new Date(sekarang)
-  awalMinggu.setDate(sekarang.getDate() - ((sekarang.getDay() + 6) % 7))
-  awalMinggu.setHours(0, 0, 0, 0)
-  const akhirMinggu = new Date(awalMinggu)
-  akhirMinggu.setDate(awalMinggu.getDate() + 6)
-  akhirMinggu.setHours(23, 59, 59, 999)
+  const awalBulan = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
+  const akhirBulan = new Date(sekarang.getFullYear(), sekarang.getMonth() + 1, 0, 23, 59, 59, 999)
 
   const tasks = await ambilTaskKalender(
     id,
-    awalMinggu.toISOString(),
-    akhirMinggu.toISOString()
+    awalBulan.toISOString(),
+    akhirBulan.toISOString()
   )
 
   const isStaff = sesi.roleSistem === 'user'
@@ -77,7 +73,7 @@ export default async function HalamanKalenderDivisi({
       <KalenderDivisi
         divisionId={id}
         tasksAwal={tasks}
-        awalMingguIso={awalMinggu.toISOString()}
+        awalBulanIso={awalBulan.toISOString()}
         isStaff={isStaff}
       />
     </>

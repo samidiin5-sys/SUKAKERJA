@@ -14,14 +14,6 @@ const WARNA_PRIORITAS: Record<string, string> = {
   rendah: 'bg-cream-100 text-muted border-cream-200',
 }
 
-function mulaiMinggu(tanggal: Date): Date {
-  const d = new Date(tanggal)
-  const hari = (d.getDay() + 6) % 7
-  d.setDate(d.getDate() - hari)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
 function formatLokal(tanggal: Date): string {
   return `${tanggal.getFullYear()}-${String(tanggal.getMonth() + 1).padStart(2, '0')}-${String(tanggal.getDate()).padStart(2, '0')}`
 }
@@ -39,70 +31,8 @@ function formatJam(iso: string): string {
   return `${String(jam).padStart(2, '0')}:${String(menit).padStart(2, '0')}`
 }
 
-function isSamaHari(isoA: string, isoB: string): boolean {
-  return isoA.split('T')[0] === isoB.split('T')[0]
-}
-
 function isHariIni(tanggal: Date): boolean {
   return formatLokal(tanggal) === formatLokal(new Date())
-}
-
-function CardTask({ task, onClick }: { task: TaskKalender; onClick: () => void }) {
-  const jam = formatJam(task.dueDate)
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full rounded-lg border p-2 text-left transition hover:shadow-sm ${
-        task.completedAt
-          ? 'border-emerald-200 bg-emerald-50 opacity-70'
-          : 'border-cream-200 bg-white hover:border-orange-300'
-      }`}
-    >
-      <div className="flex items-start justify-between gap-1">
-        <p className={`text-xs font-semibold leading-snug ${task.completedAt ? 'line-through text-muted' : 'text-ink'}`}>
-          {task.isRecurring && <span className="mr-1 text-maroon-500">↻</span>}
-          {task.judul}
-        </p>
-        {task.completedAt && (
-          <span className="mt-0.5 flex-shrink-0 text-emerald-500">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-          </span>
-        )}
-      </div>
-      <div className="mt-1 flex flex-wrap items-center gap-1">
-        <span className={`rounded border px-1 py-0.5 text-[9px] font-bold capitalize ${WARNA_PRIORITAS[task.prioritas] ?? ''}`}>
-          {task.prioritas}
-        </span>
-        {jam && (
-          <span className="text-[10px] font-semibold text-muted">{jam}</span>
-        )}
-      </div>
-      {task.assignees.length > 0 && (
-        <div className="mt-1.5 flex -space-x-1">
-          {task.assignees.slice(0, 3).map((a) => (
-            <div
-              key={a.id}
-              title={a.nama}
-              className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full border border-white bg-maroon-700 text-[8px] font-bold text-white"
-            >
-              {a.fotoUrl ? (
-                <img src={a.fotoUrl} alt={a.nama} className="h-full w-full object-cover" />
-              ) : (
-                a.nama[0]?.toUpperCase()
-              )}
-            </div>
-          ))}
-          {task.assignees.length > 3 && (
-            <div className="flex h-4 w-4 items-center justify-center rounded-full border border-white bg-cream-200 text-[8px] font-bold text-muted">
-              +{task.assignees.length - 3}
-            </div>
-          )}
-        </div>
-      )}
-    </button>
-  )
 }
 
 function ModalDetailTask({ task, onTutup }: { task: TaskKalender; onTutup: () => void }) {
@@ -181,18 +111,16 @@ function ModalDetailTask({ task, onTutup }: { task: TaskKalender; onTutup: () =>
 export default function KalenderDivisi({
   divisionId,
   tasksAwal,
-  awalMingguIso,
+  awalBulanIso,
   isStaff,
 }: {
   divisionId: string
   tasksAwal: TaskKalender[]
-  awalMingguIso: string
+  awalBulanIso: string
   isStaff: boolean
 }) {
-  const [mode, setMode] = useState<'minggu' | 'bulan'>('minggu')
-  const [awalMingguSaat, setAwalMingguSaat] = useState(() => new Date(awalMingguIso))
   const [bulanSaat, setBulanSaat] = useState(() => {
-    const d = new Date(awalMingguIso)
+    const d = new Date(awalBulanIso)
     return new Date(d.getFullYear(), d.getMonth(), 1)
   })
   const [tasks, setTasks] = useState<TaskKalender[]>(tasksAwal)
@@ -206,16 +134,6 @@ export default function KalenderDivisi({
     setSedangMuat(false)
   }, [divisionId])
 
-  function navigasiMinggu(arah: -1 | 1) {
-    const baru = new Date(awalMingguSaat)
-    baru.setDate(baru.getDate() + arah * 7)
-    setAwalMingguSaat(baru)
-    const selesai = new Date(baru)
-    selesai.setDate(baru.getDate() + 6)
-    selesai.setHours(23, 59, 59, 999)
-    muatTask(baru, selesai)
-  }
-
   function navigasiBulan(arah: -1 | 1) {
     const baru = new Date(bulanSaat.getFullYear(), bulanSaat.getMonth() + arah, 1)
     setBulanSaat(baru)
@@ -224,38 +142,13 @@ export default function KalenderDivisi({
   }
 
   function keHariIni() {
-    if (mode === 'minggu') {
-      const baru = mulaiMinggu(new Date())
-      setAwalMingguSaat(baru)
-      const selesai = new Date(baru)
-      selesai.setDate(baru.getDate() + 6)
-      selesai.setHours(23, 59, 59, 999)
-      muatTask(baru, selesai)
-    } else {
-      const sekarang = new Date()
-      const baru = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
-      setBulanSaat(baru)
-      const selesai = new Date(baru.getFullYear(), baru.getMonth() + 1, 0, 23, 59, 59, 999)
-      muatTask(baru, selesai)
-    }
+    const sekarang = new Date()
+    const baru = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
+    setBulanSaat(baru)
+    const selesai = new Date(baru.getFullYear(), baru.getMonth() + 1, 0, 23, 59, 59, 999)
+    muatTask(baru, selesai)
   }
 
-  // --- TAMPILAN MINGGUAN ---
-  const hariMinggu = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(awalMingguSaat)
-    d.setDate(awalMingguSaat.getDate() + i)
-    return d
-  })
-
-  const labelMinggu = (() => {
-    const akhir = hariMinggu[6]
-    if (awalMingguSaat.getMonth() === akhir.getMonth()) {
-      return `${awalMingguSaat.getDate()}–${akhir.getDate()} ${BULAN[awalMingguSaat.getMonth()]} ${awalMingguSaat.getFullYear()}`
-    }
-    return `${awalMingguSaat.getDate()} ${BULAN[awalMingguSaat.getMonth()]} – ${akhir.getDate()} ${BULAN[akhir.getMonth()]} ${akhir.getFullYear()}`
-  })()
-
-  // --- TAMPILAN BULANAN ---
   const hariDalamBulan = (() => {
     const tahun = bulanSaat.getFullYear()
     const bulan = bulanSaat.getMonth()
@@ -279,7 +172,7 @@ export default function KalenderDivisi({
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <button
-          onClick={() => mode === 'minggu' ? navigasiMinggu(-1) : navigasiBulan(-1)}
+          onClick={() => navigasiBulan(-1)}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -287,10 +180,10 @@ export default function KalenderDivisi({
           </svg>
         </button>
         <span className="min-w-[140px] text-center text-sm font-bold text-maroon-800">
-          {mode === 'minggu' ? labelMinggu : `${BULAN[bulanSaat.getMonth()]} ${bulanSaat.getFullYear()}`}
+          {`${BULAN[bulanSaat.getMonth()]} ${bulanSaat.getFullYear()}`}
         </span>
         <button
-          onClick={() => mode === 'minggu' ? navigasiMinggu(1) : navigasiBulan(1)}
+          onClick={() => navigasiBulan(1)}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-cream-200 bg-white text-muted hover:bg-cream-50"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -303,123 +196,59 @@ export default function KalenderDivisi({
         >
           Hari Ini
         </button>
-        <div className="flex rounded-lg border border-cream-200 bg-white p-0.5">
-          <button
-            onClick={() => {
-              setMode('minggu')
-              const baru = mulaiMinggu(new Date(bulanSaat.getFullYear(), bulanSaat.getMonth(), 1))
-              setAwalMingguSaat(baru)
-              const selesai = new Date(baru)
-              selesai.setDate(baru.getDate() + 6)
-              selesai.setHours(23, 59, 59, 999)
-              muatTask(baru, selesai)
-            }}
-            className={`rounded-md px-3 py-1 text-xs font-bold transition ${mode === 'minggu' ? 'bg-maroon-800 text-white' : 'text-muted hover:bg-cream-50'}`}
-          >
-            Minggu
-          </button>
-          <button
-            onClick={() => {
-              setMode('bulan')
-              const baru = new Date(awalMingguSaat.getFullYear(), awalMingguSaat.getMonth(), 1)
-              setBulanSaat(baru)
-              const selesai = new Date(baru.getFullYear(), baru.getMonth() + 1, 0, 23, 59, 59, 999)
-              muatTask(baru, selesai)
-            }}
-            className={`rounded-md px-3 py-1 text-xs font-bold transition ${mode === 'bulan' ? 'bg-maroon-800 text-white' : 'text-muted hover:bg-cream-50'}`}
-          >
-            Bulan
-          </button>
-        </div>
         {sedangMuat && <span className="text-xs text-muted animate-pulse">Memuat...</span>}
       </div>
 
-      {/* Tampilan Mingguan */}
-      {mode === 'minggu' && (
-        <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white shadow-sm">
-          <div className="grid min-w-[560px]" style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}>
-            {hariMinggu.map((hari, i) => {
-              const hariIni = isHariIni(hari)
-              const taskHari = taskUntukHari(hari)
-              return (
-                <div key={i} className={`border-r border-cream-100 last:border-r-0 ${hariIni ? 'bg-maroon-50/40' : ''}`}>
-                  {/* Header hari */}
-                  <div className={`border-b border-cream-100 px-2 py-2 text-center ${hariIni ? 'bg-maroon-800' : ''}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${hariIni ? 'text-cream-200' : 'text-muted'}`}>
-                      {HARI[i]}
-                    </p>
-                    <p className={`text-sm font-black ${hariIni ? 'text-white' : 'text-maroon-800'}`}>
-                      {hari.getDate()}
-                    </p>
-                  </div>
-                  {/* Task */}
-                  <div className="min-h-[120px] space-y-1.5 p-1.5">
-                    {taskHari.map((task) => (
-                      <CardTask key={task.id} task={task} onClick={() => setTaskDipilih(task)} />
-                    ))}
-                    {taskHari.length === 0 && (
-                      <p className="pt-2 text-center text-[10px] text-muted/40">—</p>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
       {/* Tampilan Bulanan */}
-      {mode === 'bulan' && (
-        <div className="overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-sm">
-          {/* Header hari */}
-          <div className="grid grid-cols-7 border-b border-cream-100">
-            {HARI_PANJANG.map((h) => (
-              <div key={h} className="py-2 text-center text-[10px] font-bold uppercase tracking-wider text-muted">
-                {h.slice(0, 3)}
-              </div>
-            ))}
-          </div>
-          {/* Grid tanggal */}
-          <div className="grid grid-cols-7">
-            {hariDalamBulan.map((hari, i) => {
-              if (!hari) {
-                return <div key={i} className="border-b border-r border-cream-100/60 bg-cream-50/30 p-1 last:border-r-0" />
-              }
-              const hariIni = isHariIni(hari)
-              const taskHari = taskUntukHari(hari)
-              const kolom = i % 7
-              return (
-                <div
-                  key={i}
-                  className={`min-h-[80px] border-b border-r border-cream-100 p-1 ${kolom === 6 ? 'border-r-0' : ''} ${hariIni ? 'bg-maroon-50/30' : ''}`}
-                >
-                  <div className={`mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${hariIni ? 'bg-maroon-800 text-white' : 'text-maroon-800'}`}>
-                    {hari.getDate()}
-                  </div>
-                  <div className="space-y-0.5">
-                    {taskHari.slice(0, 3).map((task) => (
-                      <button
-                        key={task.id}
-                        onClick={() => setTaskDipilih(task)}
-                        className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold transition hover:opacity-80 ${
-                          task.completedAt
-                            ? 'bg-emerald-100 text-emerald-700 line-through'
-                            : 'bg-maroon-50 text-maroon-800'
-                        }`}
-                      >
-                        {task.isRecurring && '↻ '}{task.judul}
-                      </button>
-                    ))}
-                    {taskHari.length > 3 && (
-                      <p className="px-1 text-[10px] font-bold text-muted">+{taskHari.length - 3} lagi</p>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+      <div className="overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-sm">
+        {/* Header hari */}
+        <div className="grid grid-cols-7 border-b border-cream-100">
+          {HARI_PANJANG.map((h) => (
+            <div key={h} className="py-2 text-center text-[10px] font-bold uppercase tracking-wider text-muted">
+              {h.slice(0, 3)}
+            </div>
+          ))}
         </div>
-      )}
+        {/* Grid tanggal */}
+        <div className="grid grid-cols-7">
+          {hariDalamBulan.map((hari, i) => {
+            if (!hari) {
+              return <div key={i} className="border-b border-r border-cream-100/60 bg-cream-50/30 p-1 last:border-r-0" />
+            }
+            const hariIni = isHariIni(hari)
+            const taskHari = taskUntukHari(hari)
+            const kolom = i % 7
+            return (
+              <div
+                key={i}
+                className={`min-h-[80px] border-b border-r border-cream-100 p-1 ${kolom === 6 ? 'border-r-0' : ''} ${hariIni ? 'bg-maroon-50/30' : ''}`}
+              >
+                <div className={`mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${hariIni ? 'bg-maroon-800 text-white' : 'text-maroon-800'}`}>
+                  {hari.getDate()}
+                </div>
+                <div className="space-y-0.5">
+                  {taskHari.slice(0, 3).map((task) => (
+                    <button
+                      key={task.id}
+                      onClick={() => setTaskDipilih(task)}
+                      className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold transition hover:opacity-80 ${
+                        task.completedAt
+                          ? 'bg-emerald-100 text-emerald-700 line-through'
+                          : 'bg-maroon-50 text-maroon-800'
+                      }`}
+                    >
+                      {task.isRecurring && '↻ '}{task.judul}
+                    </button>
+                  ))}
+                  {taskHari.length > 3 && (
+                    <p className="px-1 text-[10px] font-bold text-muted">+{taskHari.length - 3} lagi</p>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Legenda */}
       <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] font-semibold text-muted">
