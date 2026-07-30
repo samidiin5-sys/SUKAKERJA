@@ -1,4 +1,4 @@
-﻿'use server'
+'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanSuperAdmin } from '@/lib/auth/otorisasi'
@@ -153,6 +153,41 @@ export async function hapusPermanenTask(taskId: string): Promise<HasilRestore> {
     divisionId: board.division_id,
   })
 
+  return { sukses: true }
+}
+
+export async function restoreTasks(taskIds: string[]): Promise<HasilRestore> {
+  await pastikanSuperAdmin()
+  for (const id of taskIds) {
+    const hasil = await restoreTask(id)
+    if (!hasil.sukses) return hasil
+  }
+  return { sukses: true }
+}
+
+export async function hapusPermanenTasks(taskIds: string[]): Promise<HasilRestore> {
+  await pastikanSuperAdmin()
+  for (const id of taskIds) {
+    const hasil = await hapusPermanenTask(id)
+    if (!hasil.sukses) return hasil
+  }
+  return { sukses: true }
+}
+
+export async function kosongkanTempatSampah(): Promise<HasilRestore> {
+  const admin = createAdminClient()
+  await pastikanSuperAdmin()
+  const { data: tasks } = await admin
+    .from('tasks')
+    .select('id')
+    .not('deleted_at', 'is', null)
+
+  if (tasks && tasks.length > 0) {
+    for (const t of tasks) {
+      const hasil = await hapusPermanenTask(t.id)
+      if (!hasil.sukses) return hasil
+    }
+  }
   return { sukses: true }
 }
 
