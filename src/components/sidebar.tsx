@@ -86,7 +86,7 @@ export default function Sidebar({
       <div className="flex items-center gap-2.5 px-3.5 py-4">
         <div
           title="SukaKerja"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-2xl border border-cream-200/40 bg-white/15 text-cream-50 shadow-sm backdrop-blur-sm transition-transform hover:scale-105"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[16px] border border-white/20 bg-white/15 text-cream-50 shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur-sm transition-transform hover:scale-105"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
@@ -173,7 +173,7 @@ export default function Sidebar({
         <button
           onClick={tanganiLogout}
           title={collapsed ? 'Keluar' : undefined}
-          className="group relative mt-1 flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-semibold text-cream-200/70 transition hover:bg-cream-50/10 hover:text-cream-50"
+          className="group relative mt-1 flex w-full items-center gap-3 rounded-[14px] px-2.5 py-2 text-sm font-semibold text-cream-200/70 transition hover:bg-cream-50/10 hover:text-cream-50"
         >
           <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
             <IkonKeluar />
@@ -204,7 +204,7 @@ export default function Sidebar({
         <button
           onClick={onToggleCollapse}
           aria-label={collapsed ? 'Buka sidebar' : 'Tutup sidebar'}
-          className="absolute -right-4 top-1/2 z-20 hidden -translate-y-1/2 lg:flex h-8 w-8 items-center justify-center rounded-full border border-cream-200/80 bg-white/95 backdrop-blur-sm shadow-md text-maroon-700 hover:bg-maroon-800 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 outline-none cursor-pointer"
+          className="absolute -right-4 top-1/2 z-20 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-cream-200/80 bg-white/95 text-maroon-700 shadow-[0_10px_24px_rgba(92,31,33,0.16)] outline-none transition-all duration-300 hover:scale-110 hover:bg-maroon-800 hover:text-white active:scale-95 lg:flex"
         >
           <svg
             width="12"
@@ -252,9 +252,11 @@ export default function Sidebar({
 function SeksiNav({ judul, collapsed }: { judul: string; collapsed: boolean }) {
   if (collapsed) return <div className="my-2 border-t border-cream-50/10" />
   return (
-    <p className="mb-1 mt-3 px-2.5 text-[10px] font-bold tracking-[0.25em] text-cream-200/55">
-      {judul.toUpperCase()}
-    </p>
+    <div className="mb-1 mt-3 flex items-center px-2.5">
+      <p className="text-[10px] font-bold tracking-[0.25em] text-cream-200/55">
+        {judul.toUpperCase()}
+      </p>
+    </div>
   )
 }
 
@@ -274,7 +276,7 @@ function ItemSidebarGrup({ grup, pathname, collapsed }: { grup: ItemNavGrup; pat
       <button
         onClick={() => setBuka((b) => !b)}
         title={collapsed ? grup.label : undefined}
-        className={`group relative flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${
+        className={`group relative flex w-full items-center gap-3 rounded-[14px] px-2.5 py-2 text-sm font-semibold transition ${
           isAktif
             ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
             : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'
@@ -330,7 +332,7 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
     <a
       href={item.href}
       title={collapsed ? item.label : undefined}
-      className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${
+      className={`group relative flex items-center gap-3 rounded-[14px] px-2.5 py-2 text-sm font-semibold transition ${
         aktif
           ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
           : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'

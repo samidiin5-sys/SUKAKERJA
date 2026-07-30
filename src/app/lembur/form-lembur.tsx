@@ -17,7 +17,7 @@ function KotakCentang({ checked, onChange }: { checked: boolean; onChange?: () =
   return (
     <span
       onClick={onChange}
-      className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 transition ${checked ? 'border-maroon-800 bg-maroon-800' : 'border-cream-300 bg-white'} ${onChange ? 'cursor-pointer' : 'cursor-default'}`}
+      className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 transition ${checked ? 'border-maroon-800 bg-maroon-800 shadow-sm' : 'border-cream-300 bg-white'} ${onChange ? 'cursor-pointer' : 'cursor-default'}`}
     >
       {checked && <IkonCentang />}
     </span>
@@ -124,13 +124,14 @@ export default function FormLembur({
   const anggotaLain = anggota.filter((a) => a.id !== sesiId)
 
   return (
-    <div className="rounded-[24px] border border-cream-200 bg-white p-4 shadow-sm sm:p-5">
+    <div className="relative overflow-hidden rounded-[24px] border border-cream-200 bg-white p-4 shadow-[0_14px_40px_rgba(92,31,33,0.06)] sm:p-5">
+      <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-maroon-700 to-amber-400" />
       <h3 className="mb-4 text-xs font-bold tracking-[0.24em] text-muted">
         {isOwnerOrAdmin ? 'TETAPKAN LEMBUR UNTUK STAFF' : 'AJUKAN LEMBUR BARU'}
       </h3>
 
       {isOwnerOrAdmin && (
-        <div className="mb-3 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5">
+        <div className="mb-3 flex items-start gap-2 rounded-[16px] border border-blue-200 bg-blue-50/80 px-3 py-2.5 shadow-sm">
           <svg className="mt-0.5 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
             <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
           </svg>
@@ -147,7 +148,7 @@ export default function FormLembur({
             value={divisionId}
             onChange={(e) => setDivisionId(e.target.value)}
             required
-            className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+            className="w-full rounded-[16px] border border-cream-200 bg-cream-50/80 px-3 py-2.5 text-sm text-ink outline-none shadow-sm transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           >
             {divisiSaya.map((d) => (
               <option key={d.id} value={d.id}>{d.nama}</option>
@@ -163,10 +164,10 @@ export default function FormLembur({
           {muatAnggota ? (
             <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
           ) : (
-            <div className="space-y-0.5 rounded-lg border border-cream-200 bg-cream-50 p-2">
+            <div className="space-y-0.5 rounded-[16px] border border-cream-200 bg-cream-50/80 p-2 shadow-sm">
               {/* Mode staff: current user always checked */}
               {!isOwnerOrAdmin && (
-                <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
+                <div className="flex items-center gap-2.5 rounded-[12px] px-2 py-1.5">
                   <KotakCentang checked />
                   <span className="text-sm font-semibold text-ink">{sesiNama}</span>
                   <span className="ml-auto rounded bg-maroon-100 px-1.5 py-0.5 text-[10px] font-bold text-maroon-700">Kamu</span>
@@ -177,7 +178,7 @@ export default function FormLembur({
               {!isOwnerOrAdmin && anggotaLain.length > 0 && (
                 <div className="border-t border-cream-200 pt-0.5">
                   {anggotaLain.map((a) => (
-                    <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-cream-100 transition">
+                    <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-[12px] px-2 py-1.5 transition hover:bg-cream-100">
                       <input type="checkbox" className="sr-only" checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
                       <KotakCentang checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
                       <span className="text-sm text-ink">{a.nama}</span>
@@ -191,7 +192,7 @@ export default function FormLembur({
                 <p className="px-2 py-1.5 text-xs text-muted">Tidak ada staff di divisi ini.</p>
               )}
               {isOwnerOrAdmin && anggota.map((a) => (
-                <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-cream-100 transition">
+                <label key={a.id} className="flex cursor-pointer items-center gap-2.5 rounded-[12px] px-2 py-1.5 transition hover:bg-cream-100">
                   <input type="checkbox" className="sr-only" checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
                   <KotakCentang checked={dipilih.has(a.id)} onChange={() => togglePilih(a.id)} />
                   <span className="text-sm text-ink">{a.nama}</span>
@@ -219,14 +220,14 @@ export default function FormLembur({
             value={tanggal}
             onChange={(e) => setTanggal(e.target.value)}
             required
-            className="w-full rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+            className="w-full rounded-[16px] border border-cream-200 bg-cream-50/80 px-3 py-2.5 text-sm text-ink outline-none shadow-sm transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Mulai</label>
-            <div className="flex items-center gap-1 rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5">
+            <div className="flex items-center gap-1 rounded-[16px] border border-cream-200 bg-cream-50/80 px-3 py-2.5 shadow-sm">
               <input
                 type="text"
                 inputMode="numeric"
@@ -265,7 +266,7 @@ export default function FormLembur({
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">Jam Selesai</label>
-            <div className="flex items-center gap-1 rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5">
+            <div className="flex items-center gap-1 rounded-[16px] border border-cream-200 bg-cream-50/80 px-3 py-2.5 shadow-sm">
               <input
                 type="text"
                 inputMode="numeric"
@@ -312,7 +313,7 @@ export default function FormLembur({
             placeholder="Jelaskan alasan lembur (min. 10 karakter)..."
             rows={3}
             required
-            className="w-full resize-none rounded-2xl border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+            className="w-full resize-none rounded-[16px] border border-cream-200 bg-cream-50/80 px-3 py-2.5 text-sm text-ink outline-none shadow-sm transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
         </div>
 
@@ -325,7 +326,7 @@ export default function FormLembur({
         <button
           type="submit"
           disabled={sedangKirim || dipilih.size === 0}
-          className="w-full rounded-2xl bg-maroon-800 py-2.5 text-sm font-bold text-white transition hover:bg-maroon-700 disabled:opacity-50 sm:w-auto sm:px-6"
+          className="w-full rounded-[16px] bg-maroon-800 py-2.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(92,31,33,0.18)] transition hover:-translate-y-0.5 hover:bg-maroon-700 disabled:opacity-50 sm:w-auto sm:px-6"
         >
           {sedangKirim
             ? 'Memproses...'

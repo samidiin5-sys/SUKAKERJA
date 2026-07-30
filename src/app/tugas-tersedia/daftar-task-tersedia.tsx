@@ -64,10 +64,10 @@ export default function DaftarTaskTersedia({
     <>
       {adaProposal && (
         <div className="mb-6">
-          <h2 className="mb-3 text-sm font-black tracking-widest text-maroon-800">PENGAJUAN SAYA (LAMA)</h2>
+          <h2 className="mb-3 text-sm font-black tracking-[0.24em] text-maroon-800">PENGAJUAN SAYA (LAMA)</h2>
           <div className="space-y-2">
             {proposalSaya.map((p) => (
-              <div key={p.id} className="rounded-[20px] border border-cream-200 bg-white/95 p-3 shadow-sm transition hover:border-maroon-200 hover:shadow-md">
+              <div key={p.id} className="rounded-[20px] border border-cream-200 bg-white/95 p-3 shadow-[0_10px_24px_rgba(92,31,33,0.04)] transition hover:border-maroon-200 hover:shadow-[0_16px_32px_rgba(92,31,33,0.08)]">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-bold text-ink">{p.taskJudul}</p>
@@ -89,10 +89,10 @@ export default function DaftarTaskTersedia({
         </div>
       )}
 
-      <h2 className="mb-3 text-sm font-black tracking-widest text-maroon-800">TUGAS TERSEDIA</h2>
+      <h2 className="mb-3 text-sm font-black tracking-[0.24em] text-maroon-800">TUGAS TERSEDIA</h2>
 
       {!adaTask ? (
-        <div className="rounded-2xl border border-cream-200 bg-white p-8 text-center">
+        <div className="rounded-[24px] border border-dashed border-cream-200 bg-white p-8 text-center shadow-sm">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-cream-100">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted">
               <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" />
@@ -104,7 +104,7 @@ export default function DaftarTaskTersedia({
       ) : (
         <div className="space-y-3">
           {tasks.map((task) => (
-            <div key={task.id} className="rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-maroon-200 hover:shadow-md">
+            <div key={task.id} className="rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-[0_10px_24px_rgba(92,31,33,0.04)] transition hover:-translate-y-0.5 hover:border-maroon-200 hover:shadow-[0_16px_32px_rgba(92,31,33,0.08)]">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -151,7 +151,7 @@ export default function DaftarTaskTersedia({
               <button
                 onClick={() => tanganiAmbilTugas(task.id)}
                 disabled={sedangAmbil[task.id] || pesan[task.id]?.sukses}
-                className="mt-3 w-full rounded-[16px] bg-maroon-800 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-maroon-700 disabled:opacity-50"
+                className="mt-3 w-full rounded-[16px] bg-maroon-800 py-2.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(92,31,33,0.18)] transition hover:-translate-y-0.5 hover:bg-maroon-700 disabled:opacity-50"
               >
                 {sedangAmbil[task.id] ? 'Mengambil Tugas...' : pesan[task.id]?.sukses ? 'Tugas Diambil ✓' : 'Ambil Tugas Ini'}
               </button>

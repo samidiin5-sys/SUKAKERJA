@@ -78,12 +78,12 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
             value={cari}
             onChange={(e) => setCari(e.target.value)}
             placeholder="Cari task..."
-            className="min-w-0 flex-1 rounded-2xl border border-cream-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+            className="min-w-0 flex-1 rounded-[16px] border border-cream-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
           <select
             value={filterPrioritas}
             onChange={(e) => setFilterPrioritas(e.target.value)}
-            className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
+            className="rounded-[12px] border border-cream-200 bg-cream-50/80 px-2 py-2 text-xs text-ink shadow-sm outline-none focus:border-orange-500"
           >
             <option value="semua">Semua Prioritas</option>
             {Object.entries(LABEL_PRIORITAS).map(([v, l]) => (
@@ -96,7 +96,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
             <select
               value={filterDivisi}
               onChange={(e) => setFilterDivisi(e.target.value)}
-              className="rounded-lg border border-cream-200 bg-cream-50 px-2 py-2 text-xs outline-none focus:border-orange-500"
+              className="rounded-[12px] border border-cream-200 bg-cream-50/80 px-2 py-2 text-xs text-ink shadow-sm outline-none focus:border-orange-500"
             >
               <option value="semua">Semua Divisi</option>
               {divisiUnik.map(([id, nama]) => (
@@ -113,7 +113,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
                 setFilterPrioritas('semua')
                 setFilterDivisi('semua')
               }}
-              className="rounded-lg px-3 py-2 text-xs font-semibold text-muted hover:bg-cream-100"
+              className="rounded-[12px] px-3 py-2 text-xs font-semibold text-muted transition hover:bg-cream-100"
             >
               Reset
             </button>
@@ -122,7 +122,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
       )}
 
       {tugasAwal.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-cream-200 bg-white p-8 text-center">
+        <div className="rounded-[24px] border border-dashed border-cream-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm text-muted">
             Belum ada tugas yang ditugaskan kepada Anda. Buka papan divisi untuk membuat task baru.
           </p>
@@ -130,7 +130,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
       )}
 
       {tugasAwal.length > 0 && tugasTersaring.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-cream-200 bg-white p-8 text-center">
+        <div className="rounded-[24px] border border-dashed border-cream-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm text-muted">Tidak ada task yang cocok dengan pencarian/filter.</p>
         </div>
       )}
@@ -148,10 +148,10 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
                     <li key={t.id}>
                       <a
                         href={`/divisi/${t.divisiId}`}
-                        className="group flex items-start justify-between gap-3 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-md"
+                        className="group flex items-start justify-between gap-3 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-[0_10px_24px_rgba(92,31,33,0.04)] transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-[0_16px_32px_rgba(92,31,33,0.08)]"
                       >
                         <div className="flex min-w-0 flex-1 items-start gap-3">
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-maroon-50 text-maroon-700">
+                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-maroon-50 text-maroon-700 ring-1 ring-white/70">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <rect x="4" y="5" width="16" height="14" rx="2" />
                               <path d="M8 3v4M16 3v4M4 10h16" />
@@ -168,7 +168,7 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
                           </div>
                         </div>
                         <div className="flex shrink-0 flex-col items-end text-right">
-                          <span className="rounded-full bg-orange-400/20 px-2 py-0.5 text-[10px] font-bold text-orange-800">
+                          <span className="rounded-full bg-orange-400/20 px-2 py-0.5 text-[10px] font-bold text-orange-800 shadow-sm">
                             {LABEL_PRIORITAS[t.prioritas] ?? t.prioritas}
                           </span>
                           {t.dueDate && (

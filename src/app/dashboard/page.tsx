@@ -31,7 +31,7 @@ export default async function HalamanDashboard() {
       ) : isOwner ? (
         <>
           {/* Greeting — compact, no big banner */}
-          <div className="mb-6 rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
+          <div className="mb-6 rounded-[28px] border border-cream-200 bg-white/95 p-5 shadow-[0_18px_45px_rgba(92,31,33,0.06)]">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">Ringkasan hari ini</p>
@@ -65,7 +65,7 @@ export default async function HalamanDashboard() {
                     <a
                       key={d.id}
                       href={`/divisi/${d.id}`}
-                      className="group flex items-center gap-4 rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                      className="group flex items-center gap-4 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-md"
                     >
                       <div
                         className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl text-white"
@@ -105,7 +105,7 @@ function AksesCepat({ href, label, sub, warna }: { href: string; label: string; 
   return (
     <a
       href={href}
-      className="flex items-center gap-3 rounded-2xl border border-cream-200/80 bg-cream-50/70 px-4 py-3 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
+      className="flex items-center gap-3 rounded-[20px] border border-cream-200/80 bg-cream-50/70 px-4 py-3 transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-white hover:shadow-sm"
     >
       <div className={`h-2 w-2 rounded-full ${warna}`} />
       <div>
@@ -151,7 +151,7 @@ async function RingkasanPersonal() {
       </div>
 
       {statistik.tenggatTerdekat.length > 0 && (
-        <div className="mb-5 rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
+        <div className="mb-5 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm">
           <h3 className="mb-3 text-[11px] font-bold tracking-widest text-muted">TENGGAT TERDEKAT</h3>
           <div className="space-y-1">
             {statistik.tenggatTerdekat.map((t) => (
@@ -211,7 +211,7 @@ async function RingkasanOrganisasi() {
               <a
                 key={d.id}
                 href={`/divisi/${d.id}`}
-                className="group rounded-2xl border border-cream-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-md"
               >
                 <div className="mb-3 flex items-center justify-between">
                   <p className="font-bold text-ink">{d.nama}</p>

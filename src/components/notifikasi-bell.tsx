@@ -99,7 +99,7 @@ export default function NotifikasiBell() {
     <div ref={wrapperRef} className="relative">
       <button
         onClick={bukaDropdown}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg text-maroon-800 hover:bg-cream-100"
+        className="relative flex h-9 w-9 items-center justify-center rounded-[14px] border border-transparent text-maroon-800 transition hover:border-cream-200 hover:bg-cream-50"
         aria-label="Notifikasi"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -107,14 +107,14 @@ export default function NotifikasiBell() {
           <path d="M10 18.5a2 2 0 0 0 4 0" />
         </svg>
         {jumlahBelumDibaca > 0 && (
-          <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+          <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-sm">
             {jumlahBelumDibaca > 9 ? '9+' : jumlahBelumDibaca}
           </span>
         )}
       </button>
 
       {terbuka && (
-        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-2xl">
+        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] overflow-hidden rounded-[22px] border border-cream-200 bg-white shadow-[0_18px_45px_rgba(92,31,33,0.08)]">
           <div className="flex items-center justify-between border-b border-cream-200 px-4 py-2.5">
             <p className="text-xs font-bold text-maroon-800">Notifikasi</p>
             {jumlahBelumDibaca > 0 && (
