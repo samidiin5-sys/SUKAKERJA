@@ -92,14 +92,67 @@ export default async function HalamanLembur() {
             </div>
           </>
         ) : (
-          <div className="lg:col-span-3 mx-auto w-full max-w-3xl">
-            <FormLembur
-              divisiSaya={data.divisiSaya}
-              sesiId={sesi.id}
-              sesiNama={sesi.nama}
-              isOwnerOrAdmin={false}
-            />
-          </div>
+          <>
+            {/* Left Column: Guidelines / Kebijakan Pengajuan */}
+            <div className="lg:col-span-1 space-y-4">
+              <div className="rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
+                <h3 className="mb-4 text-xs font-bold tracking-widest text-muted uppercase">Ketentuan Pengajuan</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 8v4l3 3" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-ink">Butuh Persetujuan</p>
+                      <p className="mt-0.5 text-[11px] text-muted leading-relaxed font-semibold">
+                        Setiap lembur yang diajukan oleh staff wajib ditinjau dan disetujui terlebih dahulu oleh Owner atau Admin sebelum tercatat resmi.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-ink">Notifikasi Hasil</p>
+                      <p className="mt-0.5 text-[11px] text-muted leading-relaxed font-semibold">
+                        Kamu akan otomatis mendapatkan pemberitahuan sistem setelah Owner/Admin menyetujui atau menolak pengajuanmu.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-ink">Transparansi Riwayat</p>
+                      <p className="mt-0.5 text-[11px] text-muted leading-relaxed font-semibold">
+                        Semua riwayat lembur yang diajukan beserta status persetujuannya dapat kamu pantau langsung di tabel bagian bawah.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Form */}
+            <div className="lg:col-span-2">
+              <FormLembur
+                divisiSaya={data.divisiSaya}
+                sesiId={sesi.id}
+                sesiNama={sesi.nama}
+                isOwnerOrAdmin={false}
+              />
+            </div>
+          </>
         )}
 
         {/* Riwayat Section (Bottom spanning all columns) */}

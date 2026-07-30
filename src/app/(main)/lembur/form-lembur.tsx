@@ -53,16 +53,20 @@ export default function FormLembur({
 
   useEffect(() => {
     if (!divisionId) return
+    if (!isOwnerOrAdmin) {
+      setDipilih(new Set([sesiId]))
+      return
+    }
     setMuatAnggota(true)
     ambilAnggotaUntukLembur(divisionId).then((data) => {
       setAnggota(data)
-      setDipilih(new Set(isOwnerOrAdmin ? [] : [sesiId]))
+      setDipilih(new Set([]))
       setMuatAnggota(false)
     })
   }, [divisionId, sesiId, isOwnerOrAdmin])
 
   function togglePilih(id: string) {
-    if (!isOwnerOrAdmin && id === sesiId) return
+    if (!isOwnerOrAdmin) return
     setDipilih((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
@@ -159,29 +163,19 @@ export default function FormLembur({
 
         {/* Pilih staff */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">
-            {isOwnerOrAdmin ? 'Staff yang Lembur' : 'Siapa yang Lembur'}
-          </label>
-          {muatAnggota ? (
-            <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
-          ) : (
-            <div className="space-y-1 rounded-xl border border-cream-200 bg-cream-50/50 p-2 shadow-inner max-h-[220px] overflow-y-auto custom-scrollbar">
-              {/* Mode staff: current user always checked */}
-              {!isOwnerOrAdmin && (
-                <div className="flex items-center gap-2.5 rounded-lg bg-cream-100/60 border border-cream-200/50 px-3 py-2 shadow-sm">
-                  <KotakCentang checked />
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-maroon-800 text-[10px] font-black text-cream-50">
-                    {sesiNama.split(' ').map((n) => n[0]).slice(0,2).join('').toUpperCase()}
-                  </div>
-                  <span className="text-xs font-bold text-ink">{sesiNama}</span>
-                  <span className="ml-auto rounded bg-maroon-100 px-2 py-0.5 text-[9px] font-bold text-maroon-700">Kamu</span>
-                </div>
-              )}
-
-              {/* Mode staff: other members below divider */}
-              {!isOwnerOrAdmin && anggotaLain.length > 0 && (
-                <div className="border-t border-cream-200/60 pt-1 space-y-1">
-                  {anggotaLain.map((a) => {
+          {isOwnerOrAdmin ? (
+            <>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                Staff yang Lembur
+              </label>
+              {muatAnggota ? (
+                <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
+              ) : (
+                <div className="space-y-1 rounded-xl border border-cream-200 bg-cream-50/50 p-2 shadow-inner max-h-[220px] overflow-y-auto custom-scrollbar">
+                  {anggota.length === 0 && (
+                    <p className="px-3 py-2 text-xs text-muted font-bold text-center">Tidak ada staff di divisi ini.</p>
+                  )}
+                  {anggota.map((a) => {
                     const isChecked = dipilih.has(a.id)
                     const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
                     return (
@@ -199,49 +193,36 @@ export default function FormLembur({
                           {inisial}
                         </div>
                         <span className="text-xs font-bold text-ink">{a.nama}</span>
+                        {a.id === sesiId && (
+                          <span className="ml-auto rounded bg-maroon-100 px-2 py-0.5 text-[9px] font-bold text-maroon-700">Kamu</span>
+                        )}
                       </label>
                     )
                   })}
                 </div>
               )}
-
-              {/* Mode owner/admin: all staff as checkboxes */}
-              {isOwnerOrAdmin && anggota.length === 0 && (
-                <p className="px-3 py-2 text-xs text-muted font-bold text-center">Tidak ada staff di divisi ini.</p>
+              {dipilih.size > 0 && (
+                <p className="mt-1.5 text-xs font-bold text-orange-700">
+                  ✓ {dipilih.size} staff dipilih
+                </p>
               )}
-              {isOwnerOrAdmin && anggota.map((a) => {
-                const isChecked = dipilih.has(a.id)
-                const inisial = a.nama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
-                return (
-                  <label
-                    key={a.id}
-                    className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 border transition-all duration-200 ${
-                      isChecked 
-                        ? 'bg-cream-100/70 border-cream-200/70 shadow-sm' 
-                        : 'bg-white border-transparent hover:bg-cream-50'
-                    }`}
-                  >
-                    <input type="checkbox" className="sr-only" checked={isChecked} onChange={() => togglePilih(a.id)} />
-                    <KotakCentang checked={isChecked} />
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-cream-200 text-[10px] font-black text-maroon-800">
-                      {inisial}
-                    </div>
-                    <span className="text-xs font-bold text-ink">{a.nama}</span>
-                  </label>
-                )
-              })}
-
-              {!isOwnerOrAdmin && anggotaLain.length === 0 && (
-                <p className="px-3 py-2 text-xs text-muted font-bold text-center">Tidak ada anggota lain di divisi ini.</p>
-              )}
-            </div>
-          )}
-          {dipilih.size > (isOwnerOrAdmin ? 0 : 1) && (
-            <p className="mt-1.5 text-xs font-bold text-orange-700">
-              {isOwnerOrAdmin
-                ? `✓ ${dipilih.size} staff dipilih`
-                : `✓ Lembur untuk ${dipilih.size} orang — pengajuan terpisah akan dibuat.`}
-            </p>
+            </>
+          ) : (
+            <>
+              <label className="mb-1.5 block text-xs font-semibold text-muted font-bold">
+                Pemohon Lembur
+              </label>
+              <div className="flex items-center gap-2.5 rounded-xl border border-cream-200 bg-cream-50/30 px-3.5 py-2.5 shadow-sm">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-maroon-800 text-[10px] font-black text-cream-50">
+                  {sesiNama.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()}
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-ink">{sesiNama}</span>
+                  <p className="text-[10px] font-semibold text-muted">Diri Sendiri</p>
+                </div>
+                <span className="ml-auto rounded-full bg-maroon-100 px-2.5 py-0.5 text-[9px] font-black text-maroon-700">Kamu</span>
+              </div>
+            </>
           )}
         </div>
 
