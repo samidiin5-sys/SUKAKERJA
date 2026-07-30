@@ -121,48 +121,19 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 </button>
               </div>
             </div>
-
-            {/* Target Division & Column - Always visible so Admin can choose where the task sits */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-muted">Divisi Asal</label>
-                <select
-                  value={divisionId}
-                  onChange={(e) => setDivisionId(e.target.value)}
-                  required
-                  className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
-                >
-                  {divisiSaya.map((d) => (
-                    <option key={d.id} value={d.id}>{d.nama}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-muted">Kolom Papan (Kanban Board)</label>
-                {muatBoard ? (
-                  <div className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-muted animate-pulse">
-                    Memuat...
-                  </div>
-                ) : (
-                  <select
-                    value={boardId}
-                    onChange={(e) => setBoardId(e.target.value)}
-                    required
-                    disabled={boards.length === 0}
-                    className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner disabled:opacity-50"
-                  >
-                    {boards.length === 0 ? (
-                      <option value="">Tidak ada kolom</option>
-                    ) : (
-                      boards.map((b) => (
-                        <option key={b.id} value={b.id}>{b.nama}</option>
-                      ))
-                    )}
-                  </select>
-                )}
-              </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-muted">Divisi Asal</label>
+              <select
+                value={divisionId}
+                onChange={(e) => setDivisionId(e.target.value)}
+                required
+                className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
+              >
+                {divisiSaya.map((d) => (
+                  <option key={d.id} value={d.id}>{d.nama}</option>
+                ))}
+              </select>
             </div>
-
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
               <input
