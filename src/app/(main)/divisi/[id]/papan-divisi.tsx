@@ -532,14 +532,14 @@ export default function PapanDivisi({
                 className="flex items-start gap-3 overflow-x-auto rounded-2xl bg-[#f1ece4] p-3 pb-3"
                 style={{ scrollbarWidth: 'none' }}
               >
-                {boardsTampil.map((board) => (
+                {boardsTampil.map((board, index) => (
                   <BoardColumn
                     key={board.id}
                     divisionId={divisionId}
                     board={board}
                     dragDinonaktifkan={filterAktif}
                     bolehReorderBoard={bolehReorderBoard}
-                    bolehTambahTask={bolehTambahTask}
+                    bolehTambahTask={bolehTambahTask && index === 0}
                     bolehKelola={bolehKelola}
                     onPilihTask={(taskId) => setTaskDipilih({ id: taskId, boardId: board.id })}
                   />
