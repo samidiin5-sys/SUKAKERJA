@@ -67,6 +67,7 @@ export default function DetailTaskPanel({
   const [alasan, setAlasan] = useState('')
   const [sedangSimpanAlasan, setSedangSimpanAlasan] = useState(false)
   const [pesanAlasan, setPesanAlasan] = useState<string | null>(null)
+  const [modalAlert, setModalAlert] = useState<{ terbuka: boolean; pesan: string } | null>(null)
 
   useEffect(() => {
     let batal = false
@@ -117,9 +118,10 @@ export default function DetailTaskPanel({
     if (boardTujuan?.isCompletionBoard && !bolehKelola) {
       const reviewBoard = boards.find((b) => b.nama.toLowerCase() === 'review')
       if (reviewBoard) {
-        alert(
-          'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.'
-        )
+        setModalAlert({
+          terbuka: true,
+          pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.',
+        })
         setSedangSimpan(true)
         const hasil = await pindahkanTask(divisionId, taskId, reviewBoard.id)
         setSedangSimpan(false)
@@ -130,7 +132,10 @@ export default function DetailTaskPanel({
         onBerubah()
         return
       } else {
-        alert('Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.')
+        setModalAlert({
+          terbuka: true,
+          pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.',
+        })
         return
       }
     }
@@ -149,9 +154,10 @@ export default function DetailTaskPanel({
     if (!bolehKelola) {
       const reviewBoard = boards.find((b) => b.nama.toLowerCase() === 'review')
       if (reviewBoard) {
-        alert(
-          'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.'
-        )
+        setModalAlert({
+          terbuka: true,
+          pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner di kolom Review. Tugas Anda akan dipindahkan ke kolom Review.',
+        })
         setSedangSimpan(true)
         const hasil = await pindahkanTask(divisionId, taskId, reviewBoard.id)
         setSedangSimpan(false)
@@ -162,7 +168,10 @@ export default function DetailTaskPanel({
         onBerubah()
         return
       } else {
-        alert('Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.')
+        setModalAlert({
+          terbuka: true,
+          pesan: 'Tugas harus disetujui/di-approve terlebih dahulu oleh Owner.',
+        })
         return
       }
     }
@@ -502,6 +511,30 @@ export default function DetailTaskPanel({
                 {sedangHapus ? 'Menghapus...' : 'Ya, Hapus'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {modalAlert && modalAlert.terbuka && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 border border-cream-200/30 shadow-2xl animate-in zoom-in-95 duration-150 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/35">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <h3 className="text-base font-black text-maroon-800">Persetujuan Diperlukan</h3>
+            <p className="mt-2 text-xs font-semibold text-muted/80 leading-relaxed">
+              {modalAlert.pesan}
+            </p>
+            <button
+              onClick={() => setModalAlert(null)}
+              className="mt-5 w-full rounded-xl bg-maroon-800 py-2.5 text-xs font-bold text-cream-50 hover:bg-maroon-900 active:scale-95 transition-all shadow-md shadow-maroon-800/10 cursor-pointer"
+            >
+              Mengerti
+            </button>
           </div>
         </div>
       )}
