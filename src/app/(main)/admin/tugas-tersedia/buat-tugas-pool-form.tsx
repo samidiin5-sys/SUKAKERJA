@@ -74,47 +74,47 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       {!buka ? (
         <button
           onClick={() => { setBuka(true); setPesan(null) }}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-orange-300 bg-orange-50 py-3.5 text-sm font-bold text-orange-700 transition hover:border-orange-400 hover:bg-orange-100"
+          className="flex w-full items-center justify-center gap-2 rounded-[22px] border-2 border-dashed border-maroon-200 bg-cream-50/50 py-4 text-xs font-black text-maroon-800 transition-all hover:border-maroon-300 hover:bg-cream-100/50 active:scale-[0.99] cursor-pointer"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
             <path d="M12 5v14M5 12h14" />
           </svg>
           Buat Tugas Terbuka Baru
         </button>
       ) : (
-        <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-xs font-bold tracking-widest text-muted">BUAT TUGAS TERBUKA BARU</h3>
+        <div className="rounded-[28px] border border-cream-200 bg-white p-5 shadow-[0_14px_40px_rgba(92,31,33,0.05)]">
+          <div className="mb-4 flex items-center justify-between border-b border-cream-100 pb-3">
+            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Buat Tugas Terbuka Baru</h3>
             <button
               onClick={() => { setBuka(false); reset() }}
-              className="text-xs text-muted hover:text-ink"
+              className="text-xs font-bold text-muted hover:text-ink transition cursor-pointer"
             >
               ✕ Tutup
             </button>
           </div>
 
-          <form onSubmit={tanganiKirim} className="space-y-3">
+          <form onSubmit={tanganiKirim} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Jangkauan</label>
-              <div className="flex gap-2">
+              <label className="mb-1.5 block text-xs font-semibold text-muted">Jangkauan (Akses Mengambil Tugas)</label>
+              <div className="flex gap-2.5">
                 <button
                   type="button"
                   onClick={() => setLintasDivisi(true)}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-bold transition ${
+                  className={`flex-1 rounded-xl border py-2.5 text-xs font-black transition-all ${
                     lintasDivisi
-                      ? 'border-orange-400 bg-orange-50 text-orange-700'
-                      : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300 hover:text-ink'
+                      ? 'border-maroon-700 bg-maroon-800 text-cream-50 shadow-md shadow-maroon-800/10'
+                      : 'border-cream-200 bg-cream-50/50 text-muted hover:border-maroon-200 hover:text-ink'
                   }`}
                 >
-                  Semua Staff
+                  Semua Staff (Lintas Divisi)
                 </button>
                 <button
                   type="button"
                   onClick={() => setLintasDivisi(false)}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-bold transition ${
+                  className={`flex-1 rounded-xl border py-2.5 text-xs font-black transition-all ${
                     !lintasDivisi
-                      ? 'border-orange-400 bg-orange-50 text-orange-700'
-                      : 'border-cream-200 bg-cream-50 text-muted hover:border-orange-300 hover:text-ink'
+                      ? 'border-maroon-700 bg-maroon-800 text-cream-50 shadow-md shadow-maroon-800/10'
+                      : 'border-cream-200 bg-cream-50/50 text-muted hover:border-maroon-200 hover:text-ink'
                   }`}
                 >
                   Divisi Tertentu
@@ -122,47 +122,46 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
               </div>
             </div>
 
-            {!lintasDivisi && (
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
-                  <select
-                    value={divisionId}
-                    onChange={(e) => setDivisionId(e.target.value)}
-                    required
-                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
-                  >
-                    {divisiSaya.map((d) => (
-                      <option key={d.id} value={d.id}>{d.nama}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-muted">Kolom (Board)</label>
-                  {muatBoard ? (
-                    <div className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm text-muted animate-pulse">
-                      Memuat...
-                    </div>
-                  ) : (
-                    <select
-                      value={boardId}
-                      onChange={(e) => setBoardId(e.target.value)}
-                      required
-                      disabled={boards.length === 0}
-                      className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500 disabled:opacity-50"
-                    >
-                      {boards.length === 0 ? (
-                        <option value="">Tidak ada kolom</option>
-                      ) : (
-                        boards.map((b) => (
-                          <option key={b.id} value={b.id}>{b.nama}</option>
-                        ))
-                      )}
-                    </select>
-                  )}
-                </div>
+            {/* Target Division & Column - Always visible so Admin can choose where the task sits */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-muted">Divisi Asal</label>
+                <select
+                  value={divisionId}
+                  onChange={(e) => setDivisionId(e.target.value)}
+                  required
+                  className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
+                >
+                  {divisiSaya.map((d) => (
+                    <option key={d.id} value={d.id}>{d.nama}</option>
+                  ))}
+                </select>
               </div>
-            )}
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-muted">Kolom Papan (Kanban Board)</label>
+                {muatBoard ? (
+                  <div className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-muted animate-pulse">
+                    Memuat...
+                  </div>
+                ) : (
+                  <select
+                    value={boardId}
+                    onChange={(e) => setBoardId(e.target.value)}
+                    required
+                    disabled={boards.length === 0}
+                    className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner disabled:opacity-50"
+                  >
+                    {boards.length === 0 ? (
+                      <option value="">Tidak ada kolom</option>
+                    ) : (
+                      boards.map((b) => (
+                        <option key={b.id} value={b.id}>{b.nama}</option>
+                      ))
+                    )}
+                  </select>
+                )}
+              </div>
+            </div>
 
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
@@ -173,7 +172,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 placeholder="Nama tugas yang perlu dikerjakan..."
                 required
                 maxLength={200}
-                className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
               />
             </div>
 
@@ -186,7 +185,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 onChange={(e) => setDeskripsi(e.target.value)}
                 placeholder="Detail pekerjaan, instruksi, atau referensi..."
                 rows={3}
-                className="w-full resize-none rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                className="w-full resize-none rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
               />
             </div>
 
@@ -200,9 +199,9 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                   value={deadlineTanggal}
                   onChange={(e) => setDeadlineTanggal(e.target.value)}
                   required
-                  className="flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none focus:border-orange-500"
+                  className="flex-1 rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
                 />
-                <div className="flex items-center gap-1 rounded-lg border border-cream-200 bg-cream-50 px-3 py-2">
+                <div className="flex items-center justify-center gap-1.5 rounded-xl border border-cream-200 bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:border-maroon-800 focus-within:bg-white transition-all">
                   <input
                     type="text"
                     inputMode="numeric"
@@ -217,9 +216,9 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                       setDeadlineJam(`${h.padStart(2, '0')}:${m}`)
                     }}
                     onBlur={() => setDeadlineHStr((h) => h.padStart(2, '0'))}
-                    className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+                    className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
                   />
-                  <span className="text-sm font-bold text-muted">:</span>
+                  <span className="text-xs font-black text-muted">:</span>
                   <input
                     type="text"
                     inputMode="numeric"
@@ -234,17 +233,18 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                       setDeadlineJam(`${h}:${m.padStart(2, '0')}`)
                     }}
                     onBlur={() => setDeadlineMStr((m) => m.padStart(2, '0'))}
-                    className="w-8 bg-transparent text-center text-sm font-semibold text-ink outline-none"
+                    className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex items-start gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5">
-              <svg className="mt-0.5 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+            <div className="flex items-start gap-2.5 rounded-xl border border-orange-200 bg-orange-50/50 px-3.5 py-3">
+              <svg className="mt-0.5 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
               </svg>
-              <p className="text-xs text-orange-700">
+              <p className="text-xs font-semibold text-orange-700 leading-relaxed">
                 Tugas terbuka bisa langsung diambil oleh staff tanpa pengajuan proposal. Tentukan deadline agar staff tahu batas waktu pengerjaannya.
               </p>
             </div>
@@ -255,18 +255,18 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
               </p>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex gap-2.5 pt-1.5">
               <button
                 type="submit"
                 disabled={sedangKirim || boards.length === 0}
-                className="rounded-xl bg-maroon-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-maroon-700 disabled:opacity-50"
+                className="rounded-xl bg-maroon-800 px-5 py-2.5 text-xs font-bold text-cream-50 hover:bg-maroon-900 active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all shadow-md shadow-maroon-800/10 cursor-pointer"
               >
                 {sedangKirim ? 'Membuat...' : 'Buat Tugas Terbuka'}
               </button>
               <button
                 type="button"
                 onClick={() => { setBuka(false); reset() }}
-                className="rounded-xl border border-cream-200 px-4 py-2.5 text-sm font-semibold text-muted hover:bg-cream-50"
+                className="rounded-xl border border-cream-200 bg-white px-4 py-2.5 text-xs font-bold text-muted hover:bg-cream-50/50 active:scale-95 transition-all cursor-pointer shadow-sm"
               >
                 Batal
               </button>
