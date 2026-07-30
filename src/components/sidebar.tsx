@@ -135,7 +135,7 @@ export default function Sidebar({
           <>
             <SeksiNav judul="Divisi" collapsed={collapsed} />
             {data.divisiSaya.map((d) => {
-              const href = (isSuperAdmin || isOwner) ? `/divisi/${d.id}/anggota` : `/divisi/${d.id}`
+              const href = isSuperAdmin ? `/divisi/${d.id}/anggota` : `/divisi/${d.id}`
               return (
                 <ItemSidebar
                   key={d.id}
