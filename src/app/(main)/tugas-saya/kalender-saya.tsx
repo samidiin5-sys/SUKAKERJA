@@ -40,9 +40,14 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
 
   const muat = useCallback(async (mulai: Date, selesai: Date) => {
     setSedangMuat(true)
-    const data = await ambilTaskKalenderSaya(mulai.toISOString(), selesai.toISOString())
-    setTasks(data)
-    setSedangMuat(false)
+    try {
+      const data = await ambilTaskKalenderSaya(mulai.toISOString(), selesai.toISOString())
+      setTasks(data)
+    } catch (error) {
+      console.error("Gagal memuat task kalender saya:", error)
+    } finally {
+      setSedangMuat(false)
+    }
   }, [])
 
   function naviBulan(arah: -1 | 1) {

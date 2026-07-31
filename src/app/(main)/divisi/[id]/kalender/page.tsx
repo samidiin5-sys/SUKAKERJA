@@ -4,6 +4,8 @@ import { ambilDetailDivisi } from '../actions'
 import { ambilTaskKalender } from './actions'
 import KalenderDivisi from './kalender-divisi'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HalamanKalenderDivisi({
   params,
 }: {
@@ -30,6 +32,8 @@ export default async function HalamanKalenderDivisi({
     awalBulan.toISOString(),
     akhirBulan.toISOString()
   )
+
+  console.log("TASKS FETCHED ON SERVER FOR CALENDAR:", tasks.map(t => ({ id: t.id, judul: t.judul, dueDate: t.dueDate })))
 
   const isStaff = sesi.roleSistem === 'user'
 

@@ -2,6 +2,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanAnggotaDivisi } from '@/lib/auth/otorisasi'
+import fs from 'fs'
 
 /**
  * Konversi ISO string (UTC) ke tanggal WIB dalam format YYYY-MM-DD.
@@ -61,6 +62,14 @@ export async function ambilTaskKalender(
 
   const { data: tasks } = await query
 
+  // Temp debug logging
+  try {
+    const logData = `[${new Date().toISOString()}] ambilTaskKalender - divisionId: ${divisionId} | mulai: ${mulai} | selesai: ${selesai} | boardIds: ${boardIds.join(', ')} | db_returned: ${tasks?.length ?? 0} tasks\n`
+    fs.appendFileSync('calendar_debug.log', logData)
+  } catch (e) {
+    console.error("Gagal menulis log debug:", e)
+  }
+
   type BarisTask = {
     id: string
     judul: string
@@ -91,10 +100,12 @@ export async function ambilTaskKalender(
       completedAt: t.completed_at,
       isRecurring: t.is_recurring,
       boardNama: boardMap.get(t.board_id) ?? '',
-      assignees: t.task_assignees.map((a) => ({
-        id: a.profiles.id,
-        nama: a.profiles.nama,
-        fotoUrl: a.profiles.foto_url,
-      })),
+      assignees: (t.task_assignees ?? [])
+        .filter((a) => a && a.profiles)
+        .map((a) => ({
+          id: a.profiles.id,
+          nama: a.profiles.nama,
+          fotoUrl: a.profiles.foto_url,
+        })),
     }))
 }

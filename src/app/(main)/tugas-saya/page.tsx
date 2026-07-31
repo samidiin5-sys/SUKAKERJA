@@ -1,6 +1,8 @@
 import { ambilTugasSaya, ambilTaskKalenderSaya } from './actions'
 import TugasSayaView from './tugas-saya-view'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HalamanTugasSaya({
   searchParams,
 }: {

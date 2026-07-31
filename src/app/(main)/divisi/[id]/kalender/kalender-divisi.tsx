@@ -138,9 +138,14 @@ export default function KalenderDivisi({
 
   const muatTask = useCallback(async (mulai: Date, selesai: Date) => {
     setSedangMuat(true)
-    const data = await ambilTaskKalender(divisionId, mulai.toISOString(), selesai.toISOString())
-    setTasks(data)
-    setSedangMuat(false)
+    try {
+      const data = await ambilTaskKalender(divisionId, mulai.toISOString(), selesai.toISOString())
+      setTasks(data)
+    } catch (error) {
+      console.error("Gagal memuat task kalender:", error)
+    } finally {
+      setSedangMuat(false)
+    }
   }, [divisionId])
 
   function navigasiBulan(arah: -1 | 1) {
