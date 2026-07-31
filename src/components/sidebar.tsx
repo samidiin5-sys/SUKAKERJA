@@ -44,7 +44,6 @@ export default function Sidebar({
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
-      { href: '/tugas-saya?view=kalender', label: 'Kalender', icon: <IkonKalender /> },
       { href: '/notifikasi', label: 'Notifikasi', icon: <IkonLonceng /> },
       { href: '/profil', label: 'Profil', icon: <IkonOrang /> },
     ] : []),

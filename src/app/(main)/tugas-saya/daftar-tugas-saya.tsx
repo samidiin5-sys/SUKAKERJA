@@ -135,55 +135,66 @@ export default function DaftarTugasSaya({ tugasAwal }: { tugasAwal: TugasSaya[] 
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {seksi.map(
           (s) =>
             kelompok[s.kunci].length > 0 && (
               <div key={s.kunci}>
-                <h2 className={`mb-2 text-xs font-bold tracking-widest ${s.warna}`}>
-                  {s.judul.toUpperCase()} ({kelompok[s.kunci].length})
+                <h2 className={`mb-2 text-[11px] font-bold tracking-widest uppercase ${s.warna}`}>
+                  {s.judul} ({kelompok[s.kunci].length})
                 </h2>
-                <ul className="space-y-2">
-                  {kelompok[s.kunci].map((t) => (
-                    <li key={t.id}>
+                <div className="overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-sm">
+                  {kelompok[s.kunci].map((t, i) => {
+                    const isLast = i === kelompok[s.kunci].length - 1
+                    const warnaPrioritas: Record<string, string> = {
+                      mendesak: 'bg-red-100 text-red-700',
+                      tinggi: 'bg-orange-100 text-orange-700',
+                      sedang: 'bg-yellow-100 text-yellow-700',
+                      rendah: 'bg-green-100 text-green-700',
+                    }
+                    return (
                       <a
+                        key={t.id}
                         href={`/divisi/${t.divisiId}?task=${t.id}`}
-                        className="group flex items-start justify-between gap-3 rounded-[22px] border border-cream-200 bg-white/95 p-4 shadow-[0_10px_24px_rgba(92,31,33,0.04)] transition hover:-translate-y-0.5 hover:border-maroon-200 hover:bg-cream-50/70 hover:shadow-[0_16px_32px_rgba(92,31,33,0.08)]"
+                        className={`group flex items-center gap-3 px-4 py-3 transition hover:bg-cream-50/80 ${!isLast ? 'border-b border-cream-100' : ''}`}
                       >
-                        <div className="flex min-w-0 flex-1 items-start gap-3">
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-maroon-50 text-maroon-700 ring-1 ring-white/70">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="4" y="5" width="16" height="14" rx="2" />
-                              <path d="M8 3v4M16 3v4M4 10h16" />
-                            </svg>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-bold text-ink">{t.judul}</p>
-                            <p className="text-xs text-muted">
-                              {t.divisiNama} &middot; {t.boardNama}
-                            </p>
-                            <p className="mt-1 text-xs font-semibold text-maroon-700">
-                              Ditugaskan oleh {t.ditugaskanOleh}
-                            </p>
-                          </div>
+                        {/* Dot status */}
+                        <span className={`h-2 w-2 shrink-0 rounded-full ${
+                          s.kunci === 'terlambat' ? 'bg-red-500' :
+                          s.kunci === 'hariIni'   ? 'bg-orange-400' :
+                          s.kunci === 'mingguIni' ? 'bg-yellow-400' :
+                                                    'bg-slate-300'
+                        }`} />
+
+                        {/* Judul + meta */}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-ink group-hover:text-maroon-800">
+                            {t.judul}
+                          </p>
+                          <p className="truncate text-[11px] text-muted">
+                            {t.divisiNama} · {t.boardNama}
+                          </p>
                         </div>
-                        <div className="flex shrink-0 flex-col items-end text-right">
-                          <span className="rounded-full bg-orange-400/20 px-2 py-0.5 text-[10px] font-bold text-orange-800 shadow-sm">
+
+                        {/* Badge prioritas + deadline */}
+                        <div className="flex shrink-0 items-center gap-2">
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${warnaPrioritas[t.prioritas] ?? 'bg-slate-100 text-slate-600'}`}>
                             {LABEL_PRIORITAS[t.prioritas] ?? t.prioritas}
                           </span>
                           {t.dueDate && (
-                            <p className="mt-1 text-xs text-muted">
-                              {new Date(t.dueDate).toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'short',
-                              })}
-                            </p>
+                            <span className="text-[11px] font-medium text-muted">
+                              {new Date(t.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
                           )}
+                          {/* Arrow */}
+                          <svg className="h-3.5 w-3.5 text-muted/40 group-hover:text-maroon-400 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M9 18l6-6-6-6" />
+                          </svg>
                         </div>
                       </a>
-                    </li>
-                  ))}
-                </ul>
+                    )
+                  })}
+                </div>
               </div>
             )
         )}
