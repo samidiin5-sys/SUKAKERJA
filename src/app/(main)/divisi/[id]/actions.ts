@@ -377,7 +377,6 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
     )
     .in('board_id', boardIds)
     .is('deleted_at', null)
-    .is('archived_at', null)
     .order('urutan')
 
   type BarisTask = {
