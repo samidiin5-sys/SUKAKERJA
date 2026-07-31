@@ -55,6 +55,9 @@ function ModalDetailTask({ task, onTutup }: { task: TaskKalender; onTutup: () =>
               {task.isRecurring && (
                 <span className="rounded bg-maroon-50 px-1.5 py-0.5 text-[10px] font-bold text-maroon-700">Rutin ↻</span>
               )}
+              {!task.completedAt && new Date(task.dueDate).getTime() < Date.now() && (
+                <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700">Terlambat ⚠️</span>
+              )}
               <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold capitalize ${WARNA_PRIORITAS[task.prioritas] ?? ''}`}>
                 {task.prioritas}
               </span>
@@ -234,19 +237,24 @@ export default function KalenderDivisi({
                   {hari.getDate()}
                 </div>
                 <div className="space-y-0.5">
-                  {taskHari.slice(0, 3).map((task) => (
-                    <button
-                      key={task.id}
-                      onClick={() => setTaskDipilih(task)}
-                      className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold transition hover:opacity-80 ${
-                        task.completedAt
-                          ? 'bg-emerald-100 text-emerald-700 line-through'
-                          : 'bg-maroon-50 text-maroon-800'
-                      }`}
-                    >
-                      {task.isRecurring && '↻ '}{task.judul}
-                    </button>
-                  ))}
+                  {taskHari.slice(0, 3).map((task) => {
+                    const overdue = !task.completedAt && new Date(task.dueDate).getTime() < Date.now()
+                    return (
+                      <button
+                        key={task.id}
+                        onClick={() => setTaskDipilih(task)}
+                        className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold transition hover:opacity-80 ${
+                          task.completedAt
+                            ? 'bg-emerald-100 text-emerald-700 line-through'
+                            : overdue
+                            ? 'bg-red-100 text-red-700 border border-red-200'
+                            : 'bg-maroon-50 text-maroon-800'
+                        }`}
+                      >
+                        {task.isRecurring && '↻ '}{task.judul}
+                      </button>
+                    )
+                  })}
                   {taskHari.length > 3 && (
                     <p className="px-1 text-[10px] font-bold text-muted">+{taskHari.length - 3} lagi</p>
                   )}
@@ -261,6 +269,9 @@ export default function KalenderDivisi({
       <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] font-semibold text-muted">
         <div className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-emerald-500" /> Selesai
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-red-500" /> Terlambat (Overdue)
         </div>
         <div className="flex items-center gap-1">
           <span className="text-maroon-500">↻</span> Tugas Rutin

@@ -291,7 +291,7 @@ export async function ambilStatistikDivisi(divisionId: string): Promise<Statisti
 
   const aktif = semuaTask.filter((t) => t.completed_at === null)
   const selesai = semuaTask.filter((t) => t.completed_at !== null)
-  const terlambatList = aktif.filter((t) => t.due_date && new Date(t.due_date).getTime() < awalHariIni.getTime())
+  const terlambatList = aktif.filter((t) => t.due_date && new Date(t.due_date).getTime() < sekarang.getTime())
   const selesaiBulanIni = selesai.filter((t) => new Date(t.completed_at as string).getTime() >= awalBulanIni.getTime())
 
   const produktivitas: ProduktivitasAnggota[] = anggota.map((a) => {
@@ -301,7 +301,7 @@ export async function ambilStatistikDivisi(divisionId: string): Promise<Statisti
       nama: a.nama,
       aktif: tugasSaya.filter((t) => t.completed_at === null).length,
       selesai: tugasSaya.filter((t) => t.completed_at !== null).length,
-      terlambat: tugasSaya.filter((t) => t.completed_at === null && t.due_date && new Date(t.due_date).getTime() < awalHariIni.getTime()).length,
+      terlambat: tugasSaya.filter((t) => t.completed_at === null && t.due_date && new Date(t.due_date).getTime() < sekarang.getTime()).length,
     }
   })
 
@@ -402,8 +402,17 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
   }
 
   const bolehLihatSemua = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
+  const hariIniWIB = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
 
   const semuaTask = ((tasks as unknown as BarisTask[] | null) ?? []).filter((t) => {
+    // Sembunyikan tugas rutin masa depan dari papan Kanban
+    if (t.is_recurring && t.due_date) {
+      const tglWIB = new Date(new Date(t.due_date).getTime() + 7 * 3600_000).toISOString().slice(0, 10)
+      if (tglWIB > hariIniWIB) {
+        return false
+      }
+    }
+
     if (!t.hanya_assignee) return true
     if (bolehLihatSemua) return true
     return t.task_assignees.some((a) => a.user_id === sesi.id)

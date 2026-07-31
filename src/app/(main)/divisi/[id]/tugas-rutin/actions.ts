@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanAnggotaDivisi, pastikanOwner } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 import { jalankanBuatTugasRutin } from '@/lib/cron/buat-tugas-rutin'
+import { generateTugasDariTemplate, bersihkanTugasMasaDepan } from '@/lib/cron/generator-tugas'
 
 export async function triggerBuatTugasRutin(divisionId: string): Promise<{ sukses: boolean; dibuat: number; pesan?: string }> {
   await pastikanOwner(divisionId)
@@ -111,6 +112,26 @@ export async function buatTemplate(divisionId: string, data: DataTemplate): Prom
     created_by: sesi.id,
   }).select('id').single()
   if (error) return { sukses: false, pesan: 'Gagal membuat template. Coba lagi.' }
+
+  // Generate tugas awal untuk template yang baru dibuat
+  const templateRecord = {
+    id: tmpl.id,
+    division_id: divisionId,
+    board_id: boardPertama.id,
+    judul: data.judul.trim(),
+    deskripsi: data.deskripsi.trim() || null,
+    prioritas: data.prioritas,
+    assignee_ids: data.assigneeIds,
+    pola: data.pola,
+    day_of_week: data.dayOfWeek,
+    day_of_month: data.dayOfMonth,
+    due_offset_hari: data.dueOffsetHari,
+    tanggal_mulai: data.tanggalMulai,
+    tanggal_selesai: data.tanggalSelesai || null,
+    created_by: sesi.id,
+  }
+  await generateTugasDariTemplate(templateRecord)
+
   await catatAktivitas({ actorId: sesi.id, actorNama: sesi.nama, jenis: 'template_dibuat',
     objekTipe: 'Template', objekId: tmpl.id, objekNama: data.judul, divisionId })
   return { sukses: true }
@@ -128,6 +149,9 @@ export async function ubahTemplate(divisionId: string, templateId: string, data:
   const boardPertama = await ambilBoardPertama(admin, divisionId)
   if (!boardPertama) return { sukses: false, pesan: 'Divisi ini belum memiliki board' }
 
+  // Bersihkan tugas masa depan yang belum selesai sebelum data template diubah
+  await bersihkanTugasMasaDepan(templateId, data.dueOffsetHari)
+
   const { error } = await admin.from('recurring_task_templates').update({
     board_id: boardPertama.id, judul: data.judul.trim(),
     deskripsi: data.deskripsi.trim() || null, prioritas: data.prioritas,
@@ -137,6 +161,26 @@ export async function ubahTemplate(divisionId: string, templateId: string, data:
     tanggal_selesai: data.tanggalSelesai || null,
   }).eq('id', templateId).eq('division_id', divisionId)
   if (error) return { sukses: false, pesan: 'Gagal menyimpan perubahan. Coba lagi.' }
+
+  // Generate ulang tugas baru dengan parameter ter-update
+  const templateRecord = {
+    id: templateId,
+    division_id: divisionId,
+    board_id: boardPertama.id,
+    judul: data.judul.trim(),
+    deskripsi: data.deskripsi.trim() || null,
+    prioritas: data.prioritas,
+    assignee_ids: data.assigneeIds,
+    pola: data.pola,
+    day_of_week: data.dayOfWeek,
+    day_of_month: data.dayOfMonth,
+    due_offset_hari: data.dueOffsetHari,
+    tanggal_mulai: data.tanggalMulai,
+    tanggal_selesai: data.tanggalSelesai || null,
+    created_by: sesi.id,
+  }
+  await generateTugasDariTemplate(templateRecord)
+
   await catatAktivitas({ actorId: sesi.id, actorNama: sesi.nama, jenis: 'template_diubah',
     objekTipe: 'Template', objekId: templateId, objekNama: data.judul, divisionId })
   return { sukses: true }
@@ -145,7 +189,13 @@ export async function ubahTemplate(divisionId: string, templateId: string, data:
 export async function hapusTemplate(divisionId: string, templateId: string): Promise<HasilTemplate> {
   const sesi = await pastikanOwner(divisionId)
   const admin = createAdminClient()
-  const { data: tmpl } = await admin.from('recurring_task_templates').select('judul').eq('id', templateId).single()
+  const { data: tmpl } = await admin.from('recurring_task_templates').select('judul, due_offset_hari').eq('id', templateId).single()
+  
+  if (tmpl) {
+    // Bersihkan tugas masa depan yang belum selesai
+    await bersihkanTugasMasaDepan(templateId, tmpl.due_offset_hari)
+  }
+
   const { error } = await admin.from('recurring_task_templates')
     .update({ deleted_at: new Date().toISOString() }).eq('id', templateId)
   if (error) return { sukses: false, pesan: 'Gagal menghapus template. Coba lagi.' }
@@ -157,9 +207,42 @@ export async function hapusTemplate(divisionId: string, templateId: string): Pro
 export async function toggleAktifTemplate(divisionId: string, templateId: string, isActive: boolean): Promise<HasilTemplate> {
   await pastikanOwner(divisionId)
   const admin = createAdminClient()
+  
+  const { data: tmpl } = await admin.from('recurring_task_templates')
+    .select('*')
+    .eq('id', templateId)
+    .single()
+
   const { error } = await admin.from('recurring_task_templates')
     .update({ is_active: isActive }).eq('id', templateId)
   if (error) return { sukses: false, pesan: 'Gagal mengubah status template. Coba lagi.' }
+
+  if (tmpl) {
+    if (isActive) {
+      // Aktifkan kembali, generate tugasnya
+      const templateRecord = {
+        id: tmpl.id,
+        division_id: tmpl.division_id,
+        board_id: tmpl.board_id,
+        judul: tmpl.judul,
+        deskripsi: tmpl.deskripsi,
+        prioritas: tmpl.prioritas,
+        assignee_ids: tmpl.assignee_ids ?? [],
+        pola: tmpl.pola,
+        day_of_week: tmpl.day_of_week,
+        day_of_month: tmpl.day_of_month,
+        due_offset_hari: tmpl.due_offset_hari,
+        tanggal_mulai: tmpl.tanggal_mulai,
+        tanggal_selesai: tmpl.tanggal_selesai,
+        created_by: tmpl.created_by,
+      }
+      await generateTugasDariTemplate(templateRecord)
+    } else {
+      // Nonaktifkan, bersihkan tugas masa depan yang belum selesai
+      await bersihkanTugasMasaDepan(templateId, tmpl.due_offset_hari)
+    }
+  }
+
   return { sukses: true }
 }
 

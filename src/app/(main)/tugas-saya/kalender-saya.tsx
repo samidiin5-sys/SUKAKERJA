@@ -87,6 +87,9 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
                 <div className="flex flex-wrap gap-1.5">
                   <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold capitalize ${WARNA_PRIORITAS[dipilih.prioritas] ?? ''}`}>{dipilih.prioritas}</span>
                   <span className="rounded bg-cream-100 px-1.5 py-0.5 text-[10px] text-muted">{dipilih.divisiNama} · {dipilih.boardNama}</span>
+                  {!dipilih.completedAt && new Date(dipilih.dueDate).getTime() < Date.now() && (
+                    <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700">Terlambat ⚠️</span>
+                  )}
                 </div>
                 <h3 className={`mt-2 text-base font-black text-maroon-800 ${dipilih.completedAt ? 'line-through opacity-60' : ''}`}>{dipilih.judul}</h3>
                 <p className="mt-1 text-xs text-muted">
@@ -143,12 +146,21 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
                 <>
                   <p className={`mb-1 text-xs font-bold ${isHariIni(d) ? 'text-orange-600' : 'text-muted'}`}>{d.getDate()}</p>
                   <div className="space-y-0.5">
-                    {taskHari(d).slice(0, 3).map((t) => (
-                      <button key={t.id} onClick={() => setDipilih(t)}
-                        className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold ${t.completedAt ? 'bg-emerald-100 text-emerald-700' : 'bg-maroon-50 text-maroon-800 hover:bg-maroon-100'}`}>
-                        {t.judul}
-                      </button>
-                    ))}
+                    {taskHari(d).slice(0, 3).map((t) => {
+                      const overdue = !t.completedAt && new Date(t.dueDate).getTime() < Date.now()
+                      return (
+                        <button key={t.id} onClick={() => setDipilih(t)}
+                          className={`w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold ${
+                            t.completedAt
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : overdue
+                              ? 'bg-red-100 text-red-700 border border-red-200'
+                              : 'bg-maroon-50 text-maroon-800 hover:bg-maroon-100'
+                          }`}>
+                          {t.judul}
+                        </button>
+                      )
+                    })}
                     {taskHari(d).length > 3 && (
                       <p className="text-[9px] text-muted">+{taskHari(d).length - 3} lagi</p>
                     )}
@@ -160,8 +172,9 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-4">
+      <div className="mt-3 flex flex-wrap items-center gap-4">
         <span className="flex items-center gap-1.5 text-[11px] text-muted"><span className="h-2 w-2 rounded-full bg-emerald-400" />Selesai</span>
+        <span className="flex items-center gap-1.5 text-[11px] text-muted"><span className="h-2 w-2 rounded-full bg-red-400" />Terlambat (Overdue)</span>
         <span className="flex items-center gap-1.5 text-[11px] text-muted"><span className="h-2 w-2 rounded-full bg-orange-400" />Hari ini</span>
       </div>
     </div>
