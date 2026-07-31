@@ -44,6 +44,9 @@ export default function Sidebar({
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
+      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
+      { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
+      { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
       { href: '/notifikasi', label: 'Notifikasi', icon: <IkonLonceng /> },
       { href: '/profil', label: 'Profil', icon: <IkonOrang /> },
     ] : []),
@@ -103,7 +106,7 @@ export default function Sidebar({
           <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
         ))}
 
-        {data.divisiSaya.length > 0 && (isSuperAdmin || isOwner) && (
+        {data.divisiSaya.length > 0 && (
           <>
             <SeksiNav judul="Divisi" collapsed={collapsed} />
             {data.divisiSaya.map((d) => {
