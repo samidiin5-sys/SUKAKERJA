@@ -4,6 +4,13 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { ambilSesiPengguna } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 
+/** Konversi ISO string ke format YYYY-MM-DD (WIB) agar cocok dengan due_date di DB */
+function isoKeTanggalLokal(iso: string): string {
+  const d = new Date(iso)
+  const wib = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+  return wib.toISOString().slice(0, 10)
+}
+
 export type TaskKalenderSaya = {
   id: string
   judul: string
@@ -19,12 +26,16 @@ export async function ambilTaskKalenderSaya(mulai: string, selesai: string): Pro
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()
 
+  // Konversi ISO ke YYYY-MM-DD agar cocok dengan format due_date di database
+  const mulaiTanggal = isoKeTanggalLokal(mulai)
+  const selesaiTanggal = isoKeTanggalLokal(selesai)
+
   const { data } = await admin
     .from('task_assignees')
     .select('tasks!inner(id, judul, prioritas, due_date, completed_at, deleted_at, boards!inner(nama, division_id, divisions!inner(nama)))')
     .eq('user_id', sesi.id)
-    .gte('tasks.due_date', mulai)
-    .lte('tasks.due_date', selesai)
+    .gte('tasks.due_date', mulaiTanggal)
+    .lte('tasks.due_date', selesaiTanggal)
     .is('tasks.deleted_at', null)
 
   type BarisTask = {

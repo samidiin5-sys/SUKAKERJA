@@ -3,6 +3,14 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanAnggotaDivisi } from '@/lib/auth/otorisasi'
 
+/** Konversi ISO string ke format YYYY-MM-DD (WIB) agar cocok dengan due_date di DB */
+function isoKeTanggalLokal(iso: string): string {
+  const d = new Date(iso)
+  // Konversi ke WIB (UTC+7)
+  const wib = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+  return wib.toISOString().slice(0, 10)
+}
+
 export type TaskKalender = {
   id: string
   judul: string
@@ -34,14 +42,18 @@ export async function ambilTaskKalender(
 
   if (boardIds.length === 0) return []
 
+  // Konversi ISO ke YYYY-MM-DD agar cocok dengan format due_date di database
+  const mulaiTanggal = isoKeTanggalLokal(mulai)
+  const selesaiTanggal = isoKeTanggalLokal(selesai)
+
   let query = admin
     .from('tasks')
     .select('id, judul, prioritas, due_date, completed_at, is_recurring, board_id, hanya_assignee, task_assignees(user_id, profiles(id, nama, foto_url))')
     .in('board_id', boardIds)
     .is('deleted_at', null)
     .not('due_date', 'is', null)
-    .gte('due_date', mulai)
-    .lte('due_date', selesai)
+    .gte('due_date', mulaiTanggal)
+    .lte('due_date', selesaiTanggal)
     .order('due_date')
 
   const { data: tasks } = await query
