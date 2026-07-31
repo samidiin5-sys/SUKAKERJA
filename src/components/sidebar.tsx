@@ -44,9 +44,9 @@ export default function Sidebar({
     { href: '/dashboard', label: 'Dashboard', icon: <IkonRumah /> },
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
-      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
-      { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
-      { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
+      { href: '/tugas-saya?view=kalender', label: 'Kalender', icon: <IkonKalender /> },
+      { href: '/notifikasi', label: 'Notifikasi', icon: <IkonLonceng /> },
+      { href: '/profil', label: 'Profil', icon: <IkonOrang /> },
     ] : []),
   ]
 
@@ -104,7 +104,7 @@ export default function Sidebar({
           <ItemSidebar key={item.href} item={item} aktif={pathname === item.href} collapsed={collapsed} />
         ))}
 
-        {data.divisiSaya.length > 0 && (
+        {data.divisiSaya.length > 0 && (isSuperAdmin || isOwner) && (
           <>
             <SeksiNav judul="Divisi" collapsed={collapsed} />
             {data.divisiSaya.map((d) => {
@@ -375,6 +375,22 @@ function IkonJam() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="10"/>
       <path d="M12 6v6l4 2"/>
+    </svg>
+  )
+}
+function IkonKalender() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  )
+}
+function IkonLonceng() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z" />
+      <path d="M10 18.5a2 2 0 0 0 4 0" />
     </svg>
   )
 }

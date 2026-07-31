@@ -93,7 +93,7 @@ export default function PapanDivisi({
   const [filterPrioritas, setFilterPrioritas] = useState('semua')
   const [modalAlert, setModalAlert] = useState<{ terbuka: boolean; pesan: string } | null>(null)
   const [filterAssignee, setFilterAssignee] = useState(
-    defaultAssigneeId ?? (isStaff ? currentUserId : 'semua')
+    defaultAssigneeId ?? 'semua'
   )
 
   const searchParams = useSearchParams()

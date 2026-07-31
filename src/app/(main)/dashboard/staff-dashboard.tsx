@@ -58,17 +58,30 @@ function dapatkanSapaan(): string {
 function dapatkanSelisihWaktu(isoString: string): string {
   const sekarang = new Date()
   const target = new Date(isoString)
-  const selisihMs = target.getTime() - sekarang.getTime()
-  const selisihHari = Math.ceil(selisihMs / (1000 * 60 * 60 * 24))
+  
+  // Set both to midnight locally to calculate the actual calendar day difference
+  const d1 = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate())
+  const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate())
+  const diffMs = d2.getTime() - d1.getTime()
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
 
-  if (selisihMs < 0) {
-    const hariTerlambat = Math.abs(Math.floor(selisihMs / (1000 * 60 * 60 * 24)))
-    return hariTerlambat === 0 ? 'Terlambat hari ini' : `Terlambat ${hariTerlambat} hari`
+  if (diffDays < 0) {
+    const hariTerlambat = Math.abs(diffDays)
+    return `Terlambat ${hariTerlambat} hari`
   }
 
-  if (selisihHari === 0) return 'Hari ini'
-  if (selisihHari === 1) return 'Besok'
-  return `${selisihHari} hari lagi`
+  if (diffDays === 0) {
+    const selisihMs = target.getTime() - sekarang.getTime()
+    if (selisihMs < 0) {
+      return 'Terlambat hari ini'
+    }
+    const jam = target.getHours().toString().padStart(2, '0')
+    const menit = target.getMinutes().toString().padStart(2, '0')
+    return `Hari ini · ${jam}:${menit}`
+  }
+
+  if (diffDays === 1) return 'Besok'
+  return `${diffDays} hari lagi`
 }
 
 function dapatkanWaktuRelatifAktivitas(isoString: string): string {
@@ -84,6 +97,11 @@ function dapatkanWaktuRelatifAktivitas(isoString: string): string {
   const selisihHari = Math.floor(selisihJam / 24)
   if (selisihHari === 1) return 'Kemarin'
   return `${selisihHari} hari lalu`
+}
+
+function generateCharBar(persentase: number): string {
+  const blocks = Math.round(persentase / 10)
+  return '█'.repeat(blocks) + '░'.repeat(10 - blocks)
 }
 
 // --- SVG ICONS ---
@@ -104,7 +122,6 @@ function IconJatuhTempo() {
   )
 }
 
-// Reused simple check icon
 function IconSelesai() {
   return (
     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -128,8 +145,6 @@ function IconChevronKanan() {
     </svg>
   )
 }
-
-// --- SUB-COMPONENTS ---
 
 function LoadingSkeleton() {
   return (
@@ -170,13 +185,13 @@ function ErrorState({ pesan, onRetry }: { pesan: string; onRetry: () => void }) 
 
 function EmptyState({ pesan }: { pesan: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-10 px-4 text-center rounded-2xl border border-dashed border-cream-200/80 bg-gradient-to-br from-white to-cream-50/30 shadow-inner">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cream-50 text-cream-400 mb-3 border border-cream-100 shadow-sm transition-transform duration-300 hover:scale-105">
-        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <div className="flex flex-col items-center justify-center py-8 px-4 text-center rounded-2xl border border-dashed border-cream-200/80 bg-gradient-to-br from-white to-cream-50/30">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cream-50 text-cream-400 mb-2.5 border border-cream-100 shadow-sm">
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       </div>
-      <p className="text-xs text-muted/95 font-semibold tracking-wide">{pesan}</p>
+      <p className="text-xs text-muted/95 font-semibold">{pesan}</p>
     </div>
   )
 }
@@ -202,32 +217,12 @@ function BadgePrioritas({ prioritas }: { prioritas: string }) {
   )
 }
 
-function BadgeStatus({ status, terlambat }: { status: string; terlambat: boolean }) {
-  if (terlambat) {
-    return <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-[10px] font-bold text-red-700 border border-red-200">Terlambat</span>
-  }
-
-  const styles: Record<string, string> = {
-    'Selesai': 'bg-green-50 text-green-700 border-green-200',
-    'Review': 'bg-blue-50 text-blue-700 border-blue-200',
-    'Dikerjakan': 'bg-orange-50 text-orange-700 border-orange-200',
-    'To Do': 'bg-cream-50 text-muted border-cream-200',
-  }
-
-  return (
-    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${styles[status] ?? 'bg-cream-50 text-muted border-cream-200'}`}>
-      {status}
-    </span>
-  )
-}
-
 // --- MAIN STAFF DASHBOARD COMPONENT ---
 
 export default function StaffDashboard({ data }: { data: DataShell }) {
   const [detail, setDetail] = useState<DetailDashboardStaff | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [progressPeriod, setProgressPeriod] = useState<'week' | 'month'>('week')
 
   const muatData = async () => {
     setLoading(true)
@@ -246,97 +241,194 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
     muatData()
   }, [])
 
-  // hitung progress data berdasarkan filter periode
-  const progressData = useMemo(() => {
-    if (!detail) return { total: 0, selesai: 0, dikerjakan: 0, belumMulai: 0, persentase: 0 }
-
+  // 1. FILTER TUGAS HARI INI (HERO SECTION)
+  const tugasHariIni = useMemo(() => {
+    if (!detail) return []
     const sekarang = new Date()
-    const awalHariIni = new Date(sekarang)
-    awalHariIni.setHours(0, 0, 0, 0)
-    const threshold = new Date(awalHariIni)
+    const d1 = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate()).getTime()
 
-    if (progressPeriod === 'week') {
-      threshold.setDate(threshold.getDate() - 6)
-    } else {
-      threshold.setDate(threshold.getDate() - 29)
-    }
-
-    const filtered = detail.tugasSemua.filter(t => {
-      if (t.completedAt === null) return true
-      return new Date(t.completedAt) >= threshold
+    return detail.tugasSemua.filter((t) => {
+      if (t.completedAt !== null || t.isCompletionBoard) return false
+      if (!t.dueDate) return false
+      
+      const target = new Date(t.dueDate)
+      const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime()
+      const diffMs = d2 - d1
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+      
+      // Only show tasks due today (diffDays === 0) or overdue (diffDays < 0).
+      return diffDays <= 0
     })
+  }, [detail])
 
-    const selesai = filtered.filter(t => t.completedAt !== null || t.isCompletionBoard || t.boardNama.toLowerCase().includes('review')).length
-    const dikerjakan = filtered.filter(t => t.completedAt === null && !t.isCompletionBoard && !t.boardNama.toLowerCase().includes('review') && !t.boardNama.toLowerCase().includes('to do') && !t.boardNama.toLowerCase().includes('belum dimulai')).length
-    const belumMulai = filtered.length - selesai - dikerjakan
+  // 2. STATISTICS CALCULATIONS
+  const totalSelesaiCount = useMemo(() => {
+    if (!detail) return 0
+    return detail.tugasSemua.filter(t => t.completedAt !== null || t.isCompletionBoard).length
+  }, [detail])
 
-    const totalProgress = filtered.reduce((acc, t) => {
-      if (t.completedAt !== null || t.isCompletionBoard || t.boardNama.toLowerCase().includes('review')) {
-        return acc + 100
+  const statistikList = useMemo(() => {
+    if (!detail) return []
+    return [
+      {
+        label: 'Task Aktif',
+        nilai: detail.statistik.taskAktif,
+        sub: 'Sedang dikerjakan',
+        icon: <IconTaskAktif />,
+        bgIcon: 'bg-maroon-50 text-maroon-800',
+        borderColor: 'border-cream-200'
+      },
+      {
+        label: 'Deadline Hari Ini',
+        nilai: detail.statistik.jatuhTempoHariIni,
+        sub: 'Perlu selesai hari ini',
+        icon: <IconJatuhTempo />,
+        bgIcon: 'bg-orange-50 text-orange-600',
+        borderColor: 'border-orange-200'
+      },
+      {
+        label: 'Task Selesai',
+        nilai: totalSelesaiCount,
+        sub: 'Selesai 30 hari terakhir',
+        icon: <IconSelesai />,
+        bgIcon: 'bg-green-50 text-green-600',
+        borderColor: 'border-green-200'
+      },
+      {
+        label: 'Task Terlambat',
+        nilai: detail.statistik.terlambat,
+        sub: 'Melewati batas tenggat',
+        icon: <IconTerlambat />,
+        bgIcon: 'bg-red-50 text-red-600',
+        borderColor: 'border-red-200',
+        isRed: detail.statistik.terlambat > 0
       }
-      if (t.boardNama.toLowerCase().includes('to do') || t.boardNama.toLowerCase().includes('belum dimulai')) {
-        return acc + 0
-      }
-      if (t.checklistTotal > 0) {
-        return acc + (t.checklistSelesai / t.checklistTotal) * 100
-      }
-      return acc + 50
-    }, 0)
-    const persentase = filtered.length > 0 ? Math.round(totalProgress / filtered.length) : 0
+    ]
+  }, [detail, totalSelesaiCount])
 
-    return {
-      total: filtered.length,
-      selesai,
-      dikerjakan,
-      belumMulai,
-      persentase
+  // 3. PROGRESS PER DIVISI
+  const progressPerDivisi = useMemo(() => {
+    if (!detail) return []
+    const map: Record<string, { nama: string; total: number; selesai: number }> = {}
+    detail.tugasSemua.forEach((t) => {
+      if (!map[t.divisiNama]) {
+        map[t.divisiNama] = { nama: t.divisiNama, total: 0, selesai: 0 }
+      }
+      map[t.divisiNama].total++
+      if (t.completedAt !== null || t.isCompletionBoard) {
+        map[t.divisiNama].selesai++
+      }
+    })
+    return Object.values(map).map((p) => ({
+      ...p,
+      persentase: p.total > 0 ? Math.round((p.selesai / p.total) * 100) : 0,
+    }))
+  }, [detail])
+
+  // 4. GET TIMELINE EMOJI & CLASSES FOR DEADLINES
+  const dapatkanDeadlineStatus = (dueDate: string) => {
+    const sekarang = new Date()
+    const target = new Date(dueDate)
+    
+    const d1 = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate()).getTime()
+    const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime()
+    
+    const diffMs = d2 - d1
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffDays < 0) {
+      return { emoji: '🔴', style: 'text-red-700 bg-red-50 border-red-200' }
+    } else if (diffDays === 0) {
+      const selisihMs = target.getTime() - sekarang.getTime()
+      if (selisihMs < 0) {
+        return { emoji: '🔴', style: 'text-red-700 bg-red-50 border-red-200' }
+      }
+      return { emoji: '🟠', style: 'text-orange-700 bg-orange-50 border-orange-200' }
+    } else if (diffDays === 1) {
+      return { emoji: '🟡', style: 'text-yellow-700 bg-yellow-50 border-yellow-200' }
+    } else {
+      return { emoji: '🟢', style: 'text-green-700 bg-green-50 border-green-200' }
     }
-  }, [detail, progressPeriod])
+  }
+
+  // 5. FIND FIRST ACTIVE TASK FOR CONTINUE ACTIONS
+  const lastActiveTask = useMemo(() => {
+    if (!detail) return null
+    return detail.tugasSemua.find(t => t.completedAt === null && !t.isCompletionBoard)
+  }, [detail])
+
+  const lanjutkanHref = lastActiveTask 
+    ? `/divisi/${lastActiveTask.divisiId}?task=${lastActiveTask.id}`
+    : '/tugas-saya'
 
   if (loading) return <LoadingSkeleton />
   if (error || !detail) return <ErrorState pesan={error || 'Data kosong'} onRetry={muatData} />
 
-  // Greeting summary text helper
-  const taskAktifCount = detail.statistik.taskAktif
-  const jatuhTempoCount = detail.statistik.jatuhTempoHariIni
-  const ringkasanPekerjaan = taskAktifCount === 0 
-    ? 'Kamu tidak memiliki tugas aktif hari ini. Nikmati harimu!'
-    : `Kamu memiliki ${taskAktifCount} tugas aktif dan ${jatuhTempoCount > 0 ? `${jatuhTempoCount} tugas yang perlu diselesaikan hari ini.` : 'tidak ada tugas yang jatuh tempo hari ini.'}`
-
   return (
     <div className="space-y-6">
-      {/* 1. WELCOME SECTION — Premium Redesigned Banner */}
+      
+      {/* 1. HERO SECTION: FOKUS HARI INI */}
       <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 text-white shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
         <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-maroon-500/10 blur-3xl" />
         
-        <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <span className="text-[10px] font-bold text-blue-200/70 uppercase tracking-widest">{dapatkanSapaan()}</span>
-            <h2 className="text-2xl font-black text-white tracking-tight mt-0.5">
-              Halo, {data.nama.split(' ')[0]} 👋
-            </h2>
-            <p className="text-xs font-semibold text-slate-300 mt-1">{formatTanggalIndonesia()}</p>
-            <p className="text-xs font-semibold text-slate-200 leading-relaxed max-w-xl mt-3.5 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl inline-block">
-              {ringkasanPekerjaan}
-            </p>
+        <div className="relative z-10 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-white/10 pb-4">
+            <div>
+              <span className="text-[10px] font-bold text-blue-200/70 uppercase tracking-widest">{dapatkanSapaan()}</span>
+              <h2 className="text-2xl font-black text-white tracking-tight mt-0.5">
+                Halo, {data.nama.split(' ')[0]} 👋
+              </h2>
+              <p className="text-xs font-semibold text-slate-300 mt-1">{formatTanggalIndonesia()}</p>
+            </div>
+            <div className="shrink-0 text-right">
+              <span className="text-xs bg-white/10 border border-white/15 px-3 py-1.5 rounded-full inline-block font-semibold">
+                🎯 Fokus Hari Ini
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2.5 shrink-0">
-            <a
-              href="/tugas-saya"
-              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95 cursor-pointer"
-            >
-              Lihat Tugas Saya
-              <IconChevronKanan />
-            </a>
-            {detail.divisiList.length > 0 && (
-              <a
-                href={`/divisi/${detail.divisiList[0].id}`}
-                className="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-4.5 py-2.5 text-xs font-bold text-white transition-all duration-200 hover:bg-white/20 active:scale-95 cursor-pointer"
-              >
-                Buka Kanban
-              </a>
+          <div>
+            {tugasHariIni.length === 0 ? (
+              <div className="py-2 text-sm text-slate-300 leading-relaxed max-w-xl">
+                ✨ Hebat! Tidak ada tugas mendesak atau yang jatuh tempo hari ini. Kamu bisa bersantai sejenak atau melanjutkan pekerjaan lainnya.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">TUGAS HARI INI ({tugasHariIni.length})</p>
+                <div className="max-h-56 overflow-y-auto space-y-2 pr-1.5 custom-scrollbar">
+                  {tugasHariIni.map((task) => {
+                    const status = dapatkanDeadlineStatus(task.dueDate!)
+                    return (
+                      <div
+                        key={task.id}
+                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition duration-150"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <BadgePrioritas prioritas={task.prioritas} />
+                            <span className={`text-[10px] font-bold rounded-full border px-2.5 py-0.5 ${status.style}`}>
+                              {status.emoji} {task.dueDate ? dapatkanSelisihWaktu(task.dueDate) : ''}
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-bold text-white mt-1.5 truncate">
+                            {task.judul}
+                          </h4>
+                          <p className="text-[11px] text-slate-400 mt-0.5">
+                            {task.divisiNama} • {task.boardNama}
+                          </p>
+                        </div>
+                        <a
+                          href={`/divisi/${task.divisiId}?task=${task.id}`}
+                          className="w-full sm:w-auto text-center shrink-0 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 shadow-sm transition active:scale-95 cursor-pointer"
+                        >
+                          Mulai Kerjakan →
+                        </a>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -344,266 +436,202 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
 
       {/* 2. STATISTIC CARDS */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {/* Tugas Aktif */}
-        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
-            <IconTaskAktif />
-          </div>
-          <p className="text-2xl sm:text-3xl font-black text-ink mt-3">
-            <CountUp value={detail.statistik.taskAktif} />
-          </p>
-          <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Tugas Aktif</p>
-          <p className="text-[10px] text-muted/80 mt-0.5">Sedang menunggu / dikerjakan</p>
-        </KartuTilt>
-
-        {/* Jatuh Tempo Hari Ini */}
-        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-            <IconJatuhTempo />
-          </div>
-          <p className="text-2xl sm:text-3xl font-black text-ink mt-3">
-            <CountUp value={detail.statistik.jatuhTempoHariIni} />
-          </p>
-          <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Jatuh Tempo Hari Ini</p>
-          <p className="text-[10px] text-muted/80 mt-0.5">Perlu diselesaikan hari ini</p>
-        </KartuTilt>
-
-        {/* Selesai Minggu Ini */}
-        <KartuTilt className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-50 text-green-600">
-            <IconSelesai />
-          </div>
-          <p className="text-2xl sm:text-3xl font-black text-ink mt-3">
-            <CountUp value={detail.statistik.selesaiMingguIni} />
-          </p>
-          <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Selesai Minggu Ini</p>
-          <p className="text-[10px] text-muted/80 mt-0.5">Tugas diselesaikan 7 hari terakhir</p>
-        </KartuTilt>
-
-        {/* Tugas Terlambat */}
-        <KartuTilt className={`rounded-2xl border p-4 shadow-sm ${detail.statistik.terlambat > 0 ? 'bg-red-50/40 border-red-200' : 'bg-white border-cream-200'}`}>
-          <div className={`flex h-8 w-8 items-center justify-center rounded-xl ${detail.statistik.terlambat > 0 ? 'bg-red-100 text-red-600' : 'bg-cream-100 text-muted'}`}>
-            <IconTerlambat />
-          </div>
-          <p className={`text-2xl sm:text-3xl font-black mt-3 ${detail.statistik.terlambat > 0 ? 'text-red-700' : 'text-ink'}`}>
-            <CountUp value={detail.statistik.terlambat} />
-          </p>
-          <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">Terlambat</p>
-          <p className="text-[10px] text-muted/80 mt-0.5">Melewati batas deadline</p>
-        </KartuTilt>
+        {statistikList.map((card, idx) => (
+          <KartuTilt
+            key={idx}
+            className={`rounded-2xl border p-4 shadow-sm bg-white transition duration-150 ${
+              card.isRed ? 'bg-red-50/40 border-red-200' : card.borderColor
+            }`}
+          >
+            <div className={`flex h-8 w-8 items-center justify-center rounded-xl ${card.bgIcon}`}>
+              {card.icon}
+            </div>
+            <p className={`text-2xl sm:text-3xl font-black mt-3 ${card.isRed ? 'text-red-700' : 'text-ink'}`}>
+              <CountUp value={card.nilai} />
+            </p>
+            <p className="text-[11px] font-bold text-muted mt-1 uppercase tracking-wider">{card.label}</p>
+            <p className="text-[10px] text-muted/80 mt-0.5">{card.sub}</p>
+          </KartuTilt>
+        ))}
       </div>
 
-      {/* MAIN TWO-COLUMN CONTENT */}
+      {/* 3. TWO-COLUMN GRID */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:items-start">
         
-        {/* KOLOM KIRI (LEBIH BESAR): TUGAS PRIORITAS SAYA */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Tugas Prioritas Saya</h3>
-            <a href="/tugas-saya" className="text-xs font-bold text-orange-600 hover:underline">
-              Lihat Semua Tugas
-            </a>
-          </div>
-
-          <div className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden">
-            {detail.tugasPrioritas.length === 0 ? (
-              <EmptyState pesan="Bagus! Tidak ada tugas prioritas yang mendesak saat ini." />
-            ) : (
-              <div className="divide-y divide-cream-100">
-                {detail.tugasPrioritas.map((task) => {
-                  const isOverdue = task.dueDate && new Date(task.dueDate).getTime() < new Date().setHours(0,0,0,0)
+        {/* KOLOM KIRI (2/3): DEADLINE TERDEKAT & PROGRESS PEKERJAAN */}
+        <div className="lg:col-span-2 space-y-5">
+          
+          {/* DEADLINE TERDEKAT */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Deadline Terdekat</h3>
+            <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm space-y-2">
+              {detail.deadlineTerdekat.length === 0 ? (
+                <EmptyState pesan="Bagus! Tidak ada deadline terdekat." />
+              ) : (
+                detail.deadlineTerdekat.map((t) => {
+                  const status = dapatkanDeadlineStatus(t.dueDate!)
                   return (
-                    <div key={task.id} className="group p-4 flex flex-col sm:flex-row justify-between gap-3 items-start sm:items-center hover:bg-cream-50/30 transition">
+                    <div
+                      key={t.id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-xl border border-cream-50 bg-cream-50/20 hover:bg-cream-50/50 transition duration-150"
+                    >
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <BadgePrioritas prioritas={task.prioritas} />
-                          <BadgeStatus status={task.boardNama} terlambat={!!isOverdue} />
-                          {task.isRecurring && (
-                            <span className="rounded-full bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 text-[10px] font-bold flex items-center gap-0.5">
-                              🔄 Rutin
-                            </span>
-                          )}
-                        </div>
-                        <h4 className="text-sm font-bold text-ink mt-2 group-hover:text-orange-600 transition">
-                          <a href={`/divisi/${task.divisiId}`}>{task.judul}</a>
-                        </h4>
-                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted mt-1.5">
-                          <span className="flex items-center gap-1">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: task.divisiWarna }} />
-                            {task.divisiNama}
-                          </span>
-                          <span>•</span>
-                          <span>Kolom: {task.boardNama}</span>
-                        </div>
+                        <a
+                          href={`/divisi/${t.divisiId}?task=${t.id}`}
+                          className="text-xs font-bold text-ink hover:text-orange-600 truncate block transition"
+                        >
+                          {t.judul}
+                        </a>
+                        <p className="text-[10px] text-muted mt-0.5">{t.divisiNama} • {t.boardNama}</p>
                       </div>
-
-                      <div className="flex sm:flex-col items-end justify-between sm:justify-center w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-cream-100/60 text-right">
-                        <div>
-                          <p className={`text-xs font-semibold ${isOverdue ? 'text-red-600 font-bold' : 'text-muted'}`}>
-                            {task.dueDate ? dapatkanSelisihWaktu(task.dueDate) : 'Tanpa deadline'}
-                          </p>
-                          {task.dueDate && (
-                            <p className="text-[10px] text-muted/70 mt-0.5">
-                              {new Date(task.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                            </p>
-                          )}
-                        </div>
-
-                        {task.checklistTotal > 0 && (
-                          <div className="mt-2 flex items-center gap-1.5 justify-end">
-                            <div className="h-1.5 w-16 overflow-hidden rounded-full bg-cream-200">
-                              <div
-                                className="h-full bg-green-500 rounded-full transition-all"
-                                style={{ width: `${(task.checklistSelesai / task.checklistTotal) * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-[10px] font-bold text-muted">{task.checklistSelesai}/{task.checklistTotal} checklist</span>
-                          </div>
-                        )}
-                        
-                        <div className="mt-2 text-[10px] text-muted hidden sm:block">
-                          Ditugaskan oleh <span className="font-semibold text-ink">{task.ditugaskanOleh}</span>
-                        </div>
+                      <div className="text-right shrink-0">
+                        <span className={`text-[10px] font-bold rounded-full border px-2.5 py-0.5 inline-block ${status.style}`}>
+                          {status.emoji} {t.dueDate ? dapatkanSelisihWaktu(t.dueDate) : ''}
+                        </span>
                       </div>
                     </div>
                   )
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* KOLOM KANAN: PROGRESS MINGGU INI */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Kerja</h3>
-            <div className="flex rounded-lg border border-cream-200 bg-white p-0.5 text-[10px] font-bold">
-              <button
-                onClick={() => setProgressPeriod('week')}
-                className={`rounded-md px-2 py-0.5 transition ${progressPeriod === 'week' ? 'bg-orange-500 text-white' : 'text-muted hover:text-ink'}`}
-              >
-                Minggu Ini
-              </button>
-              <button
-                onClick={() => setProgressPeriod('month')}
-                className={`rounded-md px-2 py-0.5 transition ${progressPeriod === 'month' ? 'bg-orange-500 text-white' : 'text-muted hover:text-ink'}`}
-              >
-                Bulan Ini
-              </button>
+                })
+              )}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm flex flex-col items-center justify-center">
-            {progressData.total === 0 ? (
-              <EmptyState pesan="Tidak ada tugas untuk periode ini." />
-            ) : (
-              <>
-                {/* SVG DONUT CHART */}
-                <div className="relative flex items-center justify-center h-28 w-28 mb-4">
-                  <svg viewBox="0 0 112 112" className="transform -rotate-90 w-full h-full">
-                    <circle
-                      cx="56"
-                      cy="56"
-                      r="40"
-                      className="stroke-cream-100 fill-none"
-                      strokeWidth="8"
-                    />
-                    <motion.circle
-                      cx="56"
-                      cy="56"
-                      r="40"
-                      className="stroke-orange-500 fill-none"
-                      strokeWidth="8"
-                      strokeDasharray={2 * Math.PI * 40}
-                      initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
-                      animate={{ strokeDashoffset: 2 * Math.PI * 40 - (progressData.persentase / 100) * (2 * Math.PI * 40) }}
-                      transition={{ duration: 1, ease: 'easeOut' }}
-                      strokeLinecap="round"
-                    />
+          {/* PROGRESS PEKERJAAN */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Pekerjaan</h3>
+            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm">
+              {progressPerDivisi.length === 0 ? (
+                <EmptyState pesan="Belum ada data tugas untuk menghitung progress." />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {progressPerDivisi.map((p) => {
+                    const charBar = generateCharBar(p.persentase)
+                    return (
+                      <div key={p.nama} className="rounded-xl border border-cream-100 bg-cream-50/20 p-3.5 space-y-2">
+                        <div className="flex justify-between items-center text-xs font-bold text-ink">
+                          <span className="truncate pr-2">{p.nama}</span>
+                          <span className="text-orange-600 font-extrabold">{p.persentase}%</span>
+                        </div>
+                        <div className="font-mono text-xs text-orange-500 tracking-wider font-semibold select-none leading-none">
+                          {charBar}
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-cream-200 overflow-hidden">
+                          <div className="h-full bg-orange-500 rounded-full transition-all duration-500" style={{ width: `${p.persentase}%` }} />
+                        </div>
+                        <p className="text-[10px] text-muted">{p.selesai} dari {p.total} tugas selesai</p>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+        {/* KOLOM KANAN (1/3): QUICK ACTIONS & AKTIVITAS TERBARU */}
+        <div className="space-y-5">
+          
+          {/* QUICK ACTIONS */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Aksi Cepat</h3>
+            <div className="grid grid-cols-1 gap-2.5">
+              
+              {/* Lanjutkan Task */}
+              <a
+                href={lanjutkanHref}
+                className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm hover:border-orange-200 hover:bg-orange-50/10 transition duration-150 group"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-100 shrink-0">
+                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <circle cx="12" cy="12" r="10" />
                   </svg>
-                  <div className="absolute text-center">
-                    <span className="text-xl font-black text-ink">{progressData.persentase}%</span>
-                    <p className="text-[9px] font-bold text-muted/80 uppercase">Penyelesaian</p>
-                  </div>
                 </div>
-
-                {/* CHART LEGENDS */}
-                <div className="w-full space-y-2 text-xs">
-                  <div className="flex items-center justify-between border-b border-cream-50 pb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-green-500" />
-                      <span className="text-muted">Selesai & Review</span>
-                    </div>
-                    <span className="font-bold text-ink">{progressData.selesai} task</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-cream-50 pb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-orange-500" />
-                      <span className="text-muted">Dikerjakan</span>
-                    </div>
-                    <span className="font-bold text-ink">{progressData.dikerjakan} task</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-cream-50 pb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-cream-300" />
-                      <span className="text-muted">Belum Dimulai</span>
-                    </div>
-                    <span className="font-bold text-ink">{progressData.belumMulai} task</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="font-bold text-muted">Total Tugas</span>
-                    <span className="font-black text-ink">{progressData.total} task</span>
-                  </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-ink leading-snug">Lanjutkan Task</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none truncate">
+                    {lastActiveTask ? lastActiveTask.judul : 'Belum ada task aktif'}
+                  </p>
                 </div>
-              </>
-            )}
+                <span className="text-muted group-hover:text-ink transition-transform duration-150 group-hover:translate-x-1 shrink-0">
+                  <IconChevronKanan />
+                </span>
+              </a>
+
+              {/* Upload Hasil */}
+              <a
+                href="/tugas-saya"
+                className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm hover:border-orange-200 hover:bg-orange-50/10 transition duration-150 group"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800 group-hover:bg-maroon-100 shrink-0">
+                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-ink leading-snug">Upload Hasil</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none">Kirim laporan penyelesaian task</p>
+                </div>
+                <span className="text-muted group-hover:text-ink transition-transform duration-150 group-hover:translate-x-1 shrink-0">
+                  <IconChevronKanan />
+                </span>
+              </a>
+
+              {/* Lihat Kalender */}
+              <a
+                href="/tugas-saya?view=kalender"
+                className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm hover:border-orange-200 hover:bg-orange-50/10 transition duration-150 group"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-100 shrink-0">
+                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-ink leading-snug">Lihat Kalender</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none">Cek jadwal tenggat tugas</p>
+                </div>
+                <span className="text-muted group-hover:text-ink transition-transform duration-150 group-hover:translate-x-1 shrink-0">
+                  <IconChevronKanan />
+                </span>
+              </a>
+
+              {/* Lihat Semua Task */}
+              <a
+                href="/tugas-saya"
+                className="flex items-center gap-3.5 rounded-2xl border border-cream-200 bg-white px-4 py-3.5 shadow-sm hover:border-orange-200 hover:bg-orange-50/10 transition duration-150 group"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cream-100 text-muted group-hover:bg-cream-200 shrink-0">
+                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-ink leading-snug">Lihat Semua Task</p>
+                  <p className="text-[10px] text-muted mt-0.5 leading-none">Daftar lengkap seluruh tugas</p>
+                </div>
+                <span className="text-muted group-hover:text-ink transition-transform duration-150 group-hover:translate-x-1 shrink-0">
+                  <IconChevronKanan />
+                </span>
+              </a>
+
+            </div>
           </div>
-        </div>
 
-      </div>
-
-      {/* SECONDARY ROW GRID */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {/* DEADLINE TERDEKAT */}
-        <div className="space-y-4">
-          <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Deadline Terdekat</h3>
-          <div className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm space-y-2">
-            {detail.deadlineTerdekat.length === 0 ? (
-              <EmptyState pesan="Bagus! Tidak ada deadline terdekat." />
-            ) : (
-              detail.deadlineTerdekat.map((t) => {
-                const isOverdue = t.dueDate && new Date(t.dueDate).getTime() < new Date().setHours(0,0,0,0)
-                return (
-                  <div key={t.id} className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-cream-50 bg-cream-50/20 hover:bg-cream-50/50 transition">
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-ink truncate">{t.judul}</p>
-                      <p className="text-[10px] text-muted mt-0.5">{t.divisiNama} • {t.boardNama}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <span className={`text-[10px] font-bold rounded-full px-2 py-0.5 inline-block ${isOverdue ? 'bg-red-100 text-red-700' : 'bg-orange-50 text-orange-700'}`}>
-                        {t.dueDate ? dapatkanSelisihWaktu(t.dueDate) : ''}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-        </div>
-
-        {/* AKTIVITAS TERBARU */}
-        <div className="space-y-4">
-          <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Aktivitas Terbaru</h3>
-          <div className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm">
-            {detail.aktivitas.length === 0 ? (
-              <EmptyState pesan="Belum ada aktivitas baru." />
-            ) : (
-              <div className="relative border-l border-cream-200 pl-4 space-y-5">
-                {detail.aktivitas.map((act) => {
-                  return (
+          {/* AKTIVITAS TERBARU */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Aktivitas Terbaru</h3>
+            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm">
+              {detail.aktivitas.length === 0 ? (
+                <EmptyState pesan="Belum ada aktivitas baru." />
+              ) : (
+                <div className="relative border-l border-cream-200 pl-4 space-y-4">
+                  {detail.aktivitas.map((act) => (
                     <div key={act.id} className="relative text-xs">
                       {/* Timeline dot */}
-                      <span className="absolute -left-[21px] top-1 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-orange-400 ring-4 ring-white" />
+                      <span className="absolute -left-[23px] top-1 flex h-2 w-2 items-center justify-center rounded-full bg-orange-400 ring-4 ring-white" />
                       
                       <div className="flex justify-between items-start gap-2">
                         <div>
@@ -620,158 +648,20 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
                             {!['task_dibuat','task_diubah','task_dipindah','task_selesai','task_dihapus','komentar_ditambah','lampiran_ditambah','template_dibuat'].includes(act.jenis) && 'melakukan aktivitas pada'}{' '}
                             <span className="font-bold text-ink">{act.objekNama}</span>
                           </p>
-                          <p className="text-[10px] text-muted mt-0.5">{dapatkanWaktuRelatifAktivitas(act.createdAt)}</p>
+                          <p className="text-[9px] text-muted mt-0.5">{dapatkanWaktuRelatifAktivitas(act.createdAt)}</p>
                         </div>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
+
       </div>
 
-      {/* FOOTER ROW GRID: DIVISI SAYA & AKSES CEPAT */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* DIVISI SAYA */}
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Divisi Saya</h3>
-          {detail.divisiList.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-cream-200 bg-white p-6 text-center text-xs text-muted">
-              Kamu belum bergabung dengan divisi mana pun. Hubungi Admin atau Owner.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {detail.divisiList.map((div) => (
-                  <div
-                    key={div.id}
-                    className="rounded-2xl border border-cream-200 bg-white p-4 shadow-sm flex flex-col justify-between gap-4 group/card transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-2.5 w-2.5 rounded-full ring-2"
-                          style={{
-                            backgroundColor: div.warna,
-                            borderColor: `${div.warna}25`,
-                            boxShadow: `0 0 8px ${div.warna}80`
-                          }}
-                        />
-                        <h4 className="font-extrabold text-ink text-sm tracking-tight">{div.nama}</h4>
-                      </div>
-                      <p className="text-xs text-muted/95 mt-1.5 leading-relaxed line-clamp-2">
-                        {div.deskripsi || 'Tidak ada deskripsi divisi.'}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-cream-50/40 border border-cream-100/50 p-2.5 rounded-xl">
-                      {/* Avatar group */}
-                      <div className="flex -space-x-1.5 overflow-hidden">
-                        {div.anggotaAvatars.map((member) => (
-                          <div
-                            key={member.id}
-                            className="inline-block h-7 w-7 rounded-full ring-2 ring-white bg-maroon-800 text-[10px] font-bold text-cream-50 flex items-center justify-center uppercase shadow-sm"
-                            title={member.nama}
-                          >
-                            {member.fotoUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                className="h-full w-full object-cover rounded-full"
-                                src={member.fotoUrl}
-                                alt={member.nama}
-                              />
-                            ) : (
-                              member.nama.split(' ').map(n => n[0]).slice(0,2).join('')
-                            )}
-                          </div>
-                        ))}
-                        {div.jumlahAnggota > 5 && (
-                          <div className="inline-block h-7 w-7 rounded-full ring-2 ring-white bg-cream-100 text-[9px] font-black text-muted flex items-center justify-center shadow-sm">
-                            +{div.jumlahAnggota - 5}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-right">
-                        <span className="text-[9px] font-bold text-muted/70 block uppercase tracking-wider">Tugas Aktif</span>
-                        <span className="text-xs font-black text-maroon-900 bg-orange-100/60 border border-orange-200/50 rounded-md px-1.5 py-0.5 mt-0.5 inline-block">{div.jumlahTugasAktif} task</span>
-                      </div>
-                    </div>
-
-                    <a
-                      href={`/divisi/${div.id}`}
-                      className="mt-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-maroon-800 to-maroon-900 hover:from-orange-600 hover:to-orange-500 px-4 py-2.5 text-xs font-bold text-cream-50 shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-orange-500/10 group/btn"
-                    >
-                      Buka Kanban Divisi
-                      <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
-                        <IconChevronKanan />
-                      </span>
-                    </a>
-                  </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* AKSES CEPAT */}
-        <div className="space-y-4">
-          <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Akses Cepat</h3>
-          <div className="grid grid-cols-1 gap-2.5">
-            <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
-              <a href="/tugas-saya" className="flex items-center gap-3.5 px-4 py-3.5 group">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition group-hover:bg-orange-100">
-                  <IconTaskAktif />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-ink leading-snug">Tugas Saya</p>
-                  <p className="text-[10px] text-muted mt-0.5 leading-none">Semua tugas lintas divisi</p>
-                </div>
-                <span className="transition-transform duration-200 group-hover:translate-x-1">
-                  <IconChevronKanan />
-                </span>
-              </a>
-            </KartuTilt>
-
-            {detail.divisiList.length > 0 && (
-              <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
-                <a href={`/divisi/${detail.divisiList[0].id}`} className="flex items-center gap-3.5 px-4 py-3.5 group">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800 transition group-hover:bg-maroon-100">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" />
-                      <path d="M9 3v18M15 3v18" />
-                    </svg>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-ink leading-snug">Buka Kanban</p>
-                    <p className="text-[10px] text-muted mt-0.5 leading-none">Papan kerja tim divisi</p>
-                  </div>
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">
-                    <IconChevronKanan />
-                  </span>
-                </a>
-              </KartuTilt>
-            )}
-
-            <KartuTilt className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden" tiltDegree={7}>
-              <a href="/ganti-password" className="flex items-center gap-3.5 px-4 py-3.5 group">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cream-100 text-muted transition group-hover:bg-cream-200/60">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m0 0a2 2 0 01-2 2m2-2h3m-3 0H9M3 12a9 9 0 019-9m9 9a9 9 0 01-9 9m0 0c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-                  </svg>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-ink leading-snug">Ganti Password</p>
-                  <p className="text-[10px] text-muted mt-0.5 leading-none">Amankan akun kamu</p>
-                </div>
-                <span className="transition-transform duration-200 group-hover:translate-x-1">
-                  <IconChevronKanan />
-                </span>
-              </a>
-            </KartuTilt>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
