@@ -32,6 +32,7 @@ import {
   ubahUrutanBoard,
   setujuiTask,
   revisiTask,
+  arsipkanTugasSelesai,
   type AnggotaDivisi,
   type BoardDenganTask,
   type TaskRingkas,
@@ -668,6 +669,20 @@ function BoardColumn({
   const [sedangProses, setSedangProses] = useState(false)
   const [loadingTaskId, setLoadingTaskId] = useState<string | null>(null)
 
+  async function tanganiBersihkan() {
+    const yakin = window.confirm('Apakah Anda yakin ingin mengarsipkan semua tugas yang telah selesai di kolom ini?')
+    if (!yakin) return
+
+    setSedangProses(true)
+    const hasil = await arsipkanTugasSelesai(divisionId, board.id)
+    setSedangProses(false)
+    if (hasil.sukses) {
+      router.refresh()
+    } else {
+      alert(hasil.pesan || 'Gagal mengarsipkan tugas selesai')
+    }
+  }
+
   const isReviewBoard = board.nama.toLowerCase() === 'review'
 
   async function tanganiSetujui(taskId: string) {
@@ -723,12 +738,12 @@ function BoardColumn({
       }`}
     >
       <div className="flex items-center justify-between px-3 py-2.5">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
           {bolehReorderBoard && (
             <div
               {...attributes}
               {...listeners}
-              className="cursor-grab touch-none rounded p-0.5 text-maroon-400 hover:bg-cream-200 hover:text-maroon-700 active:cursor-grabbing"
+              className="cursor-grab touch-none rounded p-0.5 text-maroon-400 hover:bg-cream-200 hover:text-maroon-700 active:cursor-grabbing shrink-0"
               title="Seret untuk mengatur urutan board"
             >
               <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
@@ -738,11 +753,28 @@ function BoardColumn({
               </svg>
             </div>
           )}
-          <h3 className="text-sm font-black text-maroon-900">{board.nama}</h3>
+          <h3 className="text-sm font-black text-maroon-900 truncate">{board.nama}</h3>
         </div>
-        <span className="rounded-full bg-maroon-100 px-2 py-0.5 text-xs font-bold text-maroon-700">
-          {board.tasks.length}
-        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {board.isCompletionBoard && bolehKelola && board.tasks.length > 0 && (
+            <button
+              onClick={tanganiBersihkan}
+              disabled={sedangProses}
+              title="Bersihkan kolom selesai (Arsip)"
+              className="rounded p-1 text-muted hover:bg-cream-200 hover:text-maroon-700 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          )}
+          <span className="rounded-full bg-maroon-100 px-2 py-0.5 text-xs font-bold text-maroon-700">
+            {board.tasks.length}
+          </span>
+        </div>
       </div>
 
       <SortableContext items={board.tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>

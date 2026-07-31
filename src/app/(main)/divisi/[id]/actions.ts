@@ -377,6 +377,7 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
     )
     .in('board_id', boardIds)
     .is('deleted_at', null)
+    .is('archived_at', null)
     .order('urutan')
 
   type BarisTask = {
@@ -1752,3 +1753,38 @@ export async function revisiTask(divisionId: string, taskId: string): Promise<Ha
 
   return { sukses: true }
 }
+
+export async function arsipkanTugasSelesai(
+  divisionId: string,
+  boardId: string
+): Promise<{ sukses: boolean; pesan?: string }> {
+  const sesi = await pastikanOwner(divisionId)
+  const admin = createAdminClient()
+
+  // Update tasks yang selesai di board tersebut agar diarsipkan
+  const { error } = await admin
+    .from('tasks')
+    .update({ archived_at: new Date().toISOString() })
+    .eq('board_id', boardId)
+    .not('completed_at', 'is', null)
+    .is('archived_at', null)
+    .is('deleted_at', null)
+
+  if (error) {
+    console.error('Gagal mengarsipkan tugas selesai:', error)
+    return { sukses: false, pesan: 'Gagal membersihkan tugas selesai. Coba lagi.' }
+  }
+
+  await catatAktivitas({
+    actorId: sesi.id,
+    actorNama: sesi.nama,
+    jenis: 'tasks_archived',
+    objekTipe: 'Board',
+    objekId: boardId,
+    objekNama: 'Kolom Selesai',
+    divisionId,
+  })
+
+  return { sukses: true }
+}
+

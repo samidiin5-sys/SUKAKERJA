@@ -38,6 +38,8 @@ export type JenisAktivitas =
   | 'template_diubah'
   | 'template_dihapus'
   | 'board_diurutkan'
+  | 'tasks_archived'
+
 
 /**
  * Mencatat satu baris activity log. Kegagalan pencatatan sengaja tidak

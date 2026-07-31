@@ -65,7 +65,7 @@ export async function ambilTaskKalender(
   // Temp debug logging
   try {
     const logData = `[${new Date().toISOString()}] ambilTaskKalender - divisionId: ${divisionId} | mulai: ${mulai} | selesai: ${selesai} | boardIds: ${boardIds.join(', ')} | db_returned: ${tasks?.length ?? 0} tasks\n`
-    fs.appendFileSync('calendar_debug.log', logData)
+    fs.appendFileSync('d:/porject-test2/sukakerja/calendar_debug.log', logData)
   } catch (e) {
     console.error("Gagal menulis log debug:", e)
   }
