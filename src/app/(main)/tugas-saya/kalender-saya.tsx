@@ -17,6 +17,11 @@ function formatLokal(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+/** Ambil tanggal WIB dari ISO string due_date (timestamptz dari DB) */
+function dueDateKeLokal(iso: string): string {
+  return new Date(new Date(iso).getTime() + 7 * 3600_000).toISOString().slice(0, 10)
+}
+
 function formatJam(iso: string): string {
   const d = new Date(iso)
   if (d.getHours() === 0 && d.getMinutes() === 0) return ''
@@ -66,7 +71,10 @@ export default function KalenderSaya({ tasksAwal, awalBulanIso }: { tasksAwal: T
     return arr
   })()
 
-  function taskHari(d: Date) { return tasks.filter((t) => formatLokal(new Date(t.dueDate)) === formatLokal(d)) }
+  function taskHari(d: Date) {
+    const kunci = formatLokal(d)
+    return tasks.filter((t) => dueDateKeLokal(t.dueDate) === kunci)
+  }
 
   return (
     <div>

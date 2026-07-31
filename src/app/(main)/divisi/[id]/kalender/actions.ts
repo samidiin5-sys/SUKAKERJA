@@ -3,12 +3,13 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanAnggotaDivisi } from '@/lib/auth/otorisasi'
 
-/** Konversi ISO string ke format YYYY-MM-DD (WIB) agar cocok dengan due_date di DB */
-function isoKeTanggalLokal(iso: string): string {
-  const d = new Date(iso)
-  // Konversi ke WIB (UTC+7)
-  const wib = new Date(d.getTime() + 7 * 60 * 60 * 1000)
-  return wib.toISOString().slice(0, 10)
+/**
+ * Konversi ISO string (UTC) ke tanggal WIB dalam format YYYY-MM-DD.
+ * Digunakan untuk membangun range query yang tepat untuk kolom timestamptz.
+ */
+function isoKeYMD(iso: string): string {
+  // Tambah 7 jam untuk konversi UTC → WIB, lalu ambil bagian tanggalnya
+  return new Date(new Date(iso).getTime() + 7 * 3600_000).toISOString().slice(0, 10)
 }
 
 export type TaskKalender = {
@@ -42,9 +43,11 @@ export async function ambilTaskKalender(
 
   if (boardIds.length === 0) return []
 
-  // Konversi ISO ke YYYY-MM-DD agar cocok dengan format due_date di database
-  const mulaiTanggal = isoKeTanggalLokal(mulai)
-  const selesaiTanggal = isoKeTanggalLokal(selesai)
+  // Bangun range query dengan timezone WIB (+07:00) agar filter timestamptz tepat
+  const mulaiYMD = isoKeYMD(mulai)
+  const selesaiYMD = isoKeYMD(selesai)
+  const mulaiISO = `${mulaiYMD}T00:00:00+07:00`
+  const selesaiISO = `${selesaiYMD}T23:59:59+07:00`
 
   let query = admin
     .from('tasks')
@@ -52,8 +55,8 @@ export async function ambilTaskKalender(
     .in('board_id', boardIds)
     .is('deleted_at', null)
     .not('due_date', 'is', null)
-    .gte('due_date', mulaiTanggal)
-    .lte('due_date', selesaiTanggal)
+    .gte('due_date', mulaiISO)
+    .lte('due_date', selesaiISO)
     .order('due_date')
 
   const { data: tasks } = await query

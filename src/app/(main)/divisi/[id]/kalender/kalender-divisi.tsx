@@ -18,6 +18,12 @@ function formatLokal(tanggal: Date): string {
   return `${tanggal.getFullYear()}-${String(tanggal.getMonth() + 1).padStart(2, '0')}-${String(tanggal.getDate()).padStart(2, '0')}`
 }
 
+/** Ambil tanggal WIB dari ISO string due_date (timestamptz dari DB) */
+function dueDateKeLokal(iso: string): string {
+  // Tambah 7 jam (WIB) lalu slice YYYY-MM-DD
+  return new Date(new Date(iso).getTime() + 7 * 3600_000).toISOString().slice(0, 10)
+}
+
 function formatTanggal(iso: string): string {
   const d = new Date(iso)
   return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -164,7 +170,8 @@ export default function KalenderDivisi({
   })()
 
   function taskUntukHari(tanggal: Date): TaskKalender[] {
-    return tasks.filter((t) => formatLokal(new Date(t.dueDate)) === formatLokal(tanggal))
+    const kunci = formatLokal(tanggal)
+    return tasks.filter((t) => dueDateKeLokal(t.dueDate) === kunci)
   }
 
   return (

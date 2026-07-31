@@ -46,8 +46,12 @@ export async function jalankanBuatTugasRutin() {
     if ((count ?? 0) > 0) { hasil.dilewati++; continue }
 
     try {
+      // Simpan due_date sebagai tengah hari WIB (12:00 +07:00) agar tidak geser
+      // akibat konversi timezone di browser pengguna
       const dueDate = new Date(tanggalHariIni)
       dueDate.setDate(dueDate.getDate() + template.due_offset_hari)
+      const dueTanggal = dueDate.toISOString().slice(0, 10)
+      const dueDateWIB = `${dueTanggal}T12:00:00+07:00`
 
       const { data: taskBaru, error } = await admin.from('tasks')
         .insert({
@@ -55,7 +59,7 @@ export async function jalankanBuatTugasRutin() {
           judul: template.judul,
           deskripsi: template.deskripsi,
           prioritas: template.prioritas,
-          due_date: dueDate.toISOString().slice(0, 10),
+          due_date: dueDateWIB,
           created_by: template.created_by,
           recurring_template_id: template.id,
           is_recurring: true,
