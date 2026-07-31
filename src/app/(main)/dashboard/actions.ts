@@ -517,7 +517,7 @@ export async function ambilDetailDashboardStaff(): Promise<DetailDashboardStaff>
 
   return {
     statistik: {
-      taskAktif: aktif.length,
+      taskAktif: jatuhTempoHariIni.length + terlambat.length,
       jatuhTempoHariIni: jatuhTempoHariIni.length,
       selesaiMingguIni: selesaiMingguIni.length,
       terlambat: terlambat.length,

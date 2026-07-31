@@ -271,9 +271,9 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
     if (!detail) return []
     return [
       {
-        label: 'Task Aktif',
+        label: 'Perlu Dikerjakan',
         nilai: detail.statistik.taskAktif,
-        sub: 'Sedang dikerjakan',
+        sub: 'Hari ini & terlambat',
         icon: <IconTaskAktif />,
         bgIcon: 'bg-maroon-50 text-maroon-800',
         borderColor: 'border-cream-200'
