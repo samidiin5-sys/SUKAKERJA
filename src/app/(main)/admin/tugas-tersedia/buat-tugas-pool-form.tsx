@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { ambilBoardUntukPool, kirimTugasPool, type BoardDivisi } from './actions'
 
 type DivisiSaya = { id: string; nama: string; warna: string; role: string }
 
 export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSaya[] }) {
+  const router = useRouter()
   const [buka, setBuka] = useState(false)
   const [divisionId, setDivisionId] = useState(divisiSaya[0]?.id ?? '')
   const [boards, setBoards] = useState<BoardDivisi[]>([])
@@ -69,6 +71,7 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
       return
     }
     setPesan({ sukses: true, teks: 'Tugas terbuka berhasil dibuat! Staff aktif sudah diberitahu.' })
+    router.refresh()
     reset()
   }
 
