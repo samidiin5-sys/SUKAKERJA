@@ -11,6 +11,7 @@ type ItemNav = {
   href: string
   label: string
   icon: React.ReactNode
+  hasDot?: boolean
 }
 
 
@@ -45,7 +46,7 @@ export default function Sidebar({
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
       { href: '/riwayat-bonus', label: 'Riwayat Bonus', icon: <IkonBonus /> },
-      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard /> },
+      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard />, hasDot: data.hasTugasTersedia },
       { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
       { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
       { href: '/notifikasi', label: 'Notifikasi', icon: <IkonLonceng /> },
@@ -252,7 +253,12 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
           : 'text-cream-200/80 hover:bg-white/10 hover:text-cream-50'
       }`}
     >
-      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{item.icon}</span>
+      <span className="relative flex h-5 w-5 flex-shrink-0 items-center justify-center">
+        {item.icon}
+        {item.hasDot && (
+          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 shadow-[0_0_0_2px_rgba(92,31,33,1)]" />
+        )}
+      </span>
       {!collapsed && <span className="truncate">{item.label}</span>}
     </Link>
   )
