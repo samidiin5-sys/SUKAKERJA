@@ -129,21 +129,23 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
                 </button>
               </div>
             </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-muted">
-                {lintasDivisi ? 'Diterbitkan Oleh (Divisi Pemilik)' : 'Pilih Divisi Khusus Penerima'}
-              </label>
-              <select
-                value={divisionId}
-                onChange={(e) => setDivisionId(e.target.value)}
-                required
-                className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
-              >
-                {divisiSaya.map((d) => (
-                  <option key={d.id} value={d.id}>{d.nama}</option>
-                ))}
-              </select>
-            </div>
+            {!lintasDivisi && (
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-muted">
+                  Pilih Divisi Khusus Penerima
+                </label>
+                <select
+                  value={divisionId}
+                  onChange={(e) => setDivisionId(e.target.value)}
+                  required
+                  className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
+                >
+                  {divisiSaya.map((d) => (
+                    <option key={d.id} value={d.id}>{d.nama}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">Judul Tugas</label>
               <input
