@@ -493,29 +493,64 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
 
           {/* PROGRESS PEKERJAAN */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Pekerjaan</h3>
-            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Pekerjaan</h3>
+              {progressPerDivisi.length > 0 && (
+                <span className="text-[10px] font-semibold text-muted">
+                  {progressPerDivisi.reduce((a, b) => a + b.selesai, 0)}/{progressPerDivisi.reduce((a, b) => a + b.total, 0)} selesai
+                </span>
+              )}
+            </div>
+            <div className="rounded-2xl border border-cream-200 bg-white shadow-sm overflow-hidden">
               {progressPerDivisi.length === 0 ? (
-                <EmptyState pesan="Belum ada data tugas untuk menghitung progress." />
+                <div className="p-4">
+                  <EmptyState pesan="Belum ada data tugas untuk menghitung progress." />
+                </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3">
-                  {progressPerDivisi.map((p) => (
-                    <div key={p.nama} className="rounded-3xl border border-cream-100 bg-cream-50 p-4 shadow-sm">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-ink truncate">{p.nama}</p>
-                          <p className="text-[10px] text-muted mt-1">{p.selesai} dari {p.total} tugas selesai</p>
+                <div className="divide-y divide-cream-100">
+                  {progressPerDivisi.map((p) => {
+                    const isSelesai = p.persentase === 100
+                    const isKritis = p.persentase < 30 && p.total > 0
+                    const barColor = isSelesai
+                      ? 'from-green-400 to-green-500'
+                      : isKritis
+                      ? 'from-red-400 to-red-500'
+                      : 'from-orange-400 to-orange-500'
+                    const badgeBg = isSelesai
+                      ? 'bg-green-50 text-green-700'
+                      : isKritis
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-orange-50 text-orange-600'
+
+                    return (
+                      <div key={p.nama} className="px-4 py-3.5 hover:bg-cream-50/40 transition">
+                        <div className="flex items-center justify-between gap-3 mb-2.5">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`h-2 w-2 rounded-full flex-shrink-0 ${isSelesai ? 'bg-green-500' : isKritis ? 'bg-red-500' : 'bg-orange-500'}`} />
+                            <p className="text-sm font-bold text-ink truncate">{p.nama}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[10px] text-muted font-medium">{p.selesai}/{p.total}</span>
+                            <span className={`text-xs font-black rounded-full px-2 py-0.5 ${badgeBg}`}>
+                              {p.persentase}%
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-sm font-black text-orange-600">{p.persentase}%</span>
+                        <div className="h-2 overflow-hidden rounded-full bg-cream-200">
+                          <div
+                            className={`h-full rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`}
+                            style={{ width: `${p.persentase}%` }}
+                          />
+                        </div>
+                        {isSelesai && (
+                          <p className="text-[10px] text-green-600 font-semibold mt-1.5">✓ Semua tugas selesai!</p>
+                        )}
+                        {isKritis && (
+                          <p className="text-[10px] text-red-500 font-semibold mt-1.5">⚠ Progress rendah — perlu perhatian</p>
+                        )}
                       </div>
-                      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-cream-200">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500"
-                          style={{ width: `${p.persentase}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
