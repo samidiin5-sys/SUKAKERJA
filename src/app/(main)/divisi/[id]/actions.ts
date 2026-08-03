@@ -2,7 +2,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import { pastikanAnggotaDivisi, pastikanOwner, pastikanStaff, bolehPindahTask } from '@/lib/auth/otorisasi'
+import { pastikanAnggotaDivisi, pastikanOwner, bolehPindahTask } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 import { kirimNotifikasi } from '@/lib/notifikasi'
 
