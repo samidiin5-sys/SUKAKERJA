@@ -174,7 +174,7 @@ export default function Sidebar({
       <motion.aside
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
-        className="relative hidden flex-col overflow-x-hidden bg-gradient-to-b from-maroon-950 to-maroon-800 lg:flex lg:sticky lg:top-0 lg:h-screen"
+        className="relative hidden flex-col z-30 bg-gradient-to-b from-maroon-950 to-maroon-800 lg:flex lg:sticky lg:top-0 lg:h-screen"
       >
         {isi}
 
