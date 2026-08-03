@@ -214,7 +214,7 @@ function BadgePrioritas({ prioritas }: { prioritas: string }) {
 
 // --- MAIN STAFF DASHBOARD COMPONENT ---
 
-export default function StaffDashboard({ data }: { data: DataShell }) {
+export default function StaffDashboard({ data, saldoBonus }: { data: DataShell, saldoBonus: number }) {
   const [detail, setDetail] = useState<DetailDashboardStaff | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -376,7 +376,11 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
               </h2>
               <p className="text-xs font-semibold text-slate-300 mt-1">{formatTanggalIndonesia()}</p>
             </div>
-            <div className="shrink-0 text-right">
+            <div className="shrink-0 text-right flex items-center justify-end gap-3">
+              <a href="/riwayat-bonus" className="flex items-center gap-2 rounded-full bg-green-500/20 border border-green-500/30 px-3 py-1.5 font-semibold text-green-300 transition-colors hover:bg-green-500/30">
+                <span className="text-[10px] uppercase tracking-wider">Bonus</span>
+                <span className="text-xs font-black">Rp{saldoBonus.toLocaleString('id-ID')}</span>
+              </a>
               <span className="text-xs bg-white/10 border border-white/15 px-3 py-1.5 rounded-full inline-block font-semibold">
                 🎯 Fokus Hari Ini
               </span>

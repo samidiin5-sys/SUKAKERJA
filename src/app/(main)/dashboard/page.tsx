@@ -3,6 +3,7 @@ import { ambilStatistikOrganisasi, ambilStatistikPersonal, ambilTugasDikirimOwne
 import StaffDashboard from './staff-dashboard'
 import AdminDashboard from './admin-dashboard'
 import TombolEksporCSV from './tombol-ekspor-csv'
+import { hitungSaldoBonusStaff } from '@/lib/bonus/bonus-service'
 
 // Redesigned dashboard routes
 function formatTenggat(iso: string): string {
@@ -19,6 +20,11 @@ export default async function HalamanDashboard() {
   const data = await ambilDataShell()
   const isSuperAdmin = data.roleSistem === 'super_admin'
   const isOwner = data.roleSistem === 'owner'
+
+  let saldoBonus = 0
+  if (!isSuperAdmin && !isOwner) {
+    saldoBonus = await hitungSaldoBonusStaff(data.id)
+  }
 
   return (
     isSuperAdmin ? (
@@ -105,7 +111,7 @@ export default async function HalamanDashboard() {
           </div>
         </>
       ) : (
-        <StaffDashboard data={data} />
+        <StaffDashboard data={data} saldoBonus={saldoBonus} />
       )
   )
 }
