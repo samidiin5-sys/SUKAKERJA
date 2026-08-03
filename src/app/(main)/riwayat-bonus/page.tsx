@@ -1,12 +1,12 @@
 import { Suspense } from 'react'
-import { pastikanStaff } from '@/lib/supabase/server-utils'
+import { ambilSesiPengguna } from '@/lib/auth/otorisasi'
 import { hitungSaldoBonusStaff, ambilRiwayatBonusStaff } from '@/lib/bonus/bonus-service'
 import RiwayatBonusView from './riwayat-bonus-view'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HalamanRiwayatBonus() {
-  const sesi = await pastikanStaff()
+  const sesi = await ambilSesiPengguna()
 
   const [totalBonus, riwayat] = await Promise.all([
     hitungSaldoBonusStaff(sesi.id),
