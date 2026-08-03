@@ -493,22 +493,30 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
 
           {/* PROGRESS PEKERJAAN */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Pekerjaan</h3>
-            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm space-y-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-sm font-black text-ink">Progress Pekerjaan</h3>
+                <p className="text-[10px] text-muted mt-1">Progress penyelesaian tugas per divisi dan status sekarang.</p>
+              </div>
+              <span className="inline-flex items-center rounded-full bg-cream-100 px-3 py-1 text-[10px] font-semibold text-muted">
+                Pembaruan otomatis
+              </span>
+            </div>
+            <div className="rounded-[28px] border border-cream-200 bg-white p-5 shadow-sm">
               {progressPerDivisi.length === 0 ? (
                 <EmptyState pesan="Belum ada data tugas untuk menghitung progress." />
               ) : (
-                <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-3">
                   {progressPerDivisi.map((p) => (
-                    <div key={p.nama} className="rounded-3xl border border-cream-100 bg-cream-50 p-4 shadow-sm">
+                    <div key={p.nama} className="rounded-[24px] border border-cream-100 bg-cream-50 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-ink truncate">{p.nama}</p>
-                          <p className="text-[10px] text-muted mt-1">{p.selesai} dari {p.total} tugas selesai</p>
+                          <p className="text-[11px] text-muted mt-1">{p.selesai} dari {p.total} tugas selesai</p>
                         </div>
-                        <span className="text-sm font-black text-orange-600">{p.persentase}%</span>
+                        <div className="text-lg font-black text-orange-600">{p.persentase}%</div>
                       </div>
-                      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-cream-200">
+                      <div className="mt-4 h-3 overflow-hidden rounded-full bg-cream-200">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500"
                           style={{ width: `${p.persentase}%` }}
