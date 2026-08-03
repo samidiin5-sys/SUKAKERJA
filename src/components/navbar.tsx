@@ -11,6 +11,8 @@ import NotifikasiBell from './notifikasi-bell'
 function judulHalaman(pathname: string): string {
   if (pathname === '/dashboard') return 'Dashboard'
   if (pathname === '/tugas-saya') return 'Tugas Saya'
+  if (pathname === '/riwayat-bonus') return 'Riwayat Bonus'
+  if (pathname === '/tugas-tersedia') return 'Tugas Tersedia'
   if (pathname === '/ganti-password') return 'Ganti Password'
   if (pathname === '/profil') return 'Profil Saya'
   if (pathname === '/admin/karyawan') return 'Kelola Karyawan'

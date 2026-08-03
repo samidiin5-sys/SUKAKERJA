@@ -86,6 +86,12 @@ function IsiKartu({ task, terlambat }: { task: TaskRingkas; terlambat: boolean }
         {task.isRecurring && (
           <span title="Tugas Rutin" className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700">↻ Rutin</span>
         )}
+
+        {task.hasBonus && (
+          <span title={`Bonus: Rp${task.bonusAmount.toLocaleString('id-ID')}`} className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+            🔥 Bonus
+          </span>
+        )}
       </div>
 
       {task.ditugaskanOleh && (

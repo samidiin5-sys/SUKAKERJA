@@ -278,6 +278,20 @@ export default function DetailTaskPanel({
               </div>
             )}
 
+            {detail?.hasBonus && (
+              <div className="flex items-center justify-between rounded-xl bg-green-50/70 border border-green-100 px-3.5 py-2.5 text-xs font-bold text-green-700">
+                <div className="flex items-center gap-2">
+                  <span>🔥</span>
+                  <span>Bonus: Rp{detail.bonusAmount.toLocaleString('id-ID')}</span>
+                </div>
+                {bolehKelola && (
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] ${detail.completedAt ? 'bg-green-200 text-green-900' : 'bg-orange-100 text-orange-800'}`}>
+                    {detail.completedAt ? 'Sudah Masuk' : 'Belum Dibayar'}
+                  </span>
+                )}
+              </div>
+            )}
+
             <div>
               <label className="mb-2 block text-xs font-bold tracking-wider text-muted uppercase">Deskripsi</label>
               <textarea

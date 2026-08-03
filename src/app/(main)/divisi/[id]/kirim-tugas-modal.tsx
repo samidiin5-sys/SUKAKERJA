@@ -24,6 +24,8 @@ export default function KirimTugasModal({
   const [isPool, setIsPool] = useState(false)
   const [pesanError, setPesanError] = useState<string | null>(null)
   const [sedangKirim, setSedangKirim] = useState(false)
+  const [hasBonus, setHasBonus] = useState(false)
+  const [bonusAmount, setBonusAmount] = useState('')
 
   const tanggalKirim = new Date().toLocaleDateString('id-ID', {
     day: 'numeric', month: 'long', year: 'numeric',
@@ -53,14 +55,15 @@ export default function KirimTugasModal({
 
     // Convert datetime-local value to ISO string
     const deadlineISO = deadline ? new Date(deadline).toISOString() : null
+    const nominal = hasBonus ? parseInt(bonusAmount.replace(/\D/g, ''), 10) || 0 : 0
 
     setSedangKirim(true)
     let hasil: { sukses: boolean; pesan?: string }
 
     if (isPool) {
-      hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO)
+      hasil = await kirimTugasPool(divisionId, boardId, judul, deskripsi, deadlineISO, 'semua', hasBonus, nominal)
     } else {
-      hasil = await kirimTugasOwner(divisionId, boardId, judul, deskripsi, deadlineISO, Array.from(tagged))
+      hasil = await kirimTugasOwner(divisionId, boardId, judul, deskripsi, deadlineISO, Array.from(tagged), hasBonus, nominal)
     }
     setSedangKirim(false)
 
@@ -135,6 +138,36 @@ export default function KirimTugasModal({
               placeholder="Detail tugas..."
               className="w-full rounded-lg border border-cream-200 bg-cream-50 px-3 py-2.5 text-sm text-ink outline-none focus:border-orange-500"
             />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted">Bonus Tugas</label>
+            <div className="rounded-xl border border-cream-200 bg-cream-50/50 p-3.5 shadow-inner">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hasBonus}
+                  onChange={(e) => setHasBonus(e.target.checked)}
+                  className="h-4 w-4 rounded border-cream-300 text-maroon-700 focus:ring-maroon-700 cursor-pointer"
+                />
+                <span className="text-xs font-bold text-maroon-800">Berikan Bonus</span>
+              </label>
+              {hasBonus && (
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className="text-xs font-semibold text-muted">Rp</span>
+                  <input
+                    type="text"
+                    value={bonusAmount}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '')
+                      setBonusAmount(val ? parseInt(val, 10).toLocaleString('id-ID') : '')
+                    }}
+                    placeholder="50.000"
+                    className="w-full rounded-lg border border-cream-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-maroon-800 focus:ring-1 focus:ring-maroon-800/20 transition-all shadow-sm"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

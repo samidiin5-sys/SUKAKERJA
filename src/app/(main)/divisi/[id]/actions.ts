@@ -341,6 +341,8 @@ export type TaskRingkas = {
   checklistSelesai: number
   coverImageUrl: string | null
   isRecurring: boolean
+  hasBonus: boolean
+  bonusAmount: number
   deskripsi?: string | null
   jumlahKomentar?: number
   jumlahLampiran?: number
@@ -373,7 +375,7 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
   const { data: tasks } = await admin
     .from('tasks')
     .select(
-      'id, board_id, judul, prioritas, due_date, completed_at, created_by, urutan, is_recurring, hanya_assignee, deskripsi, task_assignees(user_id, profiles!task_assignees_user_id_fkey(id, nama, foto_url), pemberi:profiles!task_assignees_assigned_by_fkey(nama)), checklist_items(id, selesai), comments(id), task_attachments(id)'
+      'id, board_id, judul, prioritas, due_date, completed_at, created_by, urutan, is_recurring, hanya_assignee, deskripsi, has_bonus, bonus_amount, task_assignees(user_id, profiles!task_assignees_user_id_fkey(id, nama, foto_url), pemberi:profiles!task_assignees_assigned_by_fkey(nama)), checklist_items(id, selesai), comments(id), task_attachments(id)'
     )
     .in('board_id', boardIds)
     .is('deleted_at', null)
@@ -391,6 +393,8 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
     is_recurring: boolean
     hanya_assignee: boolean
     deskripsi: string | null
+    has_bonus: boolean
+    bonus_amount: number
     task_assignees: {
       user_id: string
       profiles: { id: string; nama: string; foto_url: string | null }
@@ -478,6 +482,8 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
           fotoUrl: a.profiles.foto_url,
         })),
         ditugaskanOleh: t.task_assignees?.[0]?.pemberi?.nama ?? null,
+        hasBonus: t.has_bonus ?? false,
+        bonusAmount: t.bonus_amount ?? 0,
         bolehGeser: hitungBolehGeser(t),
         bolehHapus: bolehHapusTask,
         checklistTotal: (t.checklist_items ?? []).length,
@@ -496,7 +502,9 @@ export type HasilBuatTask = { sukses: true } | { sukses: false; pesan: string }
 export async function buatTask(
   divisionId: string,
   boardId: string,
-  judul: string
+  judul: string,
+  hasBonus?: boolean,
+  bonusAmount?: number
 ): Promise<HasilBuatTask> {
   const sesi = await pastikanAnggotaDivisi(divisionId)
 
@@ -514,9 +522,12 @@ export async function buatTask(
       board_id: boardId,
       judul: judul.trim(),
       created_by: sesi.id,
+      has_bonus: hasBonus ?? false,
+      bonus_amount: bonusAmount ?? 0,
     })
     .select('id')
     .single()
+
 
   if (error) {
     return { sukses: false, pesan: 'Gagal membuat task. Coba lagi.' }
@@ -546,7 +557,9 @@ export async function kirimTugasOwner(
   judul: string,
   deskripsi: string,
   deadline: string | null,
-  assigneeIds: string[]
+  assigneeIds: string[],
+  hasBonus?: boolean,
+  bonusAmount?: number
 ): Promise<HasilBuatTask> {
   const sesi = await pastikanOwner(divisionId)
 
@@ -565,6 +578,8 @@ export async function kirimTugasOwner(
       due_date: deadline || null,
       created_by: sesi.id,
       hanya_assignee: true,
+      has_bonus: hasBonus ?? false,
+      bonus_amount: bonusAmount ?? 0,
     })
     .select('id')
     .single()
@@ -606,7 +621,9 @@ export async function kirimTugasPool(
   judul: string,
   deskripsi: string,
   deadline: string | null,
-  targetScope: 'semua' | 'divisi' = 'semua'
+  targetScope: 'semua' | 'divisi' = 'semua',
+  hasBonus?: boolean,
+  bonusAmount?: number
 ): Promise<HasilBuatTask & { taskId?: string }> {
   const sesi = await pastikanOwner(divisionId)
 
@@ -626,6 +643,8 @@ export async function kirimTugasPool(
       is_pool_task: true,
       target_scope: targetScope,
       hanya_assignee: false,
+      has_bonus: hasBonus ?? false,
+      bonus_amount: bonusAmount ?? 0,
     })
     .select('id')
     .single()
@@ -906,6 +925,8 @@ export type DetailTask = {
   boardId: string
   assigneeIds: string[]
   isRecurring: boolean
+  hasBonus: boolean
+  bonusAmount: number
   templatePola: string | null
   alasanTerlambat: string | null
 }
@@ -916,7 +937,7 @@ export async function ambilDetailTask(divisionId: string, taskId: string): Promi
   const admin = createAdminClient()
   const { data: task } = await admin
     .from('tasks')
-    .select('id, judul, deskripsi, prioritas, due_date, completed_at, board_id, is_recurring, alasan_terlambat, recurring_template_id, recurring_task_templates(pola), task_assignees(user_id)')
+    .select('id, judul, deskripsi, prioritas, due_date, completed_at, board_id, is_recurring, has_bonus, bonus_amount, alasan_terlambat, recurring_template_id, recurring_task_templates(pola), task_assignees(user_id)')
     .eq('id', taskId)
     .single()
 
@@ -934,6 +955,8 @@ export async function ambilDetailTask(divisionId: string, taskId: string): Promi
     boardId: task.board_id,
     assigneeIds: ((task.task_assignees as unknown as BarisAssignee[]) ?? []).map((a) => a.user_id),
     isRecurring: task.is_recurring,
+    hasBonus: task.has_bonus ?? false,
+    bonusAmount: task.bonus_amount ?? 0,
     templatePola: (task.recurring_task_templates as any)?.pola ?? null,
     alasanTerlambat: task.alasan_terlambat,
   }

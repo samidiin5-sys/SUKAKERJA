@@ -665,6 +665,8 @@ function BoardColumn({
 }) {
   const router = useRouter()
   const [judulBaru, setJudulBaru] = useState('')
+  const [hasBonus, setHasBonus] = useState(false)
+  const [bonusAmount, setBonusAmount] = useState('')
   const [formTerbuka, setFormTerbuka] = useState(false)
   const [sedangProses, setSedangProses] = useState(false)
   const [loadingTaskId, setLoadingTaskId] = useState<string | null>(null)
@@ -720,11 +722,14 @@ function BoardColumn({
     if (!judulBaru.trim()) return
 
     setSedangProses(true)
-    const hasil = await buatTask(divisionId, board.id, judulBaru)
+    const nominal = hasBonus ? parseInt(bonusAmount.replace(/\D/g, ''), 10) || 0 : 0
+    const hasil = await buatTask(divisionId, board.id, judulBaru, hasBonus, nominal)
     setSedangProses(false)
 
     if (hasil.sukses) {
       setJudulBaru('')
+      setHasBonus(false)
+      setBonusAmount('')
       router.refresh()
     }
   }
@@ -825,6 +830,34 @@ function BoardColumn({
               rows={2}
               className="w-full rounded-lg border border-cream-200 bg-white px-3 py-2 text-sm outline-none focus:border-orange-500"
             />
+            {bolehKelola && (
+              <div className="mt-2 flex flex-col gap-2 rounded-lg border border-cream-200 bg-cream-50 p-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={hasBonus}
+                    onChange={(e) => setHasBonus(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-cream-300 text-maroon-700 focus:ring-maroon-700 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-maroon-800">Berikan Bonus</span>
+                </label>
+                {hasBonus && (
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-xs font-semibold text-muted">Rp</span>
+                    <input
+                      type="text"
+                      value={bonusAmount}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '')
+                        setBonusAmount(val ? parseInt(val, 10).toLocaleString('id-ID') : '')
+                      }}
+                      placeholder="50.000"
+                      className="w-full rounded border border-cream-200 bg-white px-2 py-1 text-xs font-semibold outline-none focus:border-orange-500"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
             <div className="mt-1.5 flex gap-2">
               <button
                 type="submit"
@@ -838,6 +871,8 @@ function BoardColumn({
                 onClick={() => {
                   setFormTerbuka(false)
                   setJudulBaru('')
+                  setHasBonus(false)
+                  setBonusAmount('')
                 }}
                 className="rounded-lg px-3 py-1.5 text-xs font-semibold text-muted hover:bg-cream-200"
               >
