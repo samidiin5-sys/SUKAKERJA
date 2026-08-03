@@ -1,7 +1,8 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { bolehPindahTask, pastikanAnggotaDivisi, pastikanOwner } from '@/lib/auth/otorisasi'
+import { revalidatePath } from 'next/cache'
+import { pastikanAnggotaDivisi, pastikanOwner, pastikanStaff, bolehPindahTask } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 import { kirimNotifikasi } from '@/lib/notifikasi'
 
@@ -693,6 +694,10 @@ export async function kirimTugasPool(
       })
     )
   )
+
+  revalidatePath('/admin/tugas-tersedia')
+  revalidatePath('/tugas-tersedia')
+  revalidatePath(`/divisi/${divisionId}`)
 
   return { sukses: true, taskId: taskBaru.id }
 }

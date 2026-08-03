@@ -52,23 +52,8 @@ export async function ambilTaskPoolAktif(): Promise<TaskPoolAktif[]> {
 
   let { data, error } = await query
 
-  if (error && (error.code === '42703' || error.message.includes('target_scope'))) {
-    let fallbackQuery = admin
-      .from('tasks')
-      .select('id, judul, deskripsi, prioritas, due_date, created_at, boards!inner(divisions!inner(nama))')
-      .eq('is_pool_task', true)
-      .is('deleted_at', null)
-      .is('completed_at', null)
-      .order('created_at', { ascending: false })
-      .limit(50)
-
-    if (sesi.roleSistem !== 'super_admin') {
-      fallbackQuery = fallbackQuery.eq('created_by', sesi.id)
-    }
-
-    const fallbackRes = await fallbackQuery
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data = (fallbackRes.data as any[])?.map((item) => ({ ...item, target_scope: 'semua' })) ?? null
+  if (error) {
+    console.error('Error fetch task pool:', error)
   }
 
   type Baris = {
