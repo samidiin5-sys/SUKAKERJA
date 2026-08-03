@@ -34,6 +34,24 @@ export default function Sidebar({
   const isSuperAdmin = data.roleSistem === 'super_admin'
   const isOwner = data.roleSistem === 'owner'
 
+  const [tugasTersediaDot, setTugasTersediaDot] = useState(false)
+
+  useEffect(() => {
+    if (!data.latestTugasTersedia) {
+      setTugasTersediaDot(false)
+      return
+    }
+
+    const lastSeenId = localStorage.getItem('last_seen_tugas_tersedia')
+
+    if (pathname === '/tugas-tersedia') {
+      localStorage.setItem('last_seen_tugas_tersedia', data.latestTugasTersedia)
+      setTugasTersediaDot(false)
+    } else {
+      setTugasTersediaDot(lastSeenId !== data.latestTugasTersedia)
+    }
+  }, [pathname, data.latestTugasTersedia])
+
   async function tanganiLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -46,7 +64,7 @@ export default function Sidebar({
     ...(!isSuperAdmin && !isOwner ? [
       { href: '/tugas-saya', label: 'Tugas Saya', icon: <IkonDaftar /> },
       { href: '/riwayat-bonus', label: 'Riwayat Bonus', icon: <IkonBonus /> },
-      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard />, hasDot: data.hasTugasTersedia },
+      { href: '/tugas-tersedia', label: 'Tugas Tersedia', icon: <IkonClipboard />, hasDot: tugasTersediaDot },
       { href: '/lembur', label: 'Lembur', icon: <IkonJam /> },
       { href: '/panduan', label: 'Panduan', icon: <IkonPanduan /> },
       { href: '/notifikasi', label: 'Notifikasi', icon: <IkonLonceng /> },

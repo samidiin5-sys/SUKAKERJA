@@ -10,7 +10,7 @@ export type DataShell = {
   roleSistem: 'super_admin' | 'owner' | 'user'
   divisiSaya: DivisiSaya[]
   fotoUrl: string | null
-  hasTugasTersedia: boolean
+  latestTugasTersedia: string | null
 }
 
 export async function ambilDataShell(): Promise<DataShell> {
@@ -30,10 +30,13 @@ export async function ambilDataShell(): Promise<DataShell> {
     .single()
 
   const divisiSaya = await ambilDivisiSaya()
-  let hasTugasTersedia = false
+  let latestTugasTersedia: string | null = null
   if (profil?.role_sistem === 'user') {
     const tugas = await ambilTaskTersedia()
-    hasTugasTersedia = tugas.some((t) => !t.sudahDiajukan)
+    const belumDiajukan = tugas.filter((t) => !t.sudahDiajukan)
+    if (belumDiajukan.length > 0) {
+      latestTugasTersedia = belumDiajukan[0].id
+    }
   }
 
   return {
@@ -42,6 +45,6 @@ export async function ambilDataShell(): Promise<DataShell> {
     roleSistem: (profil?.role_sistem as 'super_admin' | 'owner' | 'user') ?? 'user',
     divisiSaya,
     fotoUrl: profil?.foto_url ?? null,
-    hasTugasTersedia,
+    latestTugasTersedia,
   }
 }
