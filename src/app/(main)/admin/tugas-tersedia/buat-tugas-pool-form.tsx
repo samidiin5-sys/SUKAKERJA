@@ -130,7 +130,9 @@ export default function BuatTugasPoolForm({ divisiSaya }: { divisiSaya: DivisiSa
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-muted">Divisi Asal</label>
+              <label className="mb-1 block text-xs font-semibold text-muted">
+                {lintasDivisi ? 'Diterbitkan Oleh (Divisi Pemilik)' : 'Pilih Divisi Khusus Penerima'}
+              </label>
               <select
                 value={divisionId}
                 onChange={(e) => setDivisionId(e.target.value)}
