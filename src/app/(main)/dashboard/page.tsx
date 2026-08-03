@@ -4,6 +4,7 @@ import StaffDashboard from './staff-dashboard'
 import AdminDashboard from './admin-dashboard'
 import TombolEksporCSV from './tombol-ekspor-csv'
 import { hitungSaldoBonusStaff } from '@/lib/bonus/bonus-service'
+import { ambilSesiPengguna } from '@/lib/auth/otorisasi'
 
 // Redesigned dashboard routes
 function formatTenggat(iso: string): string {
@@ -23,7 +24,8 @@ export default async function HalamanDashboard() {
 
   let saldoBonus = 0
   if (!isSuperAdmin && !isOwner) {
-    saldoBonus = await hitungSaldoBonusStaff(data.id)
+    const sesi = await ambilSesiPengguna()
+    saldoBonus = await hitungSaldoBonusStaff(sesi.id)
   }
 
   return (
