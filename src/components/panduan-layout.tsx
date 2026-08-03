@@ -75,7 +75,7 @@ export default function PanduanLayout({
 
       <div className="flex gap-8 lg:gap-12">
         <div
-          className={`hidden w-56 flex-shrink-0 transition-all duration-300 lg:block ${
+          className={`hidden w-56 shrink-0 transition-all duration-300 lg:block ${
             isTocSticky ? 'lg:sticky lg:self-start' : ''
           }`}
           style={isTocSticky ? { top: '6rem' } : undefined}
@@ -88,7 +88,7 @@ export default function PanduanLayout({
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`block w-full py-2 text-left text-xs transition-all duration-200 pl-4 border-l-2 -ml-[1px] ${
+                className={`block w-full py-2 text-left text-xs transition-all duration-200 pl-4 border-l-2 -ml-px ${
                   activeId === section.id
                     ? 'border-maroon-600 bg-maroon-50/50 text-maroon-800 font-bold rounded-r-lg'
                     : 'border-transparent text-muted/70 hover:text-ink hover:bg-cream-50 rounded-r-lg'
@@ -137,7 +137,7 @@ export default function PanduanLayout({
                 className="scroll-mt-24"
               >
                 <div className="mb-6 flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-maroon-800 to-maroon-700 text-white shadow-sm">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-maroon-800 to-maroon-700 text-white shadow-sm">
                     {section.icon}
                   </div>
                   <div className="flex-1">
@@ -163,7 +163,7 @@ export default function PanduanLayout({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
-              className="mt-14 rounded-2xl border border-orange-200/50 bg-gradient-to-br from-orange-50/60 to-amber-50/30 p-6"
+              className="mt-14 rounded-2xl border border-orange-200/50 bg-linear-to-br from-orange-50/60 to-amber-50/30 p-6"
             >
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-500 text-white shadow-sm">
@@ -176,7 +176,7 @@ export default function PanduanLayout({
               <ul className="space-y-2.5">
                 {tips.items.map((tip, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-ink/80">
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-orange-400" />
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" />
                     <span className="leading-relaxed">{tip}</span>
                   </li>
                 ))}
@@ -242,7 +242,7 @@ export function PanduanSub({ judul, children }: { judul: string; children: React
 export function PanduanTip({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-2 flex items-start gap-2 rounded-xl bg-orange-50/60 border border-orange-100/60 px-3.5 py-2.5">
-      <span className="mt-0.5 flex-shrink-0 text-sm">💡</span>
+      <span className="mt-0.5 shrink-0 text-sm">💡</span>
       <p className="text-xs leading-relaxed text-orange-800 font-medium">{children}</p>
     </div>
   )

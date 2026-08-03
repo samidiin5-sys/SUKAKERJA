@@ -174,7 +174,7 @@ export default function Sidebar({
       <motion.aside
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
-        className="relative hidden flex-col bg-gradient-to-b from-maroon-950 to-maroon-800 lg:flex lg:sticky lg:top-0 lg:h-screen"
+        className="relative hidden flex-col overflow-x-hidden bg-gradient-to-b from-maroon-950 to-maroon-800 lg:flex lg:sticky lg:top-0 lg:h-screen"
       >
         {isi}
 
@@ -244,7 +244,7 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
   return (
     <Link
       href={item.href}
-      title={collapsed ? item.label : undefined}
+      title={item.label}
       className={`group relative flex items-center gap-3 rounded-[14px] px-2.5 py-2 text-sm font-semibold transition ${
         aktif
           ? 'bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
@@ -253,12 +253,6 @@ function ItemSidebar({ item, aktif, collapsed }: { item: ItemNav; aktif: boolean
     >
       <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">{item.icon}</span>
       {!collapsed && <span className="truncate">{item.label}</span>}
-
-      {collapsed && (
-        <span className="pointer-events-none absolute left-full ml-2 hidden whitespace-nowrap rounded-lg bg-maroon-950 px-2.5 py-1.5 text-xs font-semibold text-cream-50 shadow-lg group-hover:block">
-          {item.label}
-        </span>
-      )}
     </Link>
   )
 }

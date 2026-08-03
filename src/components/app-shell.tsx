@@ -53,7 +53,7 @@ export default function AppShell({
   }, [router])
 
   return (
-    <div className="flex min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.7),_transparent_42%)] bg-cream-100 lg:items-start">
+    <div className="flex min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.7),_transparent_42%)] bg-cream-100 lg:items-start">
       <Sidebar
         data={data}
         mobileOpen={mobileOpen}

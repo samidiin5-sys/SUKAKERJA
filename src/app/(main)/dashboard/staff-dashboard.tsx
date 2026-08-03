@@ -99,11 +99,6 @@ function dapatkanWaktuRelatifAktivitas(isoString: string): string {
   return `${selisihHari} hari lalu`
 }
 
-function generateCharBar(persentase: number): string {
-  const blocks = Math.round(persentase / 10)
-  return '█'.repeat(blocks) + '░'.repeat(10 - blocks)
-}
-
 // --- SVG ICONS ---
 
 function IconTaskAktif() {
@@ -499,29 +494,28 @@ export default function StaffDashboard({ data }: { data: DataShell }) {
           {/* PROGRESS PEKERJAAN */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold tracking-widest text-muted uppercase">Progress Pekerjaan</h3>
-            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm">
+            <div className="rounded-2xl border border-cream-200 bg-white p-4.5 shadow-sm space-y-3">
               {progressPerDivisi.length === 0 ? (
                 <EmptyState pesan="Belum ada data tugas untuk menghitung progress." />
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  {progressPerDivisi.map((p) => {
-                    const charBar = generateCharBar(p.persentase)
-                    return (
-                      <div key={p.nama} className="rounded-xl border border-cream-100 bg-cream-50/20 p-3.5 space-y-2">
-                        <div className="flex justify-between items-center text-xs font-bold text-ink">
-                          <span className="truncate pr-2">{p.nama}</span>
-                          <span className="text-orange-600 font-extrabold">{p.persentase}%</span>
+                <div className="grid grid-cols-1 gap-3">
+                  {progressPerDivisi.map((p) => (
+                    <div key={p.nama} className="rounded-3xl border border-cream-100 bg-cream-50 p-4 shadow-sm">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-ink truncate">{p.nama}</p>
+                          <p className="text-[10px] text-muted mt-1">{p.selesai} dari {p.total} tugas selesai</p>
                         </div>
-                        <div className="font-mono text-xs text-orange-500 tracking-wider font-semibold select-none leading-none">
-                          {charBar}
-                        </div>
-                        <div className="h-1.5 w-full rounded-full bg-cream-200 overflow-hidden">
-                          <div className="h-full bg-orange-500 rounded-full transition-all duration-500" style={{ width: `${p.persentase}%` }} />
-                        </div>
-                        <p className="text-[10px] text-muted">{p.selesai} dari {p.total} tugas selesai</p>
+                        <span className="text-sm font-black text-orange-600">{p.persentase}%</span>
                       </div>
-                    )
-                  })}
+                      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-cream-200">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500"
+                          style={{ width: `${p.persentase}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
