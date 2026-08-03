@@ -307,14 +307,14 @@ export default function AdminDashboard({ data: shellData }: { data: DataShell })
                 const pathData = `M ${points.map(p => `${p.x} ${p.y}`).join(' L ')}`
                 return (
                   <>
-                    <path d={pathData} fill="none" stroke="#f97316" strokeWidth="3" strokeLinecap="round" />
+                    <path d={pathData} fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
                     {points.map((p, i) => (
                       <circle
                         key={i}
                         cx={p.x}
                         cy={p.y}
                         r={activeTrendIdx === i ? 5 : 3.5}
-                        fill="#f97316"
+                        fill="#3b82f6"
                         className="cursor-pointer transition-all stroke-white stroke-[1.5]"
                         onMouseEnter={() => setActiveTrendIdx(i)}
                         onMouseLeave={() => setActiveTrendIdx(null)}
