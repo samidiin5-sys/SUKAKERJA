@@ -649,26 +649,6 @@ export async function kirimTugasPool(
     .select('id')
     .single()
 
-  // Fallback jika DB Supabase belum punya kolom target_scope
-  if (error && (error.code === '42703' || error.message.includes('target_scope'))) {
-    const fallbackRes = await admin
-      .from('tasks')
-      .insert({
-        board_id: boardId,
-        judul: judulBersih,
-        deskripsi: deskripsi.trim() || null,
-        due_date: deadline || null,
-        created_by: sesi.id,
-        is_pool_task: true,
-        hanya_assignee: false,
-      })
-      .select('id')
-      .single()
-
-    taskBaru = fallbackRes.data
-    error = fallbackRes.error
-  }
-
   if (error || !taskBaru) {
     console.error('Error insert tugas terbuka:', error)
     return { sukses: false, pesan: error?.message ?? 'Gagal membuat tugas terbuka. Coba lagi.' }
