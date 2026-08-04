@@ -120,14 +120,26 @@ export async function tetapkanLemburStaff(
   return { sukses: true }
 }
 
+function getHariIniWIB(): string {
+  const d = new Date()
+  const utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+  const wib = new Date(utc + (3600000 * 7))
+  const y = wib.getFullYear()
+  const m = String(wib.getMonth() + 1).padStart(2, '0')
+  const date = String(wib.getDate()).padStart(2, '0')
+  return `${y}-${m}-${date}`
+}
+
 export async function ambilLemburSaya(): Promise<LemburSaya[]> {
   const sesi = await ambilSesiPengguna()
   const admin = createAdminClient()
+  const hariIni = getHariIniWIB()
 
   const { data } = await admin
     .from('lembur')
     .select('id, tanggal, jam_mulai, jam_selesai, alasan, status, catatan_owner, created_at, divisions(nama)')
     .eq('user_id', sesi.id)
+    .or(`status.eq.menunggu,tanggal.gte.${hariIni}`)
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -234,4 +246,91 @@ export async function tinjauLembur(
   })
 
   return { sukses: true }
+}
+
+export async function ambilKaryawanAktif(): Promise<{ id: string; nama: string }[]> {
+  await pastikanOwnerAtauSuperAdmin()
+  const admin = createAdminClient()
+
+  const { data } = await admin
+    .from('profiles')
+    .select('id, nama')
+    .eq('status', 'aktif')
+    .is('deleted_at', null)
+    .order('nama', { ascending: true })
+
+  return (data as Array<{ id: string; nama: string }> | null) ?? []
+}
+
+export type RiwayatLemburAdminItem = {
+  id: string
+  staffNama: string
+  staffId: string
+  divisiNama: string
+  tanggal: string
+  jamMulai: string
+  jamSelesai: string
+  alasan: string
+  status: 'menunggu' | 'disetujui' | 'ditolak'
+  catatanOwner: string | null
+  createdAt: string
+}
+
+export async function ambilRiwayatLemburAdmin(filters?: { staffId?: string; status?: string }): Promise<RiwayatLemburAdminItem[]> {
+  await pastikanOwnerAtauSuperAdmin()
+  const admin = createAdminClient()
+
+  let query = admin
+    .from('lembur')
+    .select('id, user_id, division_id, tanggal, jam_mulai, jam_selesai, alasan, status, catatan_owner, created_at')
+
+  if (filters?.staffId && filters.staffId !== 'all') {
+    query = query.eq('user_id', filters.staffId)
+  }
+
+  if (filters?.status && filters.status !== 'all') {
+    query = query.eq('status', filters.status)
+  }
+
+  const { data, error } = await query
+    .order('tanggal', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(150)
+
+  if (error || !data) return []
+
+  const userIds = Array.from(new Set(data.map((d) => d.user_id)))
+  const divisionIds = Array.from(new Set(data.map((d) => d.division_id)))
+
+  if (userIds.length === 0) return []
+
+  const [profilesRes, divisionsRes] = await Promise.all([
+    admin.from('profiles').select('id, nama').in('id', userIds),
+    admin.from('divisions').select('id, nama').in('id', divisionIds),
+  ])
+
+  const profiles = ((profilesRes.data as Array<{ id: string; nama: string }> | null) ?? []).filter(Boolean)
+  const divisions = ((divisionsRes.data as Array<{ id: string; nama: string }> | null) ?? []).filter(Boolean)
+
+  const profileById = new Map(profiles.map((p) => [p.id, p]))
+  const divisionById = new Map(divisions.map((d) => [d.id, d]))
+
+  return data.map((r) => {
+    const profile = profileById.get(r.user_id)
+    const division = divisionById.get(r.division_id)
+
+    return {
+      id: r.id,
+      staffNama: profile?.nama ?? 'Staff tidak ditemukan',
+      staffId: r.user_id,
+      divisiNama: division?.nama ?? 'Divisi tidak ditemukan',
+      tanggal: r.tanggal,
+      jamMulai: r.jam_mulai,
+      jamSelesai: r.jam_selesai,
+      alasan: r.alasan,
+      status: r.status as 'menunggu' | 'disetujui' | 'ditolak',
+      catatanOwner: r.catatan_owner,
+      createdAt: r.created_at,
+    }
+  })
 }
