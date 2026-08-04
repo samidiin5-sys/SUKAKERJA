@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import {
   ambilJumlahBelumDibaca,
   ambilNotifikasiSaya,
@@ -26,18 +27,65 @@ export default function NotifikasiBell() {
   const [daftar, setDaftar] = useState<NotifikasiItem[]>([])
   const [sedangMuat, setSedangMuat] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  
+  const terbukaRef = useRef(terbuka)
+  useEffect(() => {
+    terbukaRef.current = terbuka
+  }, [terbuka])
 
   useEffect(() => {
     let batal = false
-    async function muatJumlah() {
+    const supabase = createClient()
+
+    async function inisialisasi() {
+      // 1. Ambil jumlah awal
       const jumlah = await ambilJumlahBelumDibaca()
-      if (!batal) setJumlahBelumDibaca(jumlah)
+      if (batal) return
+      setJumlahBelumDibaca(jumlah)
+
+      // 2. Dapatkan user session untuk realtime filter
+      const { data: { user } } = await supabase.auth.getUser()
+      if (batal || !user) return
+
+      // 3. Daftarkan Supabase Realtime channel
+      const channel = supabase
+        .channel(`notifications-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`,
+          },
+          async () => {
+            // Ambil data terbaru secara asinkronus jika ada perubahan
+            const jumlahBaru = await ambilJumlahBelumDibaca()
+            if (batal) return
+            setJumlahBelumDibaca(jumlahBaru)
+
+            // Jika dropdown notifikasi sedang terbuka, update daftar notifikasinya juga
+            if (terbukaRef.current) {
+              const data = await ambilNotifikasiSaya()
+              if (!batal) setDaftar(data)
+            }
+          }
+        )
+        .subscribe()
+
+      return channel
     }
-    muatJumlah()
-    const interval = setInterval(muatJumlah, 30000)
+
+    let activeChannel: any = null
+    inisialisasi().then((ch) => {
+      activeChannel = ch
+    })
+
     return () => {
       batal = true
-      clearInterval(interval)
+      if (activeChannel) {
+        supabase.removeChannel(activeChannel)
+      }
     }
   }, [])
 
