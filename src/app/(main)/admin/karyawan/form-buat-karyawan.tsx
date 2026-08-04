@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -21,15 +21,46 @@ export default function FormBuatKaryawan({
   const [sedangProses, setSedangProses] = useState(false)
   const [menyalin, setMenyalin] = useState(false)
 
+  const [errNama, setErrNama] = useState(false)
+  const [errEmail, setErrEmail] = useState(false)
+  const [errPassword, setErrPassword] = useState(false)
+  const [errDivisi, setErrDivisi] = useState(false)
+
   async function tanganiSubmit(e: React.FormEvent) {
     e.preventDefault()
     setPesanError(null)
     setBerhasilDibuat(null)
 
-    if (roleSistem === 'user' && !divisionId) {
-      setPesanError('Pilih divisi/job untuk role Staff')
-      return
+    let valid = true
+    if (!nama.trim()) {
+      setErrNama(true)
+      valid = false
+    } else {
+      setErrNama(false)
     }
+
+    if (!email.trim()) {
+      setErrEmail(true)
+      valid = false
+    } else {
+      setErrEmail(false)
+    }
+
+    if (!password || password.length < 8) {
+      setErrPassword(true)
+      valid = false
+    } else {
+      setErrPassword(false)
+    }
+
+    if (roleSistem === 'user' && !divisionId) {
+      setErrDivisi(true)
+      valid = false
+    } else {
+      setErrDivisi(false)
+    }
+
+    if (!valid) return
 
     setSedangProses(true)
     const hasil = await buatKaryawan(nama, email, password, roleSistem, divisionId || undefined)
@@ -71,7 +102,7 @@ export default function FormBuatKaryawan({
               onClick={() => salinKeClipboard(berhasilDibuat)}
               className="rounded-lg bg-orange-500 hover:bg-orange-600 px-3 py-1.5 text-[10px] font-bold text-white transition active:scale-95 cursor-pointer"
             >
-              {menyalin ? 'Tersalin âœ“' : 'Salin'}
+              {menyalin ? 'Tersalin ✓' : 'Salin'}
             </button>
           </div>
           <p className="text-[10px] text-orange-800/80 leading-relaxed font-bold">
@@ -80,64 +111,102 @@ export default function FormBuatKaryawan({
         </div>
       )}
 
-      <form onSubmit={tanganiSubmit} className="space-y-3.5">
+      <form onSubmit={tanganiSubmit} className="space-y-3.5" noValidate>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <input
-            type="text"
-            placeholder="Nama lengkap"
-            required
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
-          />
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Nama Lengkap <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Nama lengkap"
+              value={nama}
+              onChange={(e) => {
+                setNama(e.target.value)
+                if (e.target.value.trim()) setErrNama(false)
+              }}
+              className={`w-full rounded-xl border bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:ring-2 focus:ring-maroon-800/10 transition ${
+                errNama ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+              }`}
+            />
+            {errNama && <p className="mt-1 text-[10px] font-bold text-red-600">Nama lengkap harus diisi!</p>}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Email <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (e.target.value.trim()) setErrEmail(false)
+              }}
+              className={`w-full rounded-xl border bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:ring-2 focus:ring-maroon-800/10 transition ${
+                errEmail ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+              }`}
+            />
+            {errEmail && <p className="mt-1 text-[10px] font-bold text-red-600">Email harus diisi!</p>}
+          </div>
         </div>
 
-        <div className="relative">
-          <input
-            type={tampilPassword ? 'text' : 'password'}
-            placeholder="Password (min. 8 karakter)"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 pr-10 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
-          />
-          <button
-            type="button"
-            onClick={() => setTampilPassword((v) => !v)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink cursor-pointer outline-none"
-            aria-label={tampilPassword ? 'Sembunyikan password' : 'Tampilkan password'}
-          >
-            {tampilPassword ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            )}
-          </button>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-muted">
+            Password <span className="text-red-500 font-bold">(Wajib)</span>
+          </label>
+          <div className="relative">
+            <input
+              type={tampilPassword ? 'text' : 'password'}
+              placeholder="Password (min. 8 karakter)"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                if (e.target.value.length >= 8) setErrPassword(false)
+              }}
+              className={`w-full rounded-xl border bg-cream-50/40 px-3.5 py-2.5 pr-10 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:ring-2 focus:ring-maroon-800/10 transition ${
+                errPassword ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => setTampilPassword((v) => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink cursor-pointer outline-none"
+              aria-label={tampilPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+            >
+              {tampilPassword ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              )}
+            </button>
+          </div>
+          {errPassword && (
+            <p className="mt-1 text-[10px] font-bold text-red-600">Password minimal 8 karakter!</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">Role</label>
+            <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">
+              Role <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
             <select
               value={roleSistem}
               onChange={(e) => {
                 const nilai = e.target.value as 'super_admin' | 'owner' | 'user'
                 setRoleSistem(nilai)
-                if (nilai !== 'user') setDivisionId('')
+                if (nilai !== 'user') {
+                  setDivisionId('')
+                  setErrDivisi(false)
+                }
               }}
               className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 cursor-pointer"
             >
@@ -149,11 +218,18 @@ export default function FormBuatKaryawan({
 
           {roleSistem === 'user' && (
             <div>
-              <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">Divisi / Job</label>
+              <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">
+                Divisi / Job <span className="text-red-500 font-bold">(Wajib untuk Staff)</span>
+              </label>
               <select
                 value={divisionId}
-                onChange={(e) => setDivisionId(e.target.value)}
-                className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 cursor-pointer"
+                onChange={(e) => {
+                  setDivisionId(e.target.value)
+                  if (e.target.value) setErrDivisi(false)
+                }}
+                className={`w-full rounded-xl border bg-cream-50/40 px-3 py-2.5 text-xs font-bold text-ink outline-none cursor-pointer ${
+                  errDivisi ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+                }`}
               >
                 <option value="">Pilih divisi...</option>
                 {daftarDivisi.map((d) => (
@@ -162,6 +238,9 @@ export default function FormBuatKaryawan({
                   </option>
                 ))}
               </select>
+              {errDivisi && (
+                <p className="mt-1 text-[10px] font-bold text-red-600">Pilih divisi/job untuk staff!</p>
+              )}
             </div>
           )}
         </div>
@@ -179,4 +258,3 @@ export default function FormBuatKaryawan({
     </div>
   )
 }
-

@@ -15,13 +15,15 @@ export default function FormTambahAnggota({
   const [userId, setUserId] = useState('')
   const [pesanError, setPesanError] = useState<string | null>(null)
   const [sedangProses, setSedangProses] = useState(false)
+  const [errStaff, setErrStaff] = useState(false)
 
   async function tanganiSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!userId) {
-      setPesanError('Pilih karyawan terlebih dahulu')
+      setErrStaff(true)
       return
     }
+    setErrStaff(false)
     setPesanError(null)
     setSedangProses(true)
 
@@ -50,13 +52,20 @@ export default function FormTambahAnggota({
     <div className="rounded-[24px] border border-cream-200 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-xs font-bold tracking-widest text-muted uppercase">Tambah Anggota Baru</h2>
 
-      <form onSubmit={tanganiSubmit} className="flex flex-col gap-3">
+      <form onSubmit={tanganiSubmit} className="flex flex-col gap-3" noValidate>
         <div>
-          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-muted uppercase">Pilih Staff</label>
+          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-muted uppercase">
+            Pilih Staff <span className="text-red-500 font-bold">(Wajib)</span>
+          </label>
           <select
             value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
+            onChange={(e) => {
+              setUserId(e.target.value)
+              if (e.target.value) setErrStaff(false)
+            }}
+            className={`w-full rounded-xl border bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none cursor-pointer shadow-inner ${
+              errStaff ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+            }`}
           >
             <option value="">Pilih karyawan...</option>
             {kandidat.map((k) => (
@@ -65,6 +74,9 @@ export default function FormTambahAnggota({
               </option>
             ))}
           </select>
+          {errStaff && (
+            <p className="mt-1 text-[10px] font-bold text-red-600">Pilih staff terlebih dahulu!</p>
+          )}
         </div>
 
         <button

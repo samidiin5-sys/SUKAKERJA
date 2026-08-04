@@ -51,6 +51,11 @@ export default function FormLembur({
   const [dipilih, setDipilih] = useState<Set<string>>(new Set(isOwnerOrAdmin ? [] : [sesiId]))
   const [muatAnggota, setMuatAnggota] = useState(false)
 
+  const [errTanggal, setErrTanggal] = useState(false)
+  const [errJamMulai, setErrJamMulai] = useState(false)
+  const [errJamSelesai, setErrJamSelesai] = useState(false)
+  const [errAlasan, setErrAlasan] = useState(false)
+
   useEffect(() => {
     if (!divisionId) return
     if (!isOwnerOrAdmin) {
@@ -77,12 +82,45 @@ export default function FormLembur({
 
   async function tanganiKirim(e: React.FormEvent) {
     e.preventDefault()
+    setPesan(null)
+
+    let valid = true
+    if (!tanggal) {
+      setErrTanggal(true)
+      valid = false
+    } else {
+      setErrTanggal(false)
+    }
+
+    if (!hMulaiStr || !mMulaiStr || hMulaiStr.length < 2 || mMulaiStr.length < 2) {
+      setErrJamMulai(true)
+      valid = false
+    } else {
+      setErrJamMulai(false)
+    }
+
+    if (!hSelesaiStr || !mSelesaiStr || hSelesaiStr.length < 2 || mSelesaiStr.length < 2) {
+      setErrJamSelesai(true)
+      valid = false
+    } else {
+      setErrJamSelesai(false)
+    }
+
+    if (!alasan || alasan.trim().length < 10) {
+      setErrAlasan(true)
+      valid = false
+    } else {
+      setErrAlasan(false)
+    }
+
     if (dipilih.size === 0) {
       setPesan({ sukses: false, teks: 'Pilih minimal 1 orang.' })
-      return
+      valid = false
     }
+
+    if (!valid) return
+
     setSedangKirim(true)
-    setPesan(null)
 
     let hasil
     if (isOwnerOrAdmin) {
@@ -125,8 +163,6 @@ export default function FormLembur({
     )
   }
 
-  const anggotaLain = anggota.filter((a) => a.id !== sesiId)
-
   return (
     <div className="relative overflow-hidden rounded-[24px] border border-cream-200 bg-white p-5 shadow-[0_14px_40px_rgba(92,31,33,0.06)]">
       <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-maroon-700 to-amber-400" />
@@ -146,13 +182,14 @@ export default function FormLembur({
         </div>
       )}
 
-      <form onSubmit={tanganiKirim} className="space-y-4">
+      <form onSubmit={tanganiKirim} className="space-y-4" noValidate>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted">Divisi</label>
+          <label className="mb-1 block text-xs font-semibold text-muted">
+            Divisi <span className="text-red-500 font-bold">(Wajib)</span>
+          </label>
           <select
             value={divisionId}
             onChange={(e) => setDivisionId(e.target.value)}
-            required
             className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all cursor-pointer shadow-inner"
           >
             {divisiSaya.map((d) => (
@@ -165,8 +202,8 @@ export default function FormLembur({
         <div>
           {isOwnerOrAdmin ? (
             <>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">
-                Staff yang Lembur
+              <label className="mb-1.5 block text-xs font-semibold text-muted font-bold">
+                Staff yang Lembur <span className="text-red-500 font-bold">(Pilih minimal 1)</span>
               </label>
               {muatAnggota ? (
                 <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
@@ -227,20 +264,31 @@ export default function FormLembur({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted">Tanggal Lembur</label>
+          <label className="mb-1 block text-xs font-semibold text-muted font-bold">
+            Tanggal Lembur <span className="text-red-500 font-bold">(Wajib)</span>
+          </label>
           <input
             type="date"
             value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
-            required
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
+            onChange={(e) => {
+              setTanggal(e.target.value)
+              if (e.target.value) setErrTanggal(false)
+            }}
+            className={`w-full rounded-xl border bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:bg-white transition-all shadow-inner ${
+              errTanggal ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+            }`}
           />
+          {errTanggal && <p className="mt-1 text-[10px] font-bold text-red-600">Tanggal lembur harus diisi!</p>}
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">Jam Mulai</label>
-            <div className="flex items-center justify-center gap-1.5 rounded-xl border border-cream-200 bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:border-maroon-800 focus-within:bg-white transition-all">
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Jam Mulai <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
+            <div className={`flex items-center justify-center gap-1.5 rounded-xl border bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:bg-white transition-all ${
+              errJamMulai ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus-within:border-maroon-800'
+            }`}>
               <input
                 type="text"
                 inputMode="numeric"
@@ -253,9 +301,9 @@ export default function FormLembur({
                   setHMulaiStr(h)
                   const m = jamMulai ? jamMulai.split(':')[1] : '00'
                   setJamMulai(`${h.padStart(2, '0')}:${m}`)
+                  if (h.length === 2 && mMulaiStr.length === 2) setErrJamMulai(false)
                 }}
                 onBlur={() => setHMulaiStr((h) => h.padStart(2, '0'))}
-                required
                 className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
               />
               <span className="text-xs font-black text-muted">:</span>
@@ -271,15 +319,22 @@ export default function FormLembur({
                   setMMulaiStr(m)
                   const h = jamMulai ? jamMulai.split(':')[0] : '00'
                   setJamMulai(`${h}:${m.padStart(2, '0')}`)
+                  if (hMulaiStr.length === 2 && m.length === 2) setErrJamMulai(false)
                 }}
                 onBlur={() => setMMulaiStr((m) => m.padStart(2, '0'))}
                 className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
               />
             </div>
+            {errJamMulai && <p className="mt-1 text-[10px] font-bold text-red-600">Jam mulai harus diisi lengkap (hh:mm)!</p>}
           </div>
+
           <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">Jam Selesai</label>
-            <div className="flex items-center justify-center gap-1.5 rounded-xl border border-cream-200 bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:border-maroon-800 focus-within:bg-white transition-all">
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Jam Selesai <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
+            <div className={`flex items-center justify-center gap-1.5 rounded-xl border bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:bg-white transition-all ${
+              errJamSelesai ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus-within:border-maroon-800'
+            }`}>
               <input
                 type="text"
                 inputMode="numeric"
@@ -292,9 +347,9 @@ export default function FormLembur({
                   setHSelesaiStr(h)
                   const m = jamSelesai ? jamSelesai.split(':')[1] : '00'
                   setJamSelesai(`${h.padStart(2, '0')}:${m}`)
+                  if (h.length === 2 && mSelesaiStr.length === 2) setErrJamSelesai(false)
                 }}
                 onBlur={() => setHSelesaiStr((h) => h.padStart(2, '0'))}
-                required
                 className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
               />
               <span className="text-xs font-black text-muted">:</span>
@@ -310,24 +365,35 @@ export default function FormLembur({
                   setMSelesaiStr(m)
                   const h = jamSelesai ? jamSelesai.split(':')[0] : '00'
                   setJamSelesai(`${h}:${m.padStart(2, '0')}`)
+                  if (hSelesaiStr.length === 2 && m.length === 2) setErrJamSelesai(false)
                 }}
                 onBlur={() => setMSelesaiStr((m) => m.padStart(2, '0'))}
                 className="w-8 bg-transparent text-center text-xs font-bold text-ink outline-none"
               />
             </div>
+            {errJamSelesai && <p className="mt-1 text-[10px] font-bold text-red-600">Jam selesai harus diisi lengkap (hh:mm)!</p>}
           </div>
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted">Alasan Lembur</label>
+          <label className="mb-1 block text-xs font-semibold text-muted font-bold">
+            Alasan Lembur <span className="text-red-500 font-bold">(Wajib)</span>
+          </label>
           <textarea
             value={alasan}
-            onChange={(e) => setAlasan(e.target.value)}
+            onChange={(e) => {
+              setAlasan(e.target.value)
+              if (e.target.value.trim().length >= 10) setErrAlasan(false)
+            }}
             placeholder="Jelaskan alasan lembur (min. 10 karakter)..."
             rows={3}
-            required
-            className="w-full resize-none rounded-xl border border-cream-200 bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-maroon-800 focus:bg-white transition-all shadow-inner"
+            className={`w-full resize-none rounded-xl border bg-cream-50/50 px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:bg-white transition-all shadow-inner ${
+              errAlasan ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+            }`}
           />
+          {errAlasan && (
+            <p className="mt-1 text-[10px] font-bold text-red-600">Alasan lembur harus diisi (minimal 10 karakter)!</p>
+          )}
         </div>
 
         {pesan && (
@@ -338,7 +404,7 @@ export default function FormLembur({
 
         <button
           type="submit"
-          disabled={sedangKirim || dipilih.size === 0}
+          disabled={sedangKirim || (isOwnerOrAdmin && dipilih.size === 0)}
           className="w-full rounded-xl bg-maroon-800 py-2.5 text-xs font-bold text-cream-50 hover:bg-maroon-900 active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all shadow-md shadow-maroon-800/10 sm:w-auto sm:px-6"
         >
           {sedangKirim

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -13,14 +13,20 @@ export default function FormBuatDivisi() {
   const [warna, setWarna] = useState(WARNA_PILIHAN[0])
   const [pesanError, setPesanError] = useState<string | null>(null)
   const [sedangProses, setSedangProses] = useState(false)
+  const [errNama, setErrNama] = useState(false)
 
   async function tanganiSubmit(e: React.FormEvent) {
     e.preventDefault()
     setPesanError(null)
+
+    if (!nama.trim()) {
+      setErrNama(true)
+      return
+    }
+    setErrNama(false)
+
     setSedangProses(true)
-
     const hasil = await buatDivisi(nama, deskripsi, warna)
-
     setSedangProses(false)
 
     if (!hasil.sukses) {
@@ -37,23 +43,40 @@ export default function FormBuatDivisi() {
     <div className="rounded-3xl border border-cream-200 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-sm font-black text-maroon-800 uppercase tracking-wider">Buat Divisi Baru</h2>
 
-      <form onSubmit={tanganiSubmit} className="space-y-3.5">
+      <form onSubmit={tanganiSubmit} className="space-y-3.5" noValidate>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <input
-            type="text"
-            placeholder="Nama divisi, contoh: Kreatif"
-            required
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
-          />
-          <input
-            type="text"
-            placeholder="Deskripsi (opsional)"
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
-            className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
-          />
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Nama Divisi <span className="text-red-500 font-bold">(Wajib)</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Nama divisi, contoh: Kreatif"
+              value={nama}
+              onChange={(e) => {
+                setNama(e.target.value)
+                if (e.target.value.trim()) setErrNama(false)
+              }}
+              className={`w-full rounded-xl border bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:ring-2 focus:ring-maroon-800/10 transition ${
+                errNama ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus:border-maroon-800'
+              }`}
+            />
+            {errNama && (
+              <p className="mt-1 text-[11px] font-bold text-red-600">Nama divisi harus diisi!</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted">
+              Deskripsi <span className="text-muted/60 font-medium">(Opsional)</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Deskripsi singkat"
+              value={deskripsi}
+              onChange={(e) => setDeskripsi(e.target.value)}
+              className="w-full rounded-xl border border-cream-200 bg-cream-50/40 px-3.5 py-2.5 text-xs font-semibold text-ink placeholder-muted/65 outline-none focus:border-maroon-800 focus:ring-2 focus:ring-maroon-800/10 transition"
+            />
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

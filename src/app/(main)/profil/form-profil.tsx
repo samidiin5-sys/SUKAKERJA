@@ -21,12 +21,19 @@ export default function FormProfil({
   const [sedangMenyimpanFoto, setSedangMenyimpanFoto] = useState(false)
   const [pesanNama, setPesanNama] = useState<{ sukses: boolean; teks: string } | null>(null)
   const [pesanFoto, setPesanFoto] = useState<{ sukses: boolean; teks: string } | null>(null)
+  const [errNama, setErrNama] = useState(false)
 
   const inputFotoRef = useRef<HTMLInputElement>(null)
 
   async function tanganiSimpanNama(e: React.FormEvent) {
     e.preventDefault()
     setPesanNama(null)
+    if (!nama.trim()) {
+      setErrNama(true)
+      return
+    }
+    setErrNama(false)
+
     setSedangMenyimpanNama(true)
     const hasil = await updateProfil(nama)
     setSedangMenyimpanNama(false)
@@ -126,7 +133,7 @@ export default function FormProfil({
               type="button"
               onClick={() => inputFotoRef.current?.click()}
               disabled={sedangMenyimpanFoto}
-              className="rounded-xl border border-cream-200 px-6 py-2.5 text-sm font-bold text-maroon-700 transition hover:border-orange-500 hover:text-orange-600 disabled:opacity-50"
+              className="rounded-xl border border-cream-200 px-6 py-2.5 text-sm font-bold text-maroon-700 transition hover:border-orange-500 hover:text-orange-600 disabled:opacity-50 cursor-pointer"
             >
               {sedangMenyimpanFoto ? 'Mengunggah...' : 'Ganti Foto'}
             </button>
@@ -146,20 +153,27 @@ export default function FormProfil({
         <h2 className="mb-1 text-sm font-bold text-ink">Nama Tampilan</h2>
         <p className="mb-5 text-xs text-muted">Nama ini yang akan tampil ke seluruh anggota tim.</p>
 
-        <form onSubmit={tanganiSimpanNama} className="space-y-4">
+        <form onSubmit={tanganiSimpanNama} className="space-y-4" noValidate>
           <div>
             <label htmlFor="nama" className="mb-1.5 block text-sm font-semibold text-ink">
-              Nama
+              Nama <span className="text-red-500 font-bold">(Wajib)</span>
             </label>
             <input
               id="nama"
               type="text"
-              required
               value={nama}
-              onChange={(e) => setNama(e.target.value)}
+              onChange={(e) => {
+                setNama(e.target.value)
+                if (e.target.value.trim()) setErrNama(false)
+              }}
               maxLength={100}
-              className="w-full rounded-xl border border-cream-200 bg-cream-50 px-4 py-3 text-sm text-ink outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className={`w-full rounded-xl border bg-cream-50 px-4 py-3 text-sm text-ink outline-none focus:ring-2 focus:ring-orange-500/20 ${
+                errNama ? 'border-red-500 focus:border-red-500' : 'border-cream-200 focus:border-orange-500'
+              }`}
             />
+            {errNama && (
+              <p className="mt-1 text-[11px] font-bold text-red-600">Nama lengkap harus diisi!</p>
+            )}
           </div>
 
           {pesanNama && (
@@ -171,7 +185,7 @@ export default function FormProfil({
           <button
             type="submit"
             disabled={sedangMenyimpanNama}
-            className="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 disabled:opacity-50"
+            className="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 disabled:opacity-50 cursor-pointer"
           >
             {sedangMenyimpanNama ? 'Menyimpan...' : 'Simpan Nama'}
           </button>
