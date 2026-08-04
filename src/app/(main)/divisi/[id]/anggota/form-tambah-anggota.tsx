@@ -55,7 +55,7 @@ export default function FormTambahAnggota({
       <form onSubmit={tanganiSubmit} className="flex flex-col gap-3" noValidate>
         <div>
           <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-muted uppercase">
-            Pilih Staff <span className="text-red-500 font-bold">(Wajib)</span>
+            Pilih Staff
           </label>
           <select
             value={userId}

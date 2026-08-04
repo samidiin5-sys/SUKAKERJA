@@ -156,7 +156,7 @@ export default function FormProfil({
         <form onSubmit={tanganiSimpanNama} className="space-y-4" noValidate>
           <div>
             <label htmlFor="nama" className="mb-1.5 block text-sm font-semibold text-ink">
-              Nama <span className="text-red-500 font-bold">(Wajib)</span>
+              Nama
             </label>
             <input
               id="nama"

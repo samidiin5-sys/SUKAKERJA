@@ -115,7 +115,7 @@ export default function FormBuatKaryawan({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Nama Lengkap <span className="text-red-500 font-bold">(Wajib)</span>
+              Nama Lengkap
             </label>
             <input
               type="text"
@@ -134,7 +134,7 @@ export default function FormBuatKaryawan({
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Email <span className="text-red-500 font-bold">(Wajib)</span>
+              Email
             </label>
             <input
               type="email"
@@ -154,7 +154,7 @@ export default function FormBuatKaryawan({
 
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted">
-            Password <span className="text-red-500 font-bold">(Wajib)</span>
+            Password
           </label>
           <div className="relative">
             <input
@@ -196,7 +196,7 @@ export default function FormBuatKaryawan({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">
-              Role <span className="text-red-500 font-bold">(Wajib)</span>
+              Role
             </label>
             <select
               value={roleSistem}
@@ -219,7 +219,7 @@ export default function FormBuatKaryawan({
           {roleSistem === 'user' && (
             <div>
               <label className="mb-1 block text-[10px] font-bold text-muted uppercase tracking-wider">
-                Divisi / Job <span className="text-red-500 font-bold">(Wajib untuk Staff)</span>
+                Divisi / Job
               </label>
               <select
                 value={divisionId}

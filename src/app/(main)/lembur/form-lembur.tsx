@@ -185,7 +185,7 @@ export default function FormLembur({
       <form onSubmit={tanganiKirim} className="space-y-4" noValidate>
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted">
-            Divisi <span className="text-red-500 font-bold">(Wajib)</span>
+            Divisi
           </label>
           <select
             value={divisionId}
@@ -203,7 +203,7 @@ export default function FormLembur({
           {isOwnerOrAdmin ? (
             <>
               <label className="mb-1.5 block text-xs font-semibold text-muted font-bold">
-                Staff yang Lembur <span className="text-red-500 font-bold">(Pilih minimal 1)</span>
+                Staff yang Lembur
               </label>
               {muatAnggota ? (
                 <p className="text-xs text-muted animate-pulse">Memuat anggota...</p>
@@ -265,7 +265,7 @@ export default function FormLembur({
 
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted font-bold">
-            Tanggal Lembur <span className="text-red-500 font-bold">(Wajib)</span>
+            Tanggal Lembur
           </label>
           <input
             type="date"
@@ -284,7 +284,7 @@ export default function FormLembur({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Jam Mulai <span className="text-red-500 font-bold">(Wajib)</span>
+              Jam Mulai
             </label>
             <div className={`flex items-center justify-center gap-1.5 rounded-xl border bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:bg-white transition-all ${
               errJamMulai ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus-within:border-maroon-800'
@@ -330,7 +330,7 @@ export default function FormLembur({
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Jam Selesai <span className="text-red-500 font-bold">(Wajib)</span>
+              Jam Selesai
             </label>
             <div className={`flex items-center justify-center gap-1.5 rounded-xl border bg-cream-50/50 px-3 py-2.5 shadow-inner focus-within:bg-white transition-all ${
               errJamSelesai ? 'border-red-500 ring-2 ring-red-500/10' : 'border-cream-200 focus-within:border-maroon-800'
@@ -377,7 +377,7 @@ export default function FormLembur({
 
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted font-bold">
-            Alasan Lembur <span className="text-red-500 font-bold">(Wajib)</span>
+            Alasan Lembur
           </label>
           <textarea
             value={alasan}

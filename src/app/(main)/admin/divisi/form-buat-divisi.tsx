@@ -47,7 +47,7 @@ export default function FormBuatDivisi() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Nama Divisi <span className="text-red-500 font-bold">(Wajib)</span>
+              Nama Divisi
             </label>
             <input
               type="text"
@@ -67,7 +67,7 @@ export default function FormBuatDivisi() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted">
-              Deskripsi <span className="text-muted/60 font-medium">(Opsional)</span>
+              Deskripsi
             </label>
             <input
               type="text"
