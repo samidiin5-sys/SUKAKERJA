@@ -1,8 +1,9 @@
-﻿'use server'
+'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanSuperAdmin, ambilSesiPengguna } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
+import { revalidatePath } from 'next/cache'
 
 const BOARD_DEFAULT = ['To Do', 'Dikerjakan', 'Review', 'Selesai']
 
@@ -65,6 +66,7 @@ export async function buatDivisi(
     divisionId: divisi.id,
   })
 
+  revalidatePath('/admin/divisi')
   return { sukses: true }
 }
 
@@ -195,6 +197,7 @@ export async function nonaktifkanDivisi(
     objekId: divisionId, objekNama: divisi.nama, divisionId,
   })
 
+  revalidatePath('/admin/divisi')
   return { sukses: true, jumlahTaskAktif }
 }
 
@@ -219,6 +222,7 @@ export async function aktifkanKembaliDivisi(divisionId: string): Promise<HasilAk
     divisionId,
   })
 
+  revalidatePath('/admin/divisi')
   return { sukses: true }
 }
 

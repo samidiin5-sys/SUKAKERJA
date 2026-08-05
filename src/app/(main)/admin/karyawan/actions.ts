@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { pastikanSuperAdmin, pastikanOwnerAtauSuperAdmin } from '@/lib/auth/otorisasi'
 import { catatAktivitas } from '@/lib/aktivitas'
 import { kirimNotifikasi } from '@/lib/notifikasi'
+import { revalidatePath } from 'next/cache'
 
 export type HasilBuatKaryawan =
   | { sukses: true; passwordSementara: string }
@@ -43,6 +44,21 @@ export async function buatKaryawan(
   }
 
   const userId = userBaru.user?.id
+
+  if (userId) {
+    // Tunggu hingga profile dibuat oleh trigger database agar tidak terjadi race condition
+    let retries = 10
+    while (retries > 0) {
+      const { data: profile } = await admin
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+      if (profile && profile.length > 0) break
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      retries--
+    }
+  }
+
   if (userId && roleSistem === 'user' && divisionId) {
     await admin.from('division_members').insert({ division_id: divisionId, user_id: userId, role: 'staff' })
   }
@@ -56,6 +72,7 @@ export async function buatKaryawan(
     objekNama: nama.trim(),
   })
 
+  revalidatePath('/admin/karyawan')
   return { sukses: true, passwordSementara: password }
 }
 
@@ -84,6 +101,7 @@ export async function resetPasswordKaryawan(
 
   await admin.from('profiles').update({ must_change_password: true }).eq('id', userId)
 
+  revalidatePath('/admin/karyawan')
   return { sukses: true, passwordSementara: passwordBaru }
 }
 
@@ -136,6 +154,7 @@ export async function nonaktifkanKaryawan(userId: string): Promise<HasilAksiAkun
     objekNama: profilTarget?.nama ?? userId,
   })
 
+  revalidatePath('/admin/karyawan')
   return { sukses: true }
 }
 
@@ -167,6 +186,7 @@ export async function aktifkanKembaliKaryawan(userId: string): Promise<HasilAksi
     divisionId: null,
   })
 
+  revalidatePath('/admin/karyawan')
   return { sukses: true }
 }
 
@@ -226,6 +246,7 @@ export async function hapusKaryawan(userId: string): Promise<HasilAksiAkun> {
     objekNama: target?.nama ?? userId
   })
 
+  revalidatePath('/admin/karyawan')
   return { sukses: true }
 }
 
