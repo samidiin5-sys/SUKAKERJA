@@ -334,6 +334,7 @@ export type TaskRingkas = {
   prioritas: string
   dueDate: string | null
   completedAt: string | null
+  archivedAt?: string | null
   assignees: { id: string; nama: string; fotoUrl?: string | null }[]
   ditugaskanOleh: string | null
   bolehGeser: boolean
@@ -376,7 +377,7 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
   const { data: tasks } = await admin
     .from('tasks')
     .select(
-      'id, board_id, judul, prioritas, due_date, completed_at, created_by, urutan, is_recurring, hanya_assignee, deskripsi, has_bonus, bonus_amount, task_assignees(user_id, profiles!task_assignees_user_id_fkey(id, nama, foto_url), pemberi:profiles!task_assignees_assigned_by_fkey(nama)), checklist_items(id, selesai), comments(id), task_attachments(id)'
+      'id, board_id, judul, prioritas, due_date, completed_at, archived_at, created_by, urutan, is_recurring, hanya_assignee, deskripsi, has_bonus, bonus_amount, task_assignees(user_id, profiles!task_assignees_user_id_fkey(id, nama, foto_url), pemberi:profiles!task_assignees_assigned_by_fkey(nama)), checklist_items(id, selesai), comments(id), task_attachments(id)'
     )
     .in('board_id', boardIds)
     .is('deleted_at', null)
@@ -389,6 +390,7 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
     prioritas: string
     due_date: string | null
     completed_at: string | null
+    archived_at: string | null
     created_by: string
     urutan: number
     is_recurring: boolean
@@ -409,11 +411,30 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
   const bolehLihatSemua = sesi.roleSistem === 'super_admin' || sesi.roleSistem === 'owner'
   const hariIniWIB = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
 
+  // Hari ini WIB (mulai dari jam 00:00 WIB hari ini)
+  const wibOffset = 7 * 60 * 60 * 1000
+  const startOfTodayWIB = new Date(Date.now() + wibOffset)
+  startOfTodayWIB.setUTCHours(0, 0, 0, 0)
+  const batasHariIniUTC = new Date(startOfTodayWIB.getTime() - wibOffset)
+
   const semuaTask = ((tasks as unknown as BarisTask[] | null) ?? []).filter((t) => {
     // Sembunyikan tugas rutin masa depan dari papan Kanban
     if (t.is_recurring && t.due_date) {
       const tglWIB = new Date(new Date(t.due_date).getTime() + 7 * 3600_000).toISOString().slice(0, 10)
       if (tglWIB > hariIniWIB) {
+        return false
+      }
+    }
+
+    // Sembunyikan tugas yang sudah diarsipkan
+    if (t.archived_at !== null) {
+      return false
+    }
+
+    // Sembunyikan tugas yang selesai kemarin atau sebelumnya (auto-arsip dengan jeda 1 hari)
+    if (t.completed_at !== null) {
+      const tglSelesai = new Date(t.completed_at)
+      if (tglSelesai < batasHariIniUTC) {
         return false
       }
     }
@@ -477,6 +498,7 @@ export async function ambilPapanDivisi(divisionId: string): Promise<BoardDenganT
         prioritas: t.prioritas,
         dueDate: t.due_date,
         completedAt: t.completed_at,
+        archivedAt: t.archived_at,
         assignees: (t.task_assignees ?? []).map((a) => ({
           id: a.profiles.id,
           nama: a.profiles.nama,
@@ -1794,4 +1816,67 @@ export async function arsipkanTugasSelesai(
 
   return { sukses: true }
 }
+
+export type TaskHistori = {
+  id: string
+  judul: string
+  prioritas: string
+  dueDate: string | null
+  completedAt: string
+  archivedAt: string | null
+  boardNama: string
+  hasBonus: boolean
+  bonusAmount: number
+}
+
+export async function ambilHistoriTugasStaff(
+  divisionId: string,
+  userId: string
+): Promise<TaskHistori[]> {
+  await pastikanAnggotaDivisi(divisionId)
+  const admin = createAdminClient()
+
+  // 1. Ambil semua board di divisi ini
+  const { data: boards } = await admin
+    .from('boards')
+    .select('id, nama')
+    .eq('division_id', divisionId)
+    .is('deleted_at', null)
+
+  if (!boards || boards.length === 0) return []
+  const boardIds = boards.map((b) => b.id)
+  const boardMap = new Map(boards.map((b) => [b.id, b.nama]))
+
+  // 2. Ambil semua tugas yang ditugaskan ke staff ini
+  const { data: assigneeRows } = await admin
+    .from('task_assignees')
+    .select('task_id')
+    .eq('user_id', userId)
+
+  const assignedTaskIds = (assigneeRows ?? []).map((r) => r.task_id)
+  if (assignedTaskIds.length === 0) return []
+
+  // 3. Ambil tugas-tugas selesai yang tidak didelete
+  const { data: tasks } = await admin
+    .from('tasks')
+    .select('id, judul, prioritas, due_date, completed_at, archived_at, board_id, has_bonus, bonus_amount')
+    .in('id', assignedTaskIds)
+    .in('board_id', boardIds)
+    .is('deleted_at', null)
+    .not('completed_at', 'is', null)
+    .order('completed_at', { ascending: false })
+
+  return ((tasks ?? []) as any[]).map((t) => ({
+    id: t.id,
+    judul: t.judul,
+    prioritas: t.prioritas,
+    dueDate: t.due_date,
+    completedAt: t.completed_at,
+    archivedAt: t.archived_at,
+    boardNama: boardMap.get(t.board_id) ?? 'Tidak diketahui',
+    hasBonus: t.has_bonus ?? false,
+    bonusAmount: t.bonus_amount ?? 0,
+  }))
+}
+
 

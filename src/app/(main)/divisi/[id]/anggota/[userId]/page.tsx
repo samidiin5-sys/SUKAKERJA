@@ -5,8 +5,9 @@ import {
   ambilDetailDivisi,
   ambilPapanDivisi,
   ambilAnggotaDivisi,
+  ambilHistoriTugasStaff,
 } from '../../actions'
-import PapanDivisi from '../../papan-divisi'
+import PantauStaffTabs from './pantau-staff-tabs'
 
 export default async function HalamanPantauStaff({
   params,
@@ -18,11 +19,12 @@ export default async function HalamanPantauStaff({
 
   if (data.roleSistem === 'user') redirect(`/divisi/${id}`)
 
-  const [divisi, boards, anggota, sesi] = await Promise.all([
+  const [divisi, boards, anggota, sesi, histori] = await Promise.all([
     ambilDetailDivisi(id),
     ambilPapanDivisi(id),
     ambilAnggotaDivisi(id),
     pastikanAnggotaDivisi(id),
+    ambilHistoriTugasStaff(id, userId),
   ])
 
   if (!divisi) redirect('/dashboard')
@@ -58,18 +60,14 @@ export default async function HalamanPantauStaff({
         </div>
       </div>
 
-      <PapanDivisi
+      <PantauStaffTabs
         divisionId={id}
         boardsAwal={boards}
         anggota={anggota}
-        bolehReorderBoard={true}
-        bolehTambahTask={true}
-        bolehKelola={true}
-        bolehKirimTugas={false}
         currentUserId={sesi.id}
-        isStaff={false}
         defaultAssigneeId={userId}
         pantauNama={staff.nama}
+        histori={histori}
       />
     </>
   )
